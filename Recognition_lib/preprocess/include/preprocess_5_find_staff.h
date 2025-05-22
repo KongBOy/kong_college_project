@@ -1,0 +1,22 @@
+#include <opencv2/core/core_c.h>
+#include "preprocess_0_hough_tool.h"
+using namespace cv;
+
+#ifndef FIND_STAFF_H_INCLUDED
+#define FIND_STAFF_H_INCLUDED
+
+
+
+#endif // FIND_STAFF_H_INCLUDED
+
+
+int find_Staff(vector<Vec2f>,vector<Vec2f>&,int *&,int *&);
+
+void filter_distance(vector<Vec2f>& src_lines,int);
+void position_erase(vector<Vec2f>&src_lines,int position);
+
+
+//new things
+//不要用vector<Vec2f>*& staff，原因寫在find_staff.cpp
+int find_Staff2(vector<Vec2f>& select_lines,int dist_level_0,int dist_level_1);
+
