@@ -23,8 +23,6 @@
 #include "recognition_3_c_merge_head_and_time.h"
 #include "recognition_4_find_picth.h"
 
-#include "midi.h"
-
 using namespace cv;
 using namespace std;
 
