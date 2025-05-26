@@ -4,6 +4,9 @@ set(EXPORT_COMPILE_COMMANDS ON)
 
 project(project_rebuild)
 
+# 把 build 結果放到 指定的資料夾
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY         "${CMAKE_SOURCE_DIR}/Resource")
+
 find_package(OpenCV REQUIRED "C:/Users/VAIO/Desktop/OpenCV/opencv231_2_build")
 set(CMAKE_BUILD_TYPE Release)
 message(STATUS "(可省, 看一下變數內容而已)OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}" )
