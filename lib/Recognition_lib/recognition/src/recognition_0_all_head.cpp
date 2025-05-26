@@ -89,7 +89,7 @@ switch(head_type)
     case 0:
     {
         ///0
-        Mat template_img = imread("note/0/0.bmp",0);
+        Mat template_img = imread("Resource/note/0/0.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
         recognition_2_b_head_recheck(0,final_rl_img_roi,maybe_head_count,maybe_head);
@@ -112,7 +112,7 @@ switch(head_type)
         Mat debug_img = final_rl_img_roi.clone();
         cvtColor(final_rl_img_roi,debug_img,CV_GRAY2BGR);
 
-        Mat template_img = imread("note/2/2.bmp",0);
+        Mat template_img = imread("Resource/note/2/2.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 ///        recognition_1_find_all_maybe_head_method_2(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
@@ -137,7 +137,7 @@ switch(head_type)
     {
         ///4
 
-        Mat template_img = imread("note/4/4.bmp",0);
+        Mat template_img = imread("Resource/note/4/4.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
 
@@ -165,7 +165,7 @@ switch(head_type)
     {
 ///4-rest
 
-        Mat template_img = imread("note/4-rest/4-rest.bmp",0);
+        Mat template_img = imread("Resource/note/4-rest/4-rest.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
         recognition_2_b_head_recheck(5,final_rl_img_roi,maybe_head_count,maybe_head);
@@ -182,7 +182,7 @@ switch(head_type)
 
     case 1:
     {
-        Mat template_img = imread("note/0-rest/0-rest.bmp",0);
+        Mat template_img = imread("Resource/note/0-rest/0-rest.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
         recognition_2_a_head_charactristic(1,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
@@ -200,7 +200,7 @@ switch(head_type)
 
     case 3:
     {
-        Mat template_img = imread("note/2-rest/2-rest.bmp",0);
+        Mat template_img = imread("Resource/note/2-rest/2-rest.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
         recognition_2_a_head_charactristic(3,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
@@ -218,7 +218,7 @@ switch(head_type)
 
     case 6:
     {
-        Mat template_img = imread("note/6-rest/6-rest-2.bmp",0);
+        Mat template_img = imread("Resource/note/6-rest/6-rest-2.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
         recognition_2_a_head_charactristic(6,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
@@ -236,7 +236,7 @@ switch(head_type)
 
     case 7:
     {
-        Mat template_img = imread("note/32-rest/7-2.bmp",0);
+        Mat template_img = imread("Resource/note/32-rest/7-2.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
         recognition_2_a_head_charactristic(7,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
@@ -254,7 +254,7 @@ switch(head_type)
 
     case 8:
     {
-        Mat template_img = imread("note/8-rest/8-rest-3.bmp",0);
+        Mat template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
         recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
         recognition_2_a_head_charactristic(8,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
@@ -274,7 +274,7 @@ switch(head_type)
     case 9:
     {
         ///0
-        Mat template_img = imread("note/9/9-bin.bmp",0);
+        Mat template_img = imread("Resource/note/9/9-bin.bmp",0);
         Mat template_img_4(13,17,CV_8UC1,Scalar(0)); ///隨便拉~~~只是設定range比較好用ˊ口ˋ
 
         recognition_1_find_all_maybe_head_method_2(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);

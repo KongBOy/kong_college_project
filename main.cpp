@@ -65,55 +65,12 @@ using namespace cv;
 char *get_all_files_names_within_folder(string folder);
 string filename="";
 void deleAllFile(string folder);
-static string PicFolder="iPhone 5c (Global)\\photo";
-
-bool checkUIPic();
-
-
-
-///C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI
-///C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\MusicSheetLocation\\
-
-/*
-static string PicFolder="C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\MusicSheetLocation\\";
-Mat UI0=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI0.jpg",1);
-Mat UI1=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI1.jpg",1);
-Mat UI2=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI2.jpg",1);
-Mat UI2_5=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI2_5.jpg",1);
-Mat UI3=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI3.jpg",1);
-Mat UI4_1=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI4_1.jpg",1);
-Mat UI4_2=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI4_2.jpg",1);
-Mat UI4_3=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI4_3.jpg",1);
-Mat UI5=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UI5.jpg",1);
-*/
-
-Mat UI0=imread("UI_all_picture/UI PIC\\UI\\UI0.jpg",1);
-Mat UI0_enter=imread("UI_all_picture/UI PIC\\UI\\UI0_enter.jpg",1);
-Mat UI0_1=imread("UI_all_picture/UI PIC\\UI\\UI0_1.jpg",1);
-Mat UI0_2=imread("UI_all_picture/UI PIC\\UI\\UI0_2.jpg",1);
-Mat UI0_3=imread("UI_all_picture/UI PIC\\UI\\UI0_3.jpg",1);
-Mat UI0_4=imread("UI_all_picture/UI PIC\\UI\\UI0_4.jpg",1);
-Mat UI0_5=imread("UI_all_picture/UI PIC\\UI\\UI0_5.jpg",1);
-Mat UI0_6=imread("UI_all_picture/UI PIC\\UI\\UI0_6.jpg",1);
-Mat UI0_6_enter=imread("UI_all_picture/UI PIC\\UI\\UI0_6_enter.jpg",1);
-
-
-Mat UI1=imread("UI_all_picture/UI PIC/UI/UI1.jpg",1);
-Mat UI1_1=imread("UI_all_picture/UI PIC/UI/UI1_1.jpg",1);
-Mat UI1_2=imread("UI_all_picture/UI PIC/UI/UI1_2.jpg",1);
-Mat UI2=imread("UI_all_picture/UI PIC/UI/UI2.jpg",1);
-Mat UI2_5=imread("UI_all_picture/UI PIC/UI/UI2_5.jpg",1);
-Mat UI3=imread("UI_all_picture/UI PIC/UI/UI3.jpg",1);
-Mat UI4_0=imread("UI_all_picture/UI PIC/UI/UI4_0.jpg",1);
-Mat UI4_1=imread("UI_all_picture/UI PIC/UI/UI4_1.jpg",1);
-Mat UI5_0=imread("UI_all_picture/UI PIC/UI/UI5_0.jpg",1);
-Mat UI5_1=imread("UI_all_picture/UI PIC/UI/UI5_1.jpg",1);
-
+static string PicFolder="Resource\\iPhone 5c (Global)\\photo";
 
 ///*****************************************************
-Mat Speed_Volume_Bar=imread("UI_all_picture/UI PIC/UI/Speed_Volume_Bar.png",1);
-Mat background=imread("UI_all_picture/UI PIC/UI/Background.png",1);
-Mat bar=imread("UI_all_picture/UI PIC/UI/Bar.png",1);
+Mat Speed_Volume_Bar=imread("Resource/UI_all_picture/UI PIC/UI/Speed_Volume_Bar.png",1);
+Mat background      =imread("Resource/UI_all_picture/UI PIC/UI/Background.png",1);
+Mat bar             =imread("Resource/UI_all_picture/UI PIC/UI/Bar.png",1);
 
 int Drawing_Random_Circles( Mat& image, RNG rng);
 //int DrawMat(Mat Input,Mat& Output,int row,int col);
@@ -148,9 +105,38 @@ int NextStep=0;
 
 time_t LastTimeFineUser;
 time_t OverTimeUserDisapper;
+
+
+
 int main(){
-    if(!checkUIPic())
-    {
+    // C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI
+    // C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\MusicSheetLocation\\
+
+    Mat UI0         = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0.jpg"        , 1);
+    Mat UI0_enter   = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_enter.jpg"  , 1);
+    Mat UI0_1       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_1.jpg"      , 1);
+    Mat UI0_2       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_2.jpg"      , 1);
+    Mat UI0_3       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_3.jpg"      , 1);
+    Mat UI0_4       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_4.jpg"      , 1);
+    Mat UI0_5       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_5.jpg"      , 1);
+    Mat UI0_6       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6.jpg"      , 1);
+    Mat UI0_6_enter = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6_enter.jpg", 1);
+
+
+    Mat UI1   = imread("Resource\\UI_all_picture/UI PIC/UI/UI1.jpg"  ,1);
+    Mat UI1_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_1.jpg",1);
+    Mat UI1_2 = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_2.jpg",1);
+    Mat UI2   = imread("Resource\\UI_all_picture/UI PIC/UI/UI2.jpg"  ,1);
+    Mat UI2_5 = imread("Resource\\UI_all_picture/UI PIC/UI/UI2_5.jpg",1);
+    Mat UI3   = imread("Resource\\UI_all_picture/UI PIC/UI/UI3.jpg"  ,1);
+    Mat UI4_0 = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_0.jpg",1);
+    Mat UI4_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_1.jpg",1);
+    Mat UI5_0 = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_0.jpg",1);
+    Mat UI5_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_1.jpg",1);
+
+    // 檢查 讀UI圖
+    if(  UI0.empty()||UI0_1.empty()||UI0_2.empty()||UI0_3.empty()||UI0_4.empty()||UI0_5.empty()||UI0_6.empty()\
+       ||UI1.empty()||UI1_1.empty()||UI1_2.empty()||UI2.empty()||UI3.empty()||UI0_enter.empty()||UI0_6_enter.empty()){
         cout<<"checkUIPic Error!"<<endl;
         return 0;
     }
@@ -158,9 +144,12 @@ int main(){
         cout<<"Error Load Pic!"<<endl;
         return 0;
     }
+
+
     // opencv 中文字 編碼只支援 cp950(Big5), 所以要先把 utf8 轉 cp950
     Title = utf8_to_cp950(Title);
     namedWindow(Title);
+
     while(true)
     {
         switch(NextStep)
@@ -236,7 +225,7 @@ int main(){
 
 
 
-            SrcMusicSheet=imread("test_img/IMG_20160907_020920.jpg",0);
+            SrcMusicSheet=imread("Resource/test_img/IMG_20160907_020920.jpg",0);
 
 
 
@@ -340,13 +329,7 @@ int main(){
     */
 
 }
-bool checkUIPic(){
-    if(UI0.empty()||UI0_1.empty()||UI0_2.empty()||UI0_3.empty()||UI0_4.empty()||UI0_5.empty()||UI0_6.empty()\
-       ||UI1.empty()||UI1_1.empty()||UI1_2.empty()||UI2.empty()||UI3.empty()||UI0_enter.empty()||UI0_6_enter.empty())
-        return false;
-    else
-        return true;
-}
+
 int GenerateMidiFile()
 {
 

@@ -12,7 +12,7 @@
 
 #include "preprocess_7_cut_according_staff.h"
 
-#include "vertical_map_to_recognize.h"
+// #include "vertical_map_to_recognize.h"
 
 
 
@@ -378,14 +378,14 @@ void Cut_staff(Mat test_bin,Mat reduce_line_bin,
 /// ● 4 四分 音符
 /// ● 5 四分 休止符
 /*
-        Mat template_img_4 = imread("note/4/4.bmp",0);
-        Mat template_img_4_rest = imread("note/4-rest/4-rest.bmp",0);
-        Mat template_img_2 = imread("note/2/2.bmp",0);
-        Mat template_img_0 = imread("note/0/0.bmp",0);
-        Mat template_img_1 = imread("note/0-rest/0-rest.bmp",0);
-        Mat template_img_3 = imread("note/2-rest/2-rest.bmp",0);
-        Mat template_img_8 = imread("note/8-rest/8-rest-3.bmp",0);
-        Mat template_img_6 = imread("note/6-rest/6-rest-2.bmp",0);
+        Mat template_img_4 = imread("Resource/note/4/4.bmp",0);
+        Mat template_img_4_rest = imread("Resource/note/4-rest/4-rest.bmp",0);
+        Mat template_img_2 = imread("Resource/note/2/2.bmp",0);
+        Mat template_img_0 = imread("Resource/note/0/0.bmp",0);
+        Mat template_img_1 = imread("Resource/note/0-rest/0-rest.bmp",0);
+        Mat template_img_3 = imread("Resource/note/2-rest/2-rest.bmp",0);
+        Mat template_img_8 = imread("Resource/note/8-rest/8-rest-3.bmp",0);
+        Mat template_img_6 = imread("Resource/note/6-rest/6-rest-2.bmp",0);
 
         recognition_0_all_head(1,template_img_1,final_rl_img_roi[staff_num],final_img_roi[staff_num],e_count,l_edge,distance,trans[0].y,row_note_count,row_note);
         recognition_0_all_head(3,template_img_3,final_rl_img_roi[staff_num],final_img_roi[staff_num],e_count,l_edge,distance,trans[0].y,row_note_count,row_note);

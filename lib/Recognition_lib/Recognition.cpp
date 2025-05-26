@@ -333,16 +333,16 @@ catch (exception e)
 
 ///if(go_staff != 7) continue;
 
-        Mat template_img_4 = imread("note/4/4.bmp",0);
-        Mat template_img_4_rest = imread("note/4-rest/4-rest.bmp",0);
-        Mat template_img_2 = imread("note/2/2.bmp",0);
-        Mat template_img_0 = imread("note/0/0.bmp",0);
-        Mat template_img_1 = imread("note/0-rest/0-rest.bmp",0);
-        Mat template_img_3 = imread("note/2-rest/2-rest.bmp",0);
-        Mat template_img_8 = imread("note/8-rest/8-rest-3.bmp",0);
-        Mat template_img_6 = imread("note/6-rest/6-rest-2.bmp",0);
+        Mat template_img_4 = imread("Resource/note/4/4.bmp",0);
+        Mat template_img_4_rest = imread("Resource/note/4-rest/4-rest.bmp",0);
+        Mat template_img_2 = imread("Resource/note/2/2.bmp",0);
+        Mat template_img_0 = imread("Resource/note/0/0.bmp",0);
+        Mat template_img_1 = imread("Resource/note/0-rest/0-rest.bmp",0);
+        Mat template_img_3 = imread("Resource/note/2-rest/2-rest.bmp",0);
+        Mat template_img_8 = imread("Resource/note/8-rest/8-rest-3.bmp",0);
+        Mat template_img_6 = imread("Resource/note/6-rest/6-rest-2.bmp",0);
 
-        Mat template_img_9 = imread("note/9/9.bmp",0);
+        Mat template_img_9 = imread("Resource/note/9/9.bmp",0);
 
 ///        recognition_0_all_head(2,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 

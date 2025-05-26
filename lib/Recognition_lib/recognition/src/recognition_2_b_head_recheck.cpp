@@ -91,17 +91,17 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
 
     /// ~~~template Matching
     Mat template_recheck ;
-    if(head_type == 0) template_recheck = imread("note/0/0.bmp",0);
-    if(head_type == 2) template_recheck = imread("note/2/2.bmp",0);
-    if(head_type == 4) template_recheck = imread("note/4/4.bmp",0);
-    if(head_type == 5) template_recheck = imread("note/4-rest/4-rest-white-both-1.bmp",0);
-    if(head_type == 1) template_recheck = imread("note/0-rest/0-rest-14-white-both-3-3-3.bmp",0);
-    if(head_type == 3) template_recheck = imread("note/2-rest/2-rest-14-white-both-3-3-3.bmp",0);
-    if(head_type == 8) template_recheck = imread("note/8-rest/8-rest-white-both-2-2.bmp",0); ///上下要留白，八分辨識度 & 區別度較高
-    if(head_type == 6) template_recheck = imread("note/6-rest/6-rest-white-both-2-2-3.bmp",0); ///上下不要留白，留白會抓到八分的休止符
-    if(head_type == 7) template_recheck = imread("note/32-rest/7-white-both-2.bmp",0); ///上下不要留白，留白會抓到八分的休止符
+    if(head_type == 0) template_recheck = imread("Resource/note/0/0.bmp",0);
+    if(head_type == 2) template_recheck = imread("Resource/note/2/2.bmp",0);
+    if(head_type == 4) template_recheck = imread("Resource/note/4/4.bmp",0);
+    if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp",0);
+    if(head_type == 1) template_recheck = imread("Resource/note/0-rest/0-rest-14-white-both-3-3-3.bmp",0);
+    if(head_type == 3) template_recheck = imread("Resource/note/2-rest/2-rest-14-white-both-3-3-3.bmp",0);
+    if(head_type == 8) template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp",0); ///上下要留白，八分辨識度 & 區別度較高
+    if(head_type == 6) template_recheck = imread("Resource/note/6-rest/6-rest-white-both-2-2-3.bmp",0); ///上下不要留白，留白會抓到八分的休止符
+    if(head_type == 7) template_recheck = imread("Resource/note/32-rest/7-white-both-2.bmp",0); ///上下不要留白，留白會抓到八分的休止符
 
-    if(head_type == 9) template_recheck = imread("note/9/9-bin.bmp",0);
+    if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp",0);
     ///cout註解
     ///cout<<"template_recheck.cols = "<<template_recheck.cols<<endl;
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head ++)
@@ -138,9 +138,9 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
             {
                 ///cout註解 看現在正在處理哪顆頭
                 ///cout<<"go_head = "<<go_head <<" , ";
-                if(head_type == 4) template_recheck = imread("note/4/4-" + IntToString(size) +"-white-both-2.bmp",0);
-                if(head_type == 2) template_recheck = imread("note/2/2-" + IntToString(size) +"-white-both-2.bmp",0);
-                if(head_type == 0) template_recheck = imread("note/0/0-" + IntToString(size) +"-white-both-2.bmp",0);
+                if(head_type == 4) template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp",0);
+                if(head_type == 2) template_recheck = imread("Resource/note/2/2-" + IntToString(size) +"-white-both-2.bmp",0);
+                if(head_type == 0) template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp",0);
 
 ///cout<<template_recheck<<" "<<endl;
 

@@ -12,7 +12,7 @@ using namespace std;
 using namespace cv;
 
 Mat screen(500,1270,CV_8UC3,Scalar(255,255,255));
-Mat UI2_img = imread("UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.png",1);
+Mat UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.png",1);
 
 int screen_center_x = screen.cols/2;
 int screen_center_y = screen.rows/2;
@@ -73,25 +73,25 @@ static void Perspective_trans(double x,double y,Mat warp_matrix,double & result_
 
 ///讀彩色~~背景綠色，現在用下面的喔~~
 /*
-Mat loading_bar_item_4 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_4_green.bmp",1); ///04,11,15
-Mat loading_bar_item_8 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_8_green.bmp",1); ///01,07
-Mat loading_bar_item_16 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_16_green.bmp",1); ///02,12,14
-Mat loading_bar_item_rest_8 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8_green.bmp",1); ///03,10
-Mat loading_bar_item_flat = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_flat_green.bmp",1); ///05,08
-Mat loading_bar_item_sharp = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp_green.bmp",1); ///06,09,13
-Mat loading_bar_item_finish = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp",1); ///16
-Mat loading_bar_item_staff_line = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp",1); ///16
+Mat loading_bar_item_4 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4_green.bmp",1); ///04,11,15
+Mat loading_bar_item_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8_green.bmp",1); ///01,07
+Mat loading_bar_item_16 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_16_green.bmp",1); ///02,12,14
+Mat loading_bar_item_rest_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8_green.bmp",1); ///03,10
+Mat loading_bar_item_flat = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_flat_green.bmp",1); ///05,08
+Mat loading_bar_item_sharp = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp_green.bmp",1); ///06,09,13
+Mat loading_bar_item_finish = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp",1); ///16
+Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp",1); ///16
 */
 
 ///讀灰階~~
-Mat loading_bar_item_4 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_4.bmp",0); ///04,11,15
-Mat loading_bar_item_8 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_8.bmp",0); ///01,07
-Mat loading_bar_item_16 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_16.bmp",0); ///02,12,14
-Mat loading_bar_item_rest_8 = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8.bmp",0); ///03,10
-Mat loading_bar_item_flat = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_flat.bmp",0); ///05,08
-Mat loading_bar_item_sharp = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp.bmp",0); ///06,09,13
-Mat loading_bar_item_finish = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp",0); ///16
-Mat loading_bar_item_staff_line = imread("UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp",0); ///16
+Mat loading_bar_item_4 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4.bmp",0); ///04,11,15
+Mat loading_bar_item_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8.bmp",0); ///01,07
+Mat loading_bar_item_16 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_16.bmp",0); ///02,12,14
+Mat loading_bar_item_rest_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8.bmp",0); ///03,10
+Mat loading_bar_item_flat = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_flat.bmp",0); ///05,08
+Mat loading_bar_item_sharp = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp.bmp",0); ///06,09,13
+Mat loading_bar_item_finish = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp",0); ///16
+Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp",0); ///16
 
 
 
@@ -247,7 +247,7 @@ void UI_loading_preprocess(Mat ord_img,
                 Mat UI_bass,string UI_WINDOW_NAME)
 {
     loading_bar = 0;
-    UI2_img = imread("UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp",1);
+    UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp",1);
     UI_bass = UI2_img.clone();
     imshow(UI_WINDOW_NAME,UI_bass);
 

@@ -17,18 +17,18 @@ using namespace cv;
 
 /** Function Headers */
 static string Title="小小指揮家";
-Mat T1=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\1.jpg",1);
-Mat T2=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\2.jpg",1);
-Mat T3=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\3.jpg",1);
-Mat T4=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\4.jpg",1);
-Mat T5=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\5.jpg",1);
-Mat T6=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\6.jpg",1);
-Mat T7=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\7.jpg",1);
-Mat T8=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\8.jpg",1);
-Mat T9=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\9.jpg",1);
-Mat T10=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\10.jpg",1);
-Mat T11=imread("UI_all_picture/UI PIC\\UI\\UI_say_something\\11.jpg",1);
-Mat background1=imread("UI_all_picture/UI PIC/UI/Background.png",1);
+Mat T1=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\1.jpg",1);
+Mat T2=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\2.jpg",1);
+Mat T3=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\3.jpg",1);
+Mat T4=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\4.jpg",1);
+Mat T5=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\5.jpg",1);
+Mat T6=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\6.jpg",1);
+Mat T7=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\7.jpg",1);
+Mat T8=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\8.jpg",1);
+Mat T9=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\9.jpg",1);
+Mat T10=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\10.jpg",1);
+Mat T11=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\11.jpg",1);
+Mat background1=imread("Resource\\UI_all_picture/UI PIC/UI/Background.png",1);
 
 bool detectAndDisplay( Mat frame,float *facex,float *facey,float *facewidth,float *faceheight );
 void SamplePicInitial();
