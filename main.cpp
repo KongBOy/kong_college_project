@@ -225,7 +225,7 @@ int main(){
 
 
 
-            SrcMusicSheet=imread("Resource/test_img/IMG_20160907_020920.jpg",0);
+            SrcMusicSheet=imread("Resource/test_img/phone_clear_template14.jpg",0);
 
 
 
