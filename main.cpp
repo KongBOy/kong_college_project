@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "string_tools.h"
 #include "UserEnterFile.h"
 #include "Recognition.h"
 
@@ -157,7 +158,8 @@ int main(){
         cout<<"Error Load Pic!"<<endl;
         return 0;
     }
-
+    // opencv 中文字 編碼只支援 cp950(Big5), 所以要先把 utf8 轉 cp950
+    Title = utf8_to_cp950(Title);
     namedWindow(Title);
     while(true)
     {

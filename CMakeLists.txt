@@ -21,7 +21,7 @@ target_include_directories(String_tool_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/St
 # Recognition_lib
 add_library(Recognition_lib Recognition_lib/Recognition.cpp
 
-Recognition_lib/preprocess/src/preprocess_0_bar_roi.cpp
+                            Recognition_lib/preprocess/src/preprocess_0_bar_roi.cpp
                             Recognition_lib/preprocess/src/preprocess_0_hough_tool.cpp
                             Recognition_lib/preprocess/src/preprocess_0_watch_hough_line.cpp
                             Recognition_lib/preprocess/src/preprocess_1_warp_straight_rough.cpp
@@ -66,8 +66,10 @@ target_include_directories(project_rebuild PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/Recognition_lib/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/Recognition_lib/recognition/include
                                                   "C:/Program Files (x86)/CodeBlocks/MinGW/include"
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/String_tool_lib/include # 可省, 因為 Recognition_lib 裡面已經有 link String_tool_lib 了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   )
 target_link_libraries     (project_rebuild PUBLIC ${OpenCV_LIBS}
                                                   Recognition_lib
                                                   "C:/Program Files (x86)/CodeBlocks/MinGW/lib/libwinmm.a"
+                                                  String_tool_lib  # 可省, 因為 Recognition_lib 裡面已經有 link String_tool_lib 了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   )

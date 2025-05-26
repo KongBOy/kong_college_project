@@ -7,3 +7,4 @@ using namespace std;
 
 
 string IntToString(int num);
+string utf8_to_cp950(const string& utf8_str);
