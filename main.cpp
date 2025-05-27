@@ -156,17 +156,14 @@ int main(){
     // NextStep 2: 開始辨識 中間 用到的容器 在這邊宣告
     // 小蝌蚪部分
     Note_infos* note_infos = new Note_infos();
-    note_infos -> note_count  = 0;
-    note_infos -> go_note     = 0;
-    note_infos -> go_row_note = 0;
     // 五線譜部分
-    int staff_count = 0;
+    int staff_count;
     Mat final_rl_img_roi[40];
     Mat final_img_roi[40];
     double trans_start_point_x[40];
     double trans_start_point_y[40];
 
-
+    
     while(true){
         switch(NextStep){
         // NextStep 0: 進入程式的前導動畫
@@ -192,7 +189,7 @@ int main(){
             waitKey(2000);
 
             NextStep=1;
-
+            
 
             break;
         // NextStep 1: 等待 user 輸入樂譜
@@ -252,6 +249,9 @@ int main(){
             // 初始化容器 後 開始辨識
             try{
                 // 初始化 容器, 小蝌蚪部分
+                note_infos -> note_count  = 0;
+                note_infos -> go_note     = 0;
+                note_infos -> go_row_note = 0;
                 for(int i = 0; i < 5; i++ )
                     for(int j = 0; j < 5; j++ )
                         note_infos -> note[i][j] = 0;
@@ -352,232 +352,232 @@ int GenerateMidiFile(Note_infos* note_infos, Mat final_img_roi[]){
 
 
     for(int i = 0 ; i < 40 ; i++){
-      row_proc_img[i] = final_img_roi[i].clone();
-      cvtColor(final_img_roi[i],row_proc_img[i],CV_GRAY2BGR);
+        row_proc_img[i] = final_img_roi[i].clone();
+        cvtColor(final_img_roi[i],row_proc_img[i],CV_GRAY2BGR);
         ///      note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
-  }
+    }
 
     ///  note_infos -> note_count = in_note_count;
-///  for(int i = 0 ; i < 5 ; i++)
+    ///  for(int i = 0 ; i < 5 ; i++)
     ///    for(int j = 0 ; j < note_infos -> note_count ; j++)
     ///        note_infos -> note[i][j] = in_note[i][j];
 
 
-///*************************************************
+    ///*************************************************
     list_note_info(note_infos -> note_count, note_infos -> note);
 
-  speed=60;
-cout<<"step1"<<endl;
-/*
+    speed=60;
+    cout<<"step1"<<endl;
+    /*
     for(int i = 0 ; i < 40 ; i++){
-      row_src_img[i] = final_img_roi[i].clone();
-      row_proc_img[i] = row_src_img[i].clone();
-      cvtColor(row_src_img[i],row_proc_img[i],CV_GRAY2BGR);
+        row_src_img[i] = final_img_roi[i].clone();
+        row_proc_img[i] = row_src_img[i].clone();
+        cvtColor(row_src_img[i],row_proc_img[i],CV_GRAY2BGR);
         note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
-  }
+    }
 
     note_infos -> note_count = in_note_count;
-  for(int i = 0 ; i < 5 ; i++)
+    for(int i = 0 ; i < 5 ; i++)
         for(int j = 0 ; j < note_infos -> note_count ; j++)
             note_infos -> note[i][j] = in_note[i][j];
 
 
     list_note_info(note_infos -> note_count,note_infos -> note);*/
-///**************************************************************
-///**************************************************************
+    ///**************************************************************
+    ///**************************************************************
     for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++){
         switch(note_infos -> note[2][go_note]){
             case 0:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
-                  (60/speed)*1000* 4,
-                  127,
-                  0);
-        }
-        break;
+                    (60/speed)*1000* 4,
+                    127,
+                    0);
+            }
+            break;
 
             case 2:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
-                  (60/speed)*1000* 2,
-                  127,
-                  0);
-        }
-        break;
+                    (60/speed)*1000* 2,
+                    127,
+                    0);
+            }
+            break;
 
             case 4:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                     (60/speed)*1000*pow(0.5,note_infos -> note[3][go_note]),
-                  127,
-                  0);
-        }
-        break;
+                    127,
+                    0);
+            }
+            break;
 
             case 5:{
-            Sound(0,
-                  (60/speed)*1000* 1,
-                  0,
-                  0);
-        }
-        break;
+                Sound(0,
+                    (60/speed)*1000* 1,
+                    0,
+                    0);
+            }
+            break;
 
             case 1:{
-            Sound(0,
-                  (60/speed)*1000* 4,
-                  0,
-                  0);
-        }
-        break;
+                Sound(0,
+                    (60/speed)*1000* 4,
+                    0,
+                    0);
+            }
+            break;
 
             case 3:{
-            Sound(0,
-                  (60/speed)*1000* 2,
-                  0,
-                  0);
-        }
-        break;
+                Sound(0,
+                    (60/speed)*1000* 2,
+                    0,
+                    0);
+            }
+            break;
 
             case 6:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
-                  (60/speed)*1000* 0.25,
-                  0,
-                  0);
-        }
-        break;
+                    (60/speed)*1000* 0.25,
+                    0,
+                    0);
+            }
+            break;
 
             case 7:{
-            Sound(0,
-                  (60/speed)*1000* 0.125,
-                  0,
-                  0);
-        }
-        break;
+                Sound(0,
+                    (60/speed)*1000* 0.125,
+                    0,
+                    0);
+            }
+            break;
 
             case 8:{
-            Sound(0,
-                  (60/speed)*1000* 0.5,
-                  0,
-                  0);
-        }
-        break;
-/*
+                Sound(0,
+                    (60/speed)*1000* 0.5,
+                    0,
+                    0);
+            }
+            break;
+    /*
             case 9:{
-            Sound(0,
-                  0,
-                  0,
-                  0);
+                Sound(0,
+                    0,
+                    0,
+                    0);
+            }
+            break;
+    */
         }
-        break;
-*/
-      }
 
-  }
-  return 0;
-  //cout<<"speed"<<speed<<endl;
+    }
+    return 0;
+    //cout<<"speed"<<speed<<endl;
 
-  // Tugboat whistle sound 95 hertz, 2000ms, 127 = loud, 111 = Shanai
-  // experiment with your own sounds, it's fun ...
+    // Tugboat whistle sound 95 hertz, 2000ms, 127 = loud, 111 = Shanai
+    // experiment with your own sounds, it's fun ...
 
 
-/*
-  int a=0;
-  cout<<"step1"<<endl;
-  Sound(freqTable[3][a%7],1000,127,0);  // 2 second blast
-  cout<<"step2"<<endl;
-  //Sound( 1,500,  0,0);  // 1 second of silence
-  a+=1;
-  // wait till que is empty
+    /*
+    int a=0;
+    cout<<"step1"<<endl;
+    Sound(freqTable[3][a%7],1000,127,0);  // 2 second blast
+    cout<<"step2"<<endl;
+    //Sound( 1,500,  0,0);  // 1 second of silence
+    a+=1;
+    // wait till que is empty
 
     while(a<10000){
-    //cout<<"step1"<<endl;
-    Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
-    a+=1;
-    Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
-    a+=1;
-    Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
-    a+=1;
-    Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
-    a+=1;
-    //cout<<"step2"<<endl;
-    //Sound( 1,1,  0,0);
+        //cout<<"step1"<<endl;
+        Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
+        a+=1;
+        Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
+        a+=1;
+        Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
+        a+=1;
+        Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
+        a+=1;
+        //cout<<"step2"<<endl;
+        //Sound( 1,1,  0,0);
 
-  }
+    }
 
 
 
-  /////////////////////////////////////////
+    /////////////////////////////////////////
 
     while(gSThread!=NULL){
-      Sleep(1000);
-      speed+=1;
-      //changespeed=changespeed*0.9995;
-  }
-  return 0;
-  */
+        Sleep(1000);
+        speed+=1;
+        //changespeed=changespeed*0.9995;
+    }
+    return 0;
+    */
 }
 void PlayMidiFile(Note_infos* note_infos){
-  MusicPlayback=true;
-  DWORD  dwThreadId;
+    MusicPlayback=true;
+    DWORD  dwThreadId;
     gSThread = CreateThread(NULL, 0, PlaySnd, note_infos, 0, &dwThreadId);
     if (gSThread == NULL) {
         cerr << "Failed to create thread!" << endl;
         delete note_infos; // 若 thread 沒建立成功要釋放記憶體
         return;
     }
-  cout<<"thread---------------"<<gSThread<<endl;
+    cout<<"thread---------------"<<gSThread<<endl;
 
-  ////////////////////////////////////////
+    ////////////////////////////////////////
 }
 double Round (double n, int d){
-  return (floor((n)*pow(10.0,(d))+0.5)/pow(10.0,(d)));
+    return (floor((n)*pow(10.0,(d))+0.5)/pow(10.0,(d)));
 }
 double Abs (double a){
-  if (a < 0)  return -a;
-  return  a;
+    if (a < 0)  return -a;
+    return  a;
 }
 int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo){
-  //cout<<"Sound"<<Freq<<" "<<Dura<<" "<<Vol<<" "<<Voice<<" "<<Tempo<<endl;
-  DWORD  dwThreadId;
+    //cout<<"Sound"<<Freq<<" "<<Dura<<" "<<Vol<<" "<<Voice<<" "<<Tempo<<endl;
+    DWORD  dwThreadId;
 
-  if (Freq == 0 && Dura < 1) return gTenter-gTexit;
-  // silence
+    if (Freq == 0 && Dura < 1) return gTenter-gTexit;
+    // silence
     if (Freq == 0) Vol  = 0;
     if (Dura <  5) Dura = 5;
-  gTenter++;
-  gTsig = FALSE;
+    gTenter++;
+    gTsig = FALSE;
     if (gTenter >= SNDQUE){
-    gTarray = gTenter % SNDQUE+1;
-  }
+        gTarray = gTenter % SNDQUE+1;
+    }
     else{
-    gTarray=gTenter;
-  }
+        gTarray=gTenter;
+    }
     SndPmtr[gTarray].Freq   = Freq;
     SndPmtr[gTarray].Dura   = Dura;
     SndPmtr[gTarray].Tempo  = Tempo;
     SndPmtr[gTarray].Vol    = Vol;
     SndPmtr[gTarray].Voice  = Voice;
-  SndPmtr[gTarray].sndTid = gTenter;
+    SndPmtr[gTarray].sndTid = gTenter;
     /*if (gSThread == NULL && (Freq == Abs(Freq) || Freq == 0)){
-      // "PlaySnd" needs casting (void *)
-      gSThread = CreateThread(NULL,0,PlaySnd,(void *)"PlaySnd",0,&dwThreadId);
-      //Sleep(1);
-      cout<<"thread---------------"<<gSThread<<endl;
-      return 0;
-  }*/
+        // "PlaySnd" needs casting (void *)
+        gSThread = CreateThread(NULL,0,PlaySnd,(void *)"PlaySnd",0,&dwThreadId);
+        //Sleep(1);
+        cout<<"thread---------------"<<gSThread<<endl;
+        return 0;
+    }*/
     if (Freq != Abs(Freq)){
         if (Freq == -1){
-      Freq = 0;
-      SndPmtr[gTarray].Vol=0;
-    }
-    SndPmtr[gTarray].Freq=Abs(Freq);
-    gTsig=TRUE;
+            Freq = 0;
+            SndPmtr[gTarray].Vol=0;
+        }
+        SndPmtr[gTarray].Freq=Abs(Freq);
+        gTsig=TRUE;
         while(gSThread!=NULL){
-      Sleep(10);
-    }
-    gTexit = gTenter-1;
-    gTwait = gTenter-1;
-    gTsig = FALSE;
+            Sleep(10);
+        }
+        gTexit = gTenter-1;
+        gTwait = gTenter-1;
+        gTsig = FALSE;
         return PlaySnd(NULL);  // needs some kind of argument
-  }
-  return 0;
+    }
+    return 0;
 }
 DWORD WINAPI PlaySnd (LPVOID lpParameter){
     /*
@@ -586,214 +586,214 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     */
     Note_infos* note_infos = (Note_infos*)lpParameter;
 
-  soundtype  LocSndPar;
-  int  lTarray;
-  int Note = 0;
-  int Phrase = 0;
-  row_index=0;
+    soundtype  LocSndPar;
+    int  lTarray;
+    int Note = 0;
+    int Phrase = 0;
+    row_index=0;
     note_infos -> go_note=0;
-  HMIDIOUT hMidi;
-  midiOutOpen(&hMidi,(UINT)-1,0,0,CALLBACK_NULL);
-  midiOutShortMsg(hMidi,(256*LocSndPar.Voice)+192);
+    HMIDIOUT hMidi;
+    midiOutOpen(&hMidi,(UINT)-1,0,0,CALLBACK_NULL);
+    midiOutShortMsg(hMidi,(256*LocSndPar.Voice)+192);
     while(gTenter > gTexit && gTsig == FALSE){
-    if(MusicPlayback){
-        gTwait++;
-        if (gTwait >= SNDQUE)
-          lTarray = gTwait % SNDQUE+1;
-        else
-          lTarray = gTwait;
+        if(MusicPlayback){
+            gTwait++;
+            if (gTwait >= SNDQUE)
+                lTarray = gTwait % SNDQUE+1;
+            else
+                lTarray = gTwait;
 
-        LocSndPar = SndPmtr[lTarray];
-        //cout<<"lTarray "<<lTarray<<endl;
-        //cout<<"gTenter "<<gTenter<<endl;
-        //cout<<"gTexit "<<gTexit<<endl;
-        Note=0;
-        Phrase=0;
+            LocSndPar = SndPmtr[lTarray];
+            //cout<<"lTarray "<<lTarray<<endl;
+            //cout<<"gTenter "<<gTenter<<endl;
+            //cout<<"gTexit "<<gTexit<<endl;
+            Note=0;
+            Phrase=0;
 
-        // convert frequency to midi note
-        Note = (int)Round((log(LocSndPar.Freq)-log(440.0))/log(2.0)*12+69,0);
-        //Phrase = (LocSndPar.Vol*256+Note)*256+144;//Noteon.
-        Phrase = (volume*256+Note)*256+144;//Noteon
-        midiOutShortMsg(hMidi,Phrase);
+            // convert frequency to midi note
+            Note = (int)Round((log(LocSndPar.Freq)-log(440.0))/log(2.0)*12+69,0);
+            //Phrase = (LocSndPar.Vol*256+Note)*256+144;//Noteon.
+            Phrase = (volume*256+Note)*256+144;//Noteon
+            midiOutShortMsg(hMidi,Phrase);
 
-/// ~~~~~~~~~~~加這邊邊邊邊邊~~~~~~~~~~~~
-/// ******************************************************************************************************
-/// ******************************************************************************************************
-/// ******************************************************************************************************
+            /// ~~~~~~~~~~~加這邊邊邊邊邊~~~~~~~~~~~~
+            /// ******************************************************************************************************
+            /// ******************************************************************************************************
+            /// ******************************************************************************************************
             if(note_infos -> note[2][note_infos -> go_note] == 9){
                 note_infos -> go_note++;
                 note_infos -> go_row_note++;
-    }
-    Mat template_img;
-    Scalar color;
+            }
+            Mat template_img;
+            Scalar color;
             set_formate(note_infos -> note[2][note_infos -> go_note],note_infos -> note[3][note_infos -> go_note],color,template_img);
             rectangle(row_proc_img[row_index],Point(note_infos -> note[0][note_infos -> go_note]                  , note_infos -> note[1][note_infos -> go_note]),
                                               Point(note_infos -> note[0][note_infos -> go_note]+template_img.cols, note_infos -> note[1][note_infos -> go_note]+template_img.rows),color,2);
 
-     Point pt2;
+            Point pt2;
             pt2.x = note_infos -> note[0][note_infos -> go_note]+8;
-    pt2.y = 20;
-    Scalar circle_background(0,0,0);
+            pt2.y = 20;
+            Scalar circle_background(0,0,0);
 
             switch( (note_infos -> note[4][note_infos -> go_note]/12) ){
-        case 4:/// 低音c
-            circle_background = Scalar(100,120,125);///灰色
-            break;
+                case 4:/// 低音c
+                    circle_background = Scalar(100,120,125);///灰色
+                    break;
 
-        case 5:/// 中央C
-            circle_background = Scalar(255,143,218);///粉紅色
-            break;
+                case 5:/// 中央C
+                    circle_background = Scalar(255,143,218);///粉紅色
+                    break;
 
-        case 6:/// 高音C
-            circle_background = Scalar(255,180,100);///蛋藍色
-            break;
+                case 6:/// 高音C
+                    circle_background = Scalar(255,180,100);///蛋藍色
+                    break;
 
-        case 7:/// 高高音c
-            circle_background = Scalar(100,120,125);///灰色
-            break;
+                case 7:/// 高高音c
+                    circle_background = Scalar(100,120,125);///灰色
+                    break;
 
-    }
-    circle(row_proc_img[row_index],pt2,15,circle_background,-1,1,0);
-    ///circle(row_proc_img[row_index],pt2,15,randomColor(rng),-1,1,0);
-    int movetocenter=10;
+            }
+            circle(row_proc_img[row_index],pt2,15,circle_background,-1,1,0);
+            ///circle(row_proc_img[row_index],pt2,15,randomColor(rng),-1,1,0);
+            int movetocenter=10;
 
-    pt2.x = pt2.x-movetocenter;
-    pt2.y = pt2.y+movetocenter;
+            pt2.x = pt2.x-movetocenter;
+            pt2.y = pt2.y+movetocenter;
 
             int nodePitch=note_infos -> note[4][note_infos -> go_note]%12;
-    switch(nodePitch){
-        case 0:
-            nodePitch=1;
-            break;
-        case 2:
-            nodePitch=2;
-            break;
-        case 4:
-            nodePitch=3;
-            break;
-        case 5:
-            nodePitch=4;
-            break;
-        case 7:
-            nodePitch=5;
-            break;
-        case 9:
-            nodePitch=6;
-            break;
-        case 11:
-            nodePitch=7;
-            break;
+            switch(nodePitch){
+                case 0:
+                    nodePitch=1;
+                    break;
+                case 2:
+                    nodePitch=2;
+                    break;
+                case 4:
+                    nodePitch=3;
+                    break;
+                case 5:
+                    nodePitch=4;
+                    break;
+                case 7:
+                    nodePitch=5;
+                    break;
+                case 9:
+                    nodePitch=6;
+                    break;
+                case 11:
+                    nodePitch=7;
+                    break;
 
 
-    }
-    ///Int2str(nodePitch)
-    string s;
-    stringstream ss;
-    ss<<nodePitch;
-    putText(row_proc_img[row_index],ss.str(),pt2,FONT_HERSHEY_PLAIN,2,Scalar(255,255,255),2,1,false);
-/// dst.rowRange(height_acc,height_acc_next+1)
-///    .colRange( width_acc, width_acc_next+1) = temp_bin.clone();
-///    Mat temp = UI4_3.clone();
-///    cvtColor(temp,UI4_3,CV_GRAY2BGR);
-///    UI4_3.rowRange(0,row_proc_img[row_index].rows+1)
-///         .colRange(0,row_proc_img[row_index].cols+1) = row_proc_img[row_index].clone();
+            }
+            ///Int2str(nodePitch)
+            string s;
+            stringstream ss;
+            ss<<nodePitch;
+            putText(row_proc_img[row_index],ss.str(),pt2,FONT_HERSHEY_PLAIN,2,Scalar(255,255,255),2,1,false);
+            /// dst.rowRange(height_acc,height_acc_next+1)
+            ///    .colRange( width_acc, width_acc_next+1) = temp_bin.clone();
+            ///    Mat temp = UI4_3.clone();
+            ///    cvtColor(temp,UI4_3,CV_GRAY2BGR);
+            ///    UI4_3.rowRange(0,row_proc_img[row_index].rows+1)
+            ///         .colRange(0,row_proc_img[row_index].cols+1) = row_proc_img[row_index].clone();
 
 
-    //for(int go_row = 500 ;go_row <500+ row_proc_img[row_index].rows ; go_row++)
-     //   for(int go_col = 0 ; go_col <row_proc_img[row_index].cols ; go_col++)
-      //      Output.at<Vec3b>(go_row,go_col) = row_proc_img[row_index].at<Vec3b>(go_row-500,go_col);
+            //for(int go_row = 500 ;go_row <500+ row_proc_img[row_index].rows ; go_row++)
+            //   for(int go_col = 0 ; go_col <row_proc_img[row_index].cols ; go_col++)
+            //      Output.at<Vec3b>(go_row,go_col) = row_proc_img[row_index].at<Vec3b>(go_row-500,go_col);
 
-    ///UI4_3(Rect(0,0,row_proc_img[row_index].cols,row_proc_img[row_index].rows)) = row_proc_img[row_index].clone();
+            ///UI4_3(Rect(0,0,row_proc_img[row_index].cols,row_proc_img[row_index].rows)) = row_proc_img[row_index].clone();
 
 
 
-    Drawing_Random_Circles(Output,rng);
-    DrawMat(Speed_Volume_Bar,Output,260,598);
-    DrawMat(bar,Output,speed_row,(speed-20)*(MaxValue-MinValue)/(300-20)+MinValue);
-    DrawMat(bar,Output,volume_row,(volume-80)*(MaxValue-MinValue)/(127-80)+MinValue);
-///    imshow(Title,Output);
-///    imshow("debug3",row_proc_img[row_index]);
-/*
-    Mat temp = UI4_3.clone();
-    cvtColor(UI4_3,temp,CV_BGR2GRAY);
-     temp.rowRange(0,row_proc_img[row_index].rows+1)
-         .colRange(0,row_proc_img[row_index].cols+1) = final_img_roi[row_index].clone();
-    imshow("debug4",temp);
-*/
+            Drawing_Random_Circles(Output,rng);
+            DrawMat(Speed_Volume_Bar,Output,260,598);
+            DrawMat(bar,Output,speed_row,(speed-20)*(MaxValue-MinValue)/(300-20)+MinValue);
+            DrawMat(bar,Output,volume_row,(volume-80)*(MaxValue-MinValue)/(127-80)+MinValue);
+            ///    imshow(Title,Output);
+            ///    imshow("debug3",row_proc_img[row_index]);
+            /*
+            Mat temp = UI4_3.clone();
+            cvtColor(UI4_3,temp,CV_BGR2GRAY);
+            temp.rowRange(0,row_proc_img[row_index].rows+1)
+                .colRange(0,row_proc_img[row_index].cols+1) = final_img_roi[row_index].clone();
+            imshow("debug4",temp);
+            */
 
-    waitKey(1);
+            waitKey(1);
             note_infos -> go_note++;
             note_infos -> go_row_note++;
             if( note_infos -> go_row_note >= note_infos -> row_note_count_array[row_index]){
                 note_infos -> go_row_note = 0;
-        row_index++;
-    }
+                row_index++;
+            }
 
-/// ******************************************************************************************************
-/// ******************************************************************************************************
-
-
-/// ******************************************************************************************************
+            /// ******************************************************************************************************
+            /// ******************************************************************************************************
 
 
+            /// ******************************************************************************************************
 
-        //cout<<"Noteon ON "<<LocSndPar.Freq<<endl;
-        changespeed=(60/(float)speed);
 
-        //cout<<"changespeed"<<changespeed<<endl;
-        cout<<"LocSndPar.Dura "<<LocSndPar.Dura<<endl;
-        cout<<"LocSndPar.Tempo "<<LocSndPar.Tempo<<endl;
-        cout<<"changespeed "<<changespeed<<endl;
-        Sleep((int)(LocSndPar.Dura*(1/LocSndPar.Tempo+0.0001)*changespeed));
-        //cout<<"Noteoff END "<<LocSndPar.Freq<<endl;
-        //Sleep((int)LocSndPar.Dura);
-        Phrase = (LocSndPar.Vol*256+Note)*256+128;//Noteoff
-        midiOutShortMsg(hMidi,Phrase);
 
-        gTexit++;
+            //cout<<"Noteon ON "<<LocSndPar.Freq<<endl;
+            changespeed=(60/(float)speed);
+
+            //cout<<"changespeed"<<changespeed<<endl;
+            cout<<"LocSndPar.Dura "<<LocSndPar.Dura<<endl;
+            cout<<"LocSndPar.Tempo "<<LocSndPar.Tempo<<endl;
+            cout<<"changespeed "<<changespeed<<endl;
+            Sleep((int)(LocSndPar.Dura*(1/LocSndPar.Tempo+0.0001)*changespeed));
+            //cout<<"Noteoff END "<<LocSndPar.Freq<<endl;
+            //Sleep((int)LocSndPar.Dura);
+            Phrase = (LocSndPar.Vol*256+Note)*256+128;//Noteoff
+            midiOutShortMsg(hMidi,Phrase);
+
+            gTexit++;
         }
         else{
-        break;
+            break;
+        }
+
     }
+    MusicPlayback=false;
 
-  }
-  MusicPlayback=false;
-
-  midiOutClose(hMidi);
-  CloseHandle(gSThread);
-  gSThread = NULL;
-  return 0;
+    midiOutClose(hMidi);
+    CloseHandle(gSThread);
+    gSThread = NULL;
+    return 0;
 }
 
 int Drawing_Random_Circles( Mat& image, RNG rng ){
-  cout<<"Drawing_Random_Circles"<<endl;
-  int lineType = 8;
-  Point pt1, pt2;
+    cout<<"Drawing_Random_Circles"<<endl;
+    int lineType = 8;
+    Point pt1, pt2;
 
     for( int i = 0; i < 1; i++ ){
-   pt1.x = rand()%background.cols;
-   pt1.y = rand()%background.rows;
-   pt2.x = rand()%background.cols;
-   pt2.y = rand()%background.rows;
-   //pt1.x = rng.uniform( 0, Background.cols );
-   //pt1.y = rng.uniform( 0, Background.rows );
-   //pt2.x = rng.uniform( 0, Background.cols );
-   //pt2.y = rng.uniform( 0, Background.rows );
-   cout<<"pt1.x "<<pt1.x<<endl;
-   cout<<"pt1.y "<<pt1.y<<endl;
-   cout<<"pt2.x "<<pt2.x<<endl;
-   cout<<"pt2.y "<<pt2.y<<endl;
-   int radian=2+rand()%3;
-    circle(image,pt2,radian,Scalar(255,255,255),-1,1,0);
-    circle(image,pt1,radian,Scalar(255,255,255),-1,1,0);
-    //imshow("image",image);
-   //line( image, pt1, pt2, randomColor(rng), rng.uniform(1, 10), 8 );
-  }
-  return 0;
+        pt1.x = rand()%background.cols;
+        pt1.y = rand()%background.rows;
+        pt2.x = rand()%background.cols;
+        pt2.y = rand()%background.rows;
+        //pt1.x = rng.uniform( 0, Background.cols );
+        //pt1.y = rng.uniform( 0, Background.rows );
+        //pt2.x = rng.uniform( 0, Background.cols );
+        //pt2.y = rng.uniform( 0, Background.rows );
+        cout<<"pt1.x "<<pt1.x<<endl;
+        cout<<"pt1.y "<<pt1.y<<endl;
+        cout<<"pt2.x "<<pt2.x<<endl;
+        cout<<"pt2.y "<<pt2.y<<endl;
+        int radian=2+rand()%3;
+        circle(image,pt2,radian,Scalar(255,255,255),-1,1,0);
+        circle(image,pt1,radian,Scalar(255,255,255),-1,1,0);
+        //imshow("image",image);
+        //line( image, pt1, pt2, randomColor(rng), rng.uniform(1, 10), 8 );
+    }
+    return 0;
 }
 static Scalar randomColor( RNG& rng ){
   return Scalar( rand()%255, rand()%255, rand()%255 );
-  }
+}
 /*
 int DrawMat(Mat Input,Mat& Output,int row,int col){
     int OutputRow=Output.rows;
