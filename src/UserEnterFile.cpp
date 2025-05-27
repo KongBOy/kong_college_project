@@ -16,7 +16,6 @@ using namespace std;
 using namespace cv;
 
 /** Function Headers */
-static string Title="小小指揮家";
 Mat T1=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\1.jpg",1);
 Mat T2=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\2.jpg",1);
 Mat T3=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\3.jpg",1);
@@ -96,7 +95,7 @@ CvCapture* capture ;
 time_t preHandBitClock=clock()+10000;
 time_t nowHandBitClock=clock()+10000;
 
-int HandShaking(){
+int HandShaking(string Title){
     time_t LastTimeFineUser=clock();
     time_t OverTimeUserDisapper=clock()+UserGoOutWhenPlayingTime;
 

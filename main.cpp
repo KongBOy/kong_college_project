@@ -307,7 +307,7 @@ int main(){
             Output=background.clone();
 
             PlayMidiFile(note_infos);
-            NextStep=HandShaking();
+            NextStep=HandShaking(Title);
             switch(NextStep){
                 case 1:
                     NextStep=0;

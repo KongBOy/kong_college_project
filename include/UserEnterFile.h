@@ -19,7 +19,7 @@
 using namespace std;
 using namespace cv;
 int camera();
-bool HandShaking();
+bool HandShaking(string Title);
 int HandDetection( );
 int DrawMat(Mat ,Mat& ,int ,int );
 extern int speed;
