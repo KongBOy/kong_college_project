@@ -44,7 +44,7 @@ struct Note_infos {
 void FadeInOut(Mat Inp,Mat Out,int delay);
 
 
-int  GenerateMidiFile(Note_infos* note_infos);
+int  GenerateMidiFile(Note_infos* note_infos, Mat final_img_roi[]);
 void PlayMidiFile    (Note_infos* note_infos);
 typedef struct _soundtype
 {
@@ -69,13 +69,7 @@ int     Sound (float,int=0,int=127,int=0,float=1);
 
 double changespeed=1;
 
-static float freqTable[7][12]={ {32.7  ,34.6  ,36.7  ,38.9  ,41.2  ,43.7  ,46.2  ,49.0  ,51.9  ,55.0  ,58.3  ,61.7  },\
-                                {65.4  ,69.3  ,73.4  ,77.8  ,82.4  ,87.3  ,92.5  ,98.0  ,103.8 ,110.0 ,116.5 ,123.5 },\
-                                {130.8 ,138.6 ,146.8 ,155.6 ,164.8 ,174.6 ,185.0 ,196.0 ,207.7 ,220.0 ,233.1 ,246.9 },\
-                                {261.6 ,277.2 ,293.7 ,311.1 ,329.6 ,349.2 ,370.0 ,392.0 ,415.3 ,440.0 ,466.2 ,493.9 },\
-                                {523.3 ,554.4 ,587.3 ,622.3 ,659.3 ,698.5 ,740.0 ,784.0 ,830.6 ,880.0 ,932.3 ,987.8 },\
-                                {1046.5,1108.7,1174.7,1244.5,1318.5,1396.9,1480.0,1568.0,1661.2,1760.0,1864.7,1975.5},\
-                                {2093.0,2217.5,2349.3,2489.0,2637.0,2793.8,2960.0,3136.0,3322.4,3520.0,3729.3,3951.1}};
+
 // changed this from int PlaySnd(void) to:
 DWORD WINAPI PlaySnd (LPVOID lpParameter);
 ///****************************************************
@@ -102,12 +96,6 @@ static int speed_row=400;
 static int volume_row=290;
 
 RNG rng( 0xFFFFFFFF );
-///***********************************************
-int staff_count = 0;
-Mat final_rl_img_roi[40];
-Mat final_img_roi[40];
-double trans_start_point_x[40];
-double trans_start_point_y[40];
 
 
 ///***********************************************
@@ -162,16 +150,22 @@ int main(){
     Title = utf8_to_cp950(Title);
     namedWindow(Title);
 
-    // 初始化 note_infos 
+    // NextStep 1: 等待 user 輸入樂譜 用到的容器 在這邊宣告
+    Mat SrcMusicSheet;
+
+    // NextStep 2: 開始辨識 中間 用到的容器 在這邊宣告
+    // 小蝌蚪部分
     Note_infos* note_infos = new Note_infos();
     note_infos -> note_count  = 0;
     note_infos -> go_note     = 0;
     note_infos -> go_row_note = 0;
-    for(int i = 0; i < 5; i++ )
-        for(int j = 0; j < 5; j++ )
-            note_infos -> note[i][j] = 0;
-    for(int i = 0; i < 40; i++ )
-        note_infos -> row_note_count_array[i] = 0;
+    // 五線譜部分
+    int staff_count = 0;
+    Mat final_rl_img_roi[40];
+    Mat final_img_roi[40];
+    double trans_start_point_x[40];
+    double trans_start_point_y[40];
+
 
     while(true){
         switch(NextStep){
@@ -251,22 +245,26 @@ int main(){
             NextStep=2;
             break;
         }
-        // NextStep 2: 開始辨識
+        // NextStep 2: 開始辨識(切割五線譜區域, 五線譜拉正, 辨識五線譜內音高)
         case 2:
             cout<<"Case 2"<<endl;
             imshow(Title,UI1_2);
-            //
-            try
-            {
-
+            // 初始化容器 後 開始辨識
+            try{
+                // 初始化 容器, 小蝌蚪部分
+                for(int i = 0; i < 5; i++ )
+                    for(int j = 0; j < 5; j++ )
+                        note_infos -> note[i][j] = 0;
+                for(int i = 0; i < 40; i++ )
+                    note_infos -> row_note_count_array[i] = 0;
+                // 初始化 容器, 五線譜部分
                 staff_count = 0;
-                for(int i = 0 ; i < 40 ; i++)
-                {
+                for(int i = 0 ; i < 40 ; i++){
                     trans_start_point_x[i] = 0;
                     trans_start_point_y[i] = 0;
                     note_infos -> row_note_count_array[i] = 0;
                 }
-
+                // 開始辨識
                 Recognition(SrcMusicSheet,staff_count,final_rl_img_roi,final_img_roi,trans_start_point_x,trans_start_point_y,
                             note_infos -> note_count,note_infos -> note,note_infos -> row_note_count_array,
                             UI2,Title,
@@ -288,7 +286,7 @@ int main(){
             cout<<"Case 3"<<endl;
             imshow(Title,UI3);
             waitKey(0);
-            GenerateMidiFile(note_infos);
+            GenerateMidiFile(note_infos, final_img_roi);
             speed = 100;
 
             ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music
@@ -343,8 +341,14 @@ int main(){
 
 }
 
-int GenerateMidiFile(Note_infos* note_infos)
-{
+int GenerateMidiFile(Note_infos* note_infos, Mat final_img_roi[]){
+    static float freqTable[7][12]={ {32.7  ,34.6  ,36.7  ,38.9  ,41.2  ,43.7  ,46.2  ,49.0  ,51.9  ,55.0  ,58.3  ,61.7  },\
+                                    {65.4  ,69.3  ,73.4  ,77.8  ,82.4  ,87.3  ,92.5  ,98.0  ,103.8 ,110.0 ,116.5 ,123.5 },\
+                                    {130.8 ,138.6 ,146.8 ,155.6 ,164.8 ,174.6 ,185.0 ,196.0 ,207.7 ,220.0 ,233.1 ,246.9 },\
+                                    {261.6 ,277.2 ,293.7 ,311.1 ,329.6 ,349.2 ,370.0 ,392.0 ,415.3 ,440.0 ,466.2 ,493.9 },\
+                                    {523.3 ,554.4 ,587.3 ,622.3 ,659.3 ,698.5 ,740.0 ,784.0 ,830.6 ,880.0 ,932.3 ,987.8 },\
+                                    {1046.5,1108.7,1174.7,1244.5,1318.5,1396.9,1480.0,1568.0,1661.2,1760.0,1864.7,1975.5},\
+                                    {2093.0,2217.5,2349.3,2489.0,2637.0,2793.8,2960.0,3136.0,3322.4,3520.0,3729.3,3951.1}};
 
 
     for(int i = 0 ; i < 40 ; i++){
