@@ -23,9 +23,28 @@
 #include <mmsystem.h>
 #define SNDQUE 10000
 
+// 辨識出來 小蝌蚪 放這邊
+struct Note_infos {
+    /*
+    note[0]: x
+    note[1]: y
+    note[2]: type
+    note[3]: time
+    note[4]: pitch
+    */
+    int note_count;
+    int note[5][1000];
+    int row_note_count_array[40];
+
+    int go_note;
+    int go_row_note;
+};
+
+
+
 Mat SrcMusicSheet;
-int GenerateMidiFile();
-void PlayMidiFile();
+int  GenerateMidiFile(Note_infos* note_infos);
+void PlayMidiFile    (Note_infos* note_infos);
 void FadeInOut(Mat Inp,Mat Out,int delay);
 typedef struct _soundtype
 {
@@ -57,7 +76,7 @@ static float freqTable[7][12]={ {32.7  ,34.6  ,36.7  ,38.9  ,41.2  ,43.7  ,46.2 
                                 {1046.5,1108.7,1174.7,1244.5,1318.5,1396.9,1480.0,1568.0,1661.2,1760.0,1864.7,1975.5},\
                                 {2093.0,2217.5,2349.3,2489.0,2637.0,2793.8,2960.0,3136.0,3322.4,3520.0,3729.3,3951.1}};
 // changed this from int PlaySnd(void) to:
-DWORD WINAPI PlaySnd (LPVOID);
+DWORD WINAPI PlaySnd (LPVOID lpParameter);
 ///****************************************************
 
 using namespace std;
@@ -89,14 +108,6 @@ Mat final_img_roi[40];
 double trans_start_point_x[40];
 double trans_start_point_y[40];
 
-int note_count = 0;
-int note[5][1000];
-int row_note_count_array[40];
-
-
-
-int go_note = 0;
-int go_row_note = 0;
 
 ///***********************************************
 
@@ -149,6 +160,17 @@ int main(){
     // opencv 中文字 編碼只支援 cp950(Big5), 所以要先把 utf8 轉 cp950
     Title = utf8_to_cp950(Title);
     namedWindow(Title);
+
+    // 初始化 note_infos 
+    Note_infos* note_infos = new Note_infos();
+    note_infos -> note_count  = 0;
+    note_infos -> go_note     = 0;
+    note_infos -> go_row_note = 0;
+    for(int i = 0; i < 5; i++ )
+        for(int j = 0; j < 5; j++ )
+            note_infos -> note[i][j] = 0;
+    for(int i = 0; i < 40; i++ )
+        note_infos -> row_note_count_array[i] = 0;
 
     while(true)
     {
@@ -241,19 +263,15 @@ int main(){
                 ///~~~~~~~~~~~~~~~~~~~Recognization
 
                 staff_count = 0;
-                note_count = 0;
-                for(int i = 0 ; i < 5 ; i++)
-                    for(int j = 0 ; j < 1000 ; j++)
-                        note[i][j] = 0;
                 for(int i = 0 ; i < 40 ; i++)
                 {
                     trans_start_point_x[i] = 0;
                     trans_start_point_y[i] = 0;
-                    row_note_count_array[i] = 0;
+                    note_infos -> row_note_count_array[i] = 0;
                 }
 
                 Recognition(SrcMusicSheet,staff_count,final_rl_img_roi,final_img_roi,trans_start_point_x,trans_start_point_y,
-                            note_count,note,row_note_count_array,
+                            note_infos -> note_count,note_infos -> note,note_infos -> row_note_count_array,
                             UI2,Title,
                             Title,UI2_5);
                 //Mat a=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UIss.jpg",1);
@@ -275,7 +293,7 @@ int main(){
             cout<<"Case 3"<<endl;
             imshow(Title,UI3);
             waitKey(0);
-            GenerateMidiFile();
+            GenerateMidiFile(note_infos);
             speed = 100;
 
             ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music
@@ -288,7 +306,7 @@ int main(){
             cout<<"Case 4"<<endl;
             Output=background.clone();
 
-            PlayMidiFile();
+            PlayMidiFile(note_infos);
             NextStep=HandShaking();
             switch(NextStep){
                 case 1:
@@ -330,53 +348,51 @@ int main(){
 
 }
 
-int GenerateMidiFile()
+int GenerateMidiFile(Note_infos* note_infos)
 {
 
 
-  for(int i = 0 ; i < 40 ; i++)
-  {
+    for(int i = 0 ; i < 40 ; i++){
       row_proc_img[i] = final_img_roi[i].clone();
       cvtColor(final_img_roi[i],row_proc_img[i],CV_GRAY2BGR);
-///      row_note_count_array[i] = in_row_note_count_array[i];
+        ///      note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
   }
 
-///  note_count = in_note_count;
+    ///  note_infos -> note_count = in_note_count;
 ///  for(int i = 0 ; i < 5 ; i++)
-///    for(int j = 0 ; j < note_count ; j++)
-///        note[i][j] = in_note[i][j];
+    ///    for(int j = 0 ; j < note_infos -> note_count ; j++)
+    ///        note_infos -> note[i][j] = in_note[i][j];
 
 
 ///*************************************************
-    list_note_info(note_count,note);
+    list_note_info(note_infos -> note_count, note_infos -> note);
 
   speed=60;
 cout<<"step1"<<endl;
 /*
-  for(int i = 0 ; i < 40 ; i++)
-  {
+    for(int i = 0 ; i < 40 ; i++){
       row_src_img[i] = final_img_roi[i].clone();
       row_proc_img[i] = row_src_img[i].clone();
       cvtColor(row_src_img[i],row_proc_img[i],CV_GRAY2BGR);
-      row_note_count_array[i] = in_row_note_count_array[i];
+        note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
   }
 
-  note_count = in_note_count;
+    note_infos -> note_count = in_note_count;
   for(int i = 0 ; i < 5 ; i++)
-    for(int j = 0 ; j < note_count ; j++)
-        note[i][j] = in_note[i][j];
+        for(int j = 0 ; j < note_infos -> note_count ; j++)
+            note_infos -> note[i][j] = in_note[i][j];
 
 
-    list_note_info(note_count,note);*/
+    list_note_info(note_infos -> note_count,note_infos -> note);*/
 ///**************************************************************
 ///**************************************************************
-  for(int go_note = 0 ; go_note < note_count ; go_note++)
+    for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++)
   {
-      switch(note[2][go_note])
+        switch(note_infos -> note[2][go_note])
       {
         case 0:
         {
-            Sound(freqTable[note[4][go_note]/12 -1][note[4][go_note]%12],
+                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                   (60/speed)*1000* 4,
                   127,
                   0);
@@ -385,7 +401,7 @@ cout<<"step1"<<endl;
 
         case 2:
         {
-            Sound(freqTable[note[4][go_note]/12 -1][note[4][go_note]%12],
+                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                   (60/speed)*1000* 2,
                   127,
                   0);
@@ -394,8 +410,8 @@ cout<<"step1"<<endl;
 
         case 4:
         {
-            Sound(freqTable[note[4][go_note]/12 -1][note[4][go_note]%12],
-                  (60/speed)*1000*pow(0.5,note[3][go_note]),
+                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
+                    (60/speed)*1000*pow(0.5,note_infos -> note[3][go_note]),
                   127,
                   0);
         }
@@ -430,7 +446,7 @@ cout<<"step1"<<endl;
 
         case 6:
         {
-            Sound(freqTable[note[4][go_note]/12 -1][note[4][go_note]%12],
+                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                   (60/speed)*1000* 0.25,
                   0,
                   0);
@@ -512,10 +528,15 @@ cout<<"step1"<<endl;
   return 0;
   */
 }
-void PlayMidiFile(){
+void PlayMidiFile(Note_infos* note_infos){
   MusicPlayback=true;
   DWORD  dwThreadId;
-  gSThread = CreateThread(NULL,0,PlaySnd,(void *)"PlaySnd",0,&dwThreadId);
+    gSThread = CreateThread(NULL, 0, PlaySnd, note_infos, 0, &dwThreadId);
+    if (gSThread == NULL) {
+        cerr << "Failed to create thread!" << endl;
+        delete note_infos; // 若 thread 沒建立成功要釋放記憶體
+        return;
+    }
   cout<<"thread---------------"<<gSThread<<endl;
 
   ////////////////////////////////////////
@@ -570,17 +591,23 @@ int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo){
     gTexit = gTenter-1;
     gTwait = gTenter-1;
     gTsig = FALSE;
-    return PlaySnd(0);  // needs some kind of argument
+        return PlaySnd(NULL);  // needs some kind of argument
   }
   return 0;
 }
-DWORD WINAPI PlaySnd (LPVOID){
+DWORD WINAPI PlaySnd (LPVOID lpParameter){
+    /*
+    因為 要丟到 CreateThread 裡面, 所以 參數要照規定丟 只能放一個 LPVOID void *, 
+    傳進來以後 在強制轉換成 自己要的 pointer
+    */
+    Note_infos* note_infos = (Note_infos*)lpParameter;
+
   soundtype  LocSndPar;
   int  lTarray;
   int Note = 0;
   int Phrase = 0;
   row_index=0;
-  go_note=0;
+    note_infos -> go_note=0;
   HMIDIOUT hMidi;
   midiOutOpen(&hMidi,(UINT)-1,0,0,CALLBACK_NULL);
   midiOutShortMsg(hMidi,(256*LocSndPar.Voice)+192);
@@ -609,22 +636,22 @@ DWORD WINAPI PlaySnd (LPVOID){
 /// ******************************************************************************************************
 /// ******************************************************************************************************
 /// ******************************************************************************************************
-        if(note[2][go_note] == 9){
-        go_note++;
-        go_row_note++;
+            if(note_infos -> note[2][note_infos -> go_note] == 9){
+                note_infos -> go_note++;
+                note_infos -> go_row_note++;
     }
     Mat template_img;
     Scalar color;
-    set_formate(note[2][go_note],note[3][go_note],color,template_img);
-    rectangle(row_proc_img[row_index],Point(note[0][go_note],note[1][go_note]),
-                                      Point(note[0][go_note]+template_img.cols,note[1][go_note]+template_img.rows),color,2);
+            set_formate(note_infos -> note[2][note_infos -> go_note],note_infos -> note[3][note_infos -> go_note],color,template_img);
+            rectangle(row_proc_img[row_index],Point(note_infos -> note[0][note_infos -> go_note]                  , note_infos -> note[1][note_infos -> go_note]),
+                                              Point(note_infos -> note[0][note_infos -> go_note]+template_img.cols, note_infos -> note[1][note_infos -> go_note]+template_img.rows),color,2);
 
      Point pt2;
-    pt2.x = note[0][go_note]+8;
+            pt2.x = note_infos -> note[0][note_infos -> go_note]+8;
     pt2.y = 20;
     Scalar circle_background(0,0,0);
 
-        switch( (note[4][go_note]/12) ){
+            switch( (note_infos -> note[4][note_infos -> go_note]/12) ){
         case 4:/// 低音c
             circle_background = Scalar(100,120,125);///灰色
             break;
@@ -649,7 +676,7 @@ DWORD WINAPI PlaySnd (LPVOID){
     pt2.x = pt2.x-movetocenter;
     pt2.y = pt2.y+movetocenter;
 
-    int nodePitch=note[4][go_note]%12;
+            int nodePitch=note_infos -> note[4][note_infos -> go_note]%12;
     switch(nodePitch){
         case 0:
             nodePitch=1;
@@ -711,10 +738,10 @@ DWORD WINAPI PlaySnd (LPVOID){
 */
 
     waitKey(1);
-    go_note++;
-    go_row_note++;
-        if(go_row_note >= row_note_count_array[row_index]){
-        go_row_note = 0;
+            note_infos -> go_note++;
+            note_infos -> go_row_note++;
+            if( note_infos -> go_row_note >= note_infos -> row_note_count_array[row_index]){
+                note_infos -> go_row_note = 0;
         row_index++;
     }
 
@@ -739,9 +766,9 @@ DWORD WINAPI PlaySnd (LPVOID){
         Phrase = (LocSndPar.Vol*256+Note)*256+128;//Noteoff
         midiOutShortMsg(hMidi,Phrase);
 
-
         gTexit++;
-    }else{
+        }
+        else{
         break;
     }
 
