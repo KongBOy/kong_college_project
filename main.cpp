@@ -520,17 +520,14 @@ void PlayMidiFile(){
 
   ////////////////////////////////////////
 }
-double Round (double n, int d)
-{
+double Round (double n, int d){
   return (floor((n)*pow(10.0,(d))+0.5)/pow(10.0,(d)));
 }
-double Abs (double a)
-{
+double Abs (double a){
   if (a < 0)  return -a;
   return  a;
 }
-int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo)
-{
+int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo){
   //cout<<"Sound"<<Freq<<" "<<Dura<<" "<<Vol<<" "<<Voice<<" "<<Tempo<<endl;
   DWORD  dwThreadId;
 
@@ -540,12 +537,10 @@ int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo)
   if (Dura < 5) Dura = 5;
   gTenter++;
   gTsig = FALSE;
-  if (gTenter >= SNDQUE)
-  {
+    if (gTenter >= SNDQUE){
     gTarray = gTenter % SNDQUE+1;
   }
-  else
-  {
+    else{
     gTarray=gTenter;
   }
   SndPmtr[gTarray].Freq = Freq;
@@ -562,17 +557,14 @@ int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo)
       cout<<"thread---------------"<<gSThread<<endl;
       return 0;
   }*/
-  if (Freq != Abs(Freq))
-  {
-    if (Freq == -1)
-    {
+    if (Freq != Abs(Freq)){
+        if (Freq == -1){
       Freq = 0;
       SndPmtr[gTarray].Vol=0;
     }
     SndPmtr[gTarray].Freq=Abs(Freq);
     gTsig=TRUE;
-    while(gSThread!=NULL)
-    {
+        while(gSThread!=NULL){
       Sleep(10);
     }
     gTexit = gTenter-1;
@@ -582,8 +574,7 @@ int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo)
   }
   return 0;
 }
-DWORD WINAPI PlaySnd (LPVOID)
-{
+DWORD WINAPI PlaySnd (LPVOID){
   soundtype  LocSndPar;
   int  lTarray;
   int Note = 0;
@@ -593,8 +584,7 @@ DWORD WINAPI PlaySnd (LPVOID)
   HMIDIOUT hMidi;
   midiOutOpen(&hMidi,(UINT)-1,0,0,CALLBACK_NULL);
   midiOutShortMsg(hMidi,(256*LocSndPar.Voice)+192);
-  while(gTenter > gTexit && gTsig == FALSE)
-  {
+    while(gTenter > gTexit && gTsig == FALSE){
     if(MusicPlayback){
         gTwait++;
         if (gTwait >= SNDQUE)
@@ -619,8 +609,7 @@ DWORD WINAPI PlaySnd (LPVOID)
 /// ******************************************************************************************************
 /// ******************************************************************************************************
 /// ******************************************************************************************************
-    if(note[2][go_note] == 9)
-    {
+        if(note[2][go_note] == 9){
         go_note++;
         go_row_note++;
     }
@@ -635,8 +624,7 @@ DWORD WINAPI PlaySnd (LPVOID)
     pt2.y = 20;
     Scalar circle_background(0,0,0);
 
-    switch( (note[4][go_note]/12) )
-    {
+        switch( (note[4][go_note]/12) ){
         case 4:/// 低音c
             circle_background = Scalar(100,120,125);///灰色
             break;
@@ -725,8 +713,7 @@ DWORD WINAPI PlaySnd (LPVOID)
     waitKey(1);
     go_note++;
     go_row_note++;
-    if(go_row_note >= row_note_count_array[row_index])
-    {
+        if(go_row_note >= row_note_count_array[row_index]){
         go_row_note = 0;
         row_index++;
     }
