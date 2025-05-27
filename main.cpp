@@ -41,11 +41,11 @@ struct Note_infos {
 };
 
 
+void FadeInOut(Mat Inp,Mat Out,int delay);
 
-Mat SrcMusicSheet;
+
 int  GenerateMidiFile(Note_infos* note_infos);
 void PlayMidiFile    (Note_infos* note_infos);
-void FadeInOut(Mat Inp,Mat Out,int delay);
 typedef struct _soundtype
 {
   double  Freq;
@@ -55,6 +55,7 @@ typedef struct _soundtype
   double  Tempo;
   int     sndTid;
 } soundtype, *LPSOUNDTYPE;
+
 static soundtype  SndPmtr[SNDQUE+1];
 static int        gTenter;
 static int        gTwait;
@@ -172,11 +173,10 @@ int main(){
     for(int i = 0; i < 40; i++ )
         note_infos -> row_note_count_array[i] = 0;
 
-    while(true)
-    {
-        switch(NextStep)
-        {
-        case 0:////////////////////////////////////UI0
+    while(true){
+        switch(NextStep){
+        // NextStep 0: 進入程式的前導動畫
+        case 0:
 
             imshow(Title,UI0);
             waitKey(0);
@@ -201,7 +201,8 @@ int main(){
 
 
             break;
-        case 1:{////////////////////////////////////UI1
+        // NextStep 1: 等待 user 輸入樂譜
+        case 1:{
             imshow(Title,UI1);
             waitKey(100);
             ///SrcMusicSheet = imread("test_img/phone_clear_template14.jpg",0);
@@ -210,13 +211,11 @@ int main(){
             deleAllFile(PicFolder);
             cout<<"Initail Finish"<<endl;
             cout<<"Please Upload your Picture"<<endl;
-            while(true)
-            {
+            while(true){
 
                 get_all_files_names_within_folder(PicFolder);
                 SrcMusicSheet=imread(PicFolder+"\\"+filename,0);
-                if(!SrcMusicSheet.empty())
-                {
+                if(!SrcMusicSheet.empty()){
                     imwrite("test111.jpg",SrcMusicSheet);
                     cout<<"Music Sheet Upload Finish"<<endl;
                     break;
@@ -231,13 +230,11 @@ int main(){
             ///*****************************
 */
             /*
-            while(true)
-            {
+            while(true){
                 char *PicName;
                 PicName=get_all_files_names_within_folder(PicFolder);
                 SrcMusicSheet=imread(PicFolder+PicName,1);
-                if(!SrcMusicSheet.empty())
-                {
+                if(!SrcMusicSheet.empty()){
                     cout<<"Music Sheet Upload Finish"<<endl;
                     break;
                 }
@@ -254,13 +251,13 @@ int main(){
             NextStep=2;
             break;
         }
-        case 2:////////////////////////////////////UI2
+        // NextStep 2: 開始辨識
+        case 2:
             cout<<"Case 2"<<endl;
             imshow(Title,UI1_2);
             //
             try
             {
-                ///~~~~~~~~~~~~~~~~~~~Recognization
 
                 staff_count = 0;
                 for(int i = 0 ; i < 40 ; i++)
@@ -274,11 +271,8 @@ int main(){
                             note_infos -> note_count,note_infos -> note,note_infos -> row_note_count_array,
                             UI2,Title,
                             Title,UI2_5);
-                //Mat a=imread("C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI\\UIss.jpg",1);
-                //imshow(Title,a);
             }
-            catch (exception e)
-            {
+            catch (exception e){
                 imshow(Title,UI2_5);
                 waitKey(2000);
                 NextStep=0;
@@ -289,7 +283,8 @@ int main(){
 
             NextStep=3;
             break;
-        case 3:////////////////////////////////////UI4
+        // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
+        case 3:
             cout<<"Case 3"<<endl;
             imshow(Title,UI3);
             waitKey(0);
@@ -300,9 +295,9 @@ int main(){
 
             NextStep=4;
             break;
-        case 4:////////////////////////////////////UI5
+        // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
+        case 4:
             //imshow(Title,UI5);
-            //
             cout<<"Case 4"<<endl;
             Output=background.clone();
 
@@ -386,12 +381,9 @@ cout<<"step1"<<endl;
     list_note_info(note_infos -> note_count,note_infos -> note);*/
 ///**************************************************************
 ///**************************************************************
-    for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++)
-  {
-        switch(note_infos -> note[2][go_note])
-      {
-        case 0:
-        {
+    for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++){
+        switch(note_infos -> note[2][go_note]){
+            case 0:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                   (60/speed)*1000* 4,
                   127,
@@ -399,8 +391,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 2:
-        {
+            case 2:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                   (60/speed)*1000* 2,
                   127,
@@ -408,8 +399,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 4:
-        {
+            case 4:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                     (60/speed)*1000*pow(0.5,note_infos -> note[3][go_note]),
                   127,
@@ -417,8 +407,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 5:
-        {
+            case 5:{
             Sound(0,
                   (60/speed)*1000* 1,
                   0,
@@ -426,8 +415,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 1:
-        {
+            case 1:{
             Sound(0,
                   (60/speed)*1000* 4,
                   0,
@@ -435,8 +423,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 3:
-        {
+            case 3:{
             Sound(0,
                   (60/speed)*1000* 2,
                   0,
@@ -444,8 +431,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 6:
-        {
+            case 6:{
                 Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12],
                   (60/speed)*1000* 0.25,
                   0,
@@ -453,8 +439,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 7:
-        {
+            case 7:{
             Sound(0,
                   (60/speed)*1000* 0.125,
                   0,
@@ -462,8 +447,7 @@ cout<<"step1"<<endl;
         }
         break;
 
-        case 8:
-        {
+            case 8:{
             Sound(0,
                   (60/speed)*1000* 0.5,
                   0,
@@ -471,8 +455,7 @@ cout<<"step1"<<endl;
         }
         break;
 /*
-        case 9:
-        {
+            case 9:{
             Sound(0,
                   0,
                   0,
@@ -499,8 +482,7 @@ cout<<"step1"<<endl;
   a+=1;
   // wait till que is empty
 
-  while(a<10000)
-  {
+    while(a<10000){
     //cout<<"step1"<<endl;
     Sound(freqTable[3][a%12],1000,127,0);  // 2 second blast
     a+=1;
@@ -519,8 +501,7 @@ cout<<"step1"<<endl;
 
   /////////////////////////////////////////
 
-  while(gSThread!=NULL)
-  {
+    while(gSThread!=NULL){
       Sleep(1000);
       speed+=1;
       //changespeed=changespeed*0.9995;
@@ -554,8 +535,8 @@ int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo){
 
   if (Freq == 0 && Dura < 1) return gTenter-gTexit;
   // silence
-  if (Freq == 0) Vol = 0;
-  if (Dura < 5) Dura = 5;
+    if (Freq == 0) Vol  = 0;
+    if (Dura <  5) Dura = 5;
   gTenter++;
   gTsig = FALSE;
     if (gTenter >= SNDQUE){
@@ -564,14 +545,13 @@ int Sound (float Freq,int Dura,int Vol,int Voice,float Tempo){
     else{
     gTarray=gTenter;
   }
-  SndPmtr[gTarray].Freq = Freq;
-  SndPmtr[gTarray].Dura = Dura;
-  SndPmtr[gTarray].Tempo = Tempo;
-  SndPmtr[gTarray].Vol = Vol;
-  SndPmtr[gTarray].Voice = Voice;
+    SndPmtr[gTarray].Freq   = Freq;
+    SndPmtr[gTarray].Dura   = Dura;
+    SndPmtr[gTarray].Tempo  = Tempo;
+    SndPmtr[gTarray].Vol    = Vol;
+    SndPmtr[gTarray].Voice  = Voice;
   SndPmtr[gTarray].sndTid = gTenter;
-  /*if (gSThread == NULL && (Freq == Abs(Freq) || Freq == 0))
-  {
+    /*if (gSThread == NULL && (Freq == Abs(Freq) || Freq == 0)){
       // "PlaySnd" needs casting (void *)
       gSThread = CreateThread(NULL,0,PlaySnd,(void *)"PlaySnd",0,&dwThreadId);
       //Sleep(1);
@@ -781,16 +761,12 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
   return 0;
 }
 
-int Drawing_Random_Circles( Mat& image, RNG rng )
-{
-
-
+int Drawing_Random_Circles( Mat& image, RNG rng ){
   cout<<"Drawing_Random_Circles"<<endl;
   int lineType = 8;
   Point pt1, pt2;
 
-  for( int i = 0; i < 1; i++ )
-  {
+    for( int i = 0; i < 1; i++ ){
    pt1.x = rand()%background.cols;
    pt1.y = rand()%background.rows;
    pt2.x = rand()%background.cols;
@@ -808,12 +784,10 @@ int Drawing_Random_Circles( Mat& image, RNG rng )
     circle(image,pt1,radian,Scalar(255,255,255),-1,1,0);
     //imshow("image",image);
    //line( image, pt1, pt2, randomColor(rng), rng.uniform(1, 10), 8 );
-
   }
   return 0;
 }
-static Scalar randomColor( RNG& rng )
-  {
+static Scalar randomColor( RNG& rng ){
   return Scalar( rand()%255, rand()%255, rand()%255 );
   }
 /*
@@ -888,8 +862,7 @@ void deleAllFile(string folder){
 
 
 }
-char *get_all_files_names_within_folder(string folder)
-{
+char *get_all_files_names_within_folder(string folder){
     char * names;
     char search_path[200];
     sprintf(search_path, "%s/*.jpg*", folder.c_str());
@@ -908,6 +881,4 @@ char *get_all_files_names_within_folder(string folder)
     filename=names;
     //cout<<names<<endl;
     return names;
-
-
 }
