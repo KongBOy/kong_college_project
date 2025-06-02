@@ -55,8 +55,8 @@ target_include_directories(Recognition_lib PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/String_tool_lib/include
                                                   )
 target_link_libraries     (Recognition_lib PUBLIC ${OpenCV_LIBS} 
-                                                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
-                                                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/preprocess/include
+                                                #   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
+                                                #   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/preprocess/include
                                                   String_tool_lib)
 
 # main
