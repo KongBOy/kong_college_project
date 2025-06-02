@@ -44,8 +44,6 @@ static string PicFolder="Resource\\iPhone 5c (Global)\\photo";
 
 int NextStep=0;
 
-time_t LastTimeFineUser;
-time_t OverTimeUserDisapper;
 
 
 

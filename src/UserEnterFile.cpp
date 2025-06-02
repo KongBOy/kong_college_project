@@ -95,6 +95,9 @@ bool pre_handmoveup=false;
 CvCapture* capture ;
 
 
+time_t LastTimeFineUser;
+time_t OverTimeUserDisapper;
+
 time_t preHandBitClock=clock()+10000;
 time_t nowHandBitClock=clock()+10000;
 
