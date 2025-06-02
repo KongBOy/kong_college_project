@@ -12,6 +12,8 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include "Generate_Play_Midi.h"
+
 using namespace std;
 using namespace cv;
 
@@ -61,12 +63,13 @@ CvScalar StandardDeviationScalar;
 
 
 ///////////////////////手勢辨識用
-int speed=60;
-int volume=80;
-bool MusicPlayback=false;
-Mat Output;
-int row_index = 0;
-Mat row_proc_img[40];
+// 搬進 Generate_Play_Midi
+// int speed=60;
+// int volume=80;
+// bool MusicPlayback=false;
+// Mat Output;
+// int row_index = 0;
+// Mat row_proc_img[40];
 
 float prex = 0;
 float prey = 0;
