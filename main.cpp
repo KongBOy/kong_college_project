@@ -18,7 +18,7 @@
 #include "recognition_0_debug_tools.h"
 
 #include "Generate_Play_Midi.h"
-
+#include "ScreenTool.h"
 ///****************************************************
 #include <cmath>
 #include <windows.h>
@@ -26,7 +26,7 @@
 
 
 
-void FadeInOut(Mat Inp,Mat Out,int delay);
+
 
 ///****************************************************
 
@@ -114,17 +114,17 @@ int main(){
             waitKey(0);
             imshow(Title,UI0_enter);
             waitKey(200);
-            FadeInOut(UI0_enter,UI0_1,50);
+            FadeInOut(Title, UI0_enter,UI0_1,50);
             waitKey(2000);
-            FadeInOut(UI0_1,UI0_2,50);
+            FadeInOut(Title, UI0_1,UI0_2,50);
             waitKey(2000);
-            FadeInOut(UI0_2,UI0_3,50);
+            FadeInOut(Title, UI0_2,UI0_3,50);
             waitKey(800);
-            FadeInOut(UI0_3,UI0_4,50);
+            FadeInOut(Title, UI0_3,UI0_4,50);
             waitKey(2000);
-            FadeInOut(UI0_4,UI0_5,50);
+            FadeInOut(Title, UI0_4,UI0_5,50);
             waitKey(2000);
-            FadeInOut(UI0_5,UI0_6,50);
+            FadeInOut(Title, UI0_5,UI0_6,50);
             //waitKey(0);
             imshow(Title,UI0_6_enter);
             waitKey(2000);
@@ -259,10 +259,10 @@ int main(){
             resize(UI5_0,UI5_0,Size(1600,900),0,0, INTER_CUBIC);
             imshow(Title,UI4_0);
             waitKey(2000);
-            FadeInOut(UI4_0,UI4_1,50);
+            FadeInOut(Title, UI4_0,UI4_1,50);
             waitKey(2000);
 
-            FadeInOut(UI4_1,UI5_0,50);
+            FadeInOut(Title, UI4_1,UI5_0,50);
             waitKey(2000);
             break;
 
@@ -282,28 +282,7 @@ int main(){
 
 }
 
-void FadeInOut(Mat Now,Mat After,int delay){
 
-    int row=Now.rows;
-    int col=Now.cols;
-    int a;
-    imshow(Title,Now);
-    for(int k=10;k>0;k--){
-        for(int i=0;i<row;i++){
-            for(int j=0;j<col;j++){
-                a=i*col+j;
-                if(a%k==0){
-                    Now.at<Vec3b>(i,j)= After.at<Vec3b>(i,j);
-                }
-            }
-        }
-        imshow(Title,Now);
-        waitKey(delay);
-    }
-    imshow(Title,After);
-
-
-}
 void deleAllFile(string folder){
 
     char * names;
