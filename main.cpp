@@ -36,7 +36,7 @@ int NextStep=0;
 
 int main(){
     // C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI
-    // C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\MusicSheetLocation\\
+    static string PicFolder   ="Resource\\iPhone 5c (Global)\\photo";
 
     Mat UI0         = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0.jpg"        , 1);
     Mat UI0_enter   = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_enter.jpg"  , 1);
