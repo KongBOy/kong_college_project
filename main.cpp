@@ -61,8 +61,8 @@ int main(){
     Mat UI5_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_1.jpg",1);
 
     // 檢查 讀UI圖
-    if(  UI0.empty()||UI0_1.empty()||UI0_2.empty()||UI0_3.empty()||UI0_4.empty()||UI0_5.empty()||UI0_6.empty()\
-       ||UI1.empty()||UI1_1.empty()||UI1_2.empty()||UI2.empty()||UI3.empty()||UI0_enter.empty()||UI0_6_enter.empty()){
+    if(  UI0.empty()||UI0_1.empty()||UI0_2.empty()||UI0_3.empty()||UI0_4.empty()||UI0_5    .empty()||UI0_6      .empty()\
+       ||UI1.empty()||UI1_1.empty()||UI1_2.empty()||UI2  .empty()||UI3  .empty()||UI0_enter.empty()||UI0_6_enter.empty()){
         cout<<"checkUIPic Error!"<<endl;
         return 0;
     }
