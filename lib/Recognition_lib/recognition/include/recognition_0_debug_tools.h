@@ -4,7 +4,7 @@
 
 
 #ifndef RECOGNITION_0_DEBUG_TOOLS_H_INCLUDED
-// 辨識出來 小蝌蚪 放這邊
+// 辨識出來 音符 放這邊
 struct Note_infos {
     /*
     note[0]: x
