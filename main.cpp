@@ -19,33 +19,20 @@
 
 #include "Generate_Play_Midi.h"
 #include "ScreenTool.h"
+#include "DirectoryTool.h"
 ///****************************************************
 #include <cmath>
 #include <windows.h>
 #include <mmsystem.h>
 
-
-
-
-
 ///****************************************************
 
 using namespace std;
 using namespace cv;
-char *get_all_files_names_within_folder(string folder);
-string filename="";
-void deleAllFile(string folder);
-static string PicFolder="Resource\\iPhone 5c (Global)\\photo";
-
-
 
 ///***********************************************
 
-
 int NextStep=0;
-
-
-
 
 int main(){
     // C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI
@@ -135,48 +122,39 @@ int main(){
         case 1:{
             imshow(Title,UI1);
             waitKey(100);
-            ///SrcMusicSheet = imread("test_img/phone_clear_template14.jpg",0);
-            ///SrcMusicSheet = imread("test_img/iphone_2.jpg",0);
-/*
-            deleAllFile(PicFolder);
+
+            // // debug 用, 直接指定想要的樂譜
+            // SrcMusicSheet=imread("Resource/test_img/phone_clear_template14.jpg",0);
+
+            // 上次的結果移動到finish
+            MoveJPGFiles("Resource/iPhone 5c (Global)/photo",
+                         "Resource/iPhone 5c (Global)/photo/finish");
             cout<<"Initail Finish"<<endl;
             cout<<"Please Upload your Picture"<<endl;
-            while(true){
 
-                get_all_files_names_within_folder(PicFolder);
-                SrcMusicSheet=imread(PicFolder+"\\"+filename,0);
+            // 監聽 PicFolder 裡面有沒有 .jpg 傳進來, 沒有的話就卡在這個迴圈繼續監聽, 有傳進來的話就跳出迴圈進入下個step
+            vector<string> files;
+            while(true){
+                files = get_all_jpg_files_in_folder(PicFolder);
+
+                // 如果有檔案傳進來, 不管傳進來幾個, 只 讀取第一個.jpg檔案 
+                if(files.size() > 0){
+                    SrcMusicSheet = imread(PicFolder+"\\" + files[0], 0);
+
+                    // 如果讀取成功
                 if(!SrcMusicSheet.empty()){
-                    imwrite("test111.jpg",SrcMusicSheet);
-                    cout<<"Music Sheet Upload Finish"<<endl;
+                        imwrite("Upload_img_OK-write_a_log.jpg",SrcMusicSheet);
+                        cout<<"Music Sheet Upload Finish, go to NextStep"<<endl;
                     break;
                 }
-            }
-            string FilePath=PicFolder+"\\"+filename;
-            remove(FilePath.c_str());
-
-            imshow(Title,UI1_1);
-            waitKey(1000);
-
-            ///*****************************
-*/
-            /*
-            while(true){
-                char *PicName;
-                PicName=get_all_files_names_within_folder(PicFolder);
-                SrcMusicSheet=imread(PicFolder+PicName,1);
-                if(!SrcMusicSheet.empty()){
-                    cout<<"Music Sheet Upload Finish"<<endl;
-                    break;
+                    // 如果讀取失敗, 把這批圖片傳進 read_failed, 才不會一直繼續讀失敗圖耗資源
+                    else{
+                        Move_JPG_Files("Resource/iPhone 5c (Global)/photo",
+                                     "Resource/iPhone 5c (Global)/photo/read_failed");
+                        cout<<"Music Sheet Upload Failed, images are sent to read_failed dicrectory!"<<endl;
+                    }
                 }
             }
-            */
-            ///~~~~~~~~~~~~~~~~~~~Recieve Pic
-
-
-
-            SrcMusicSheet=imread("Resource/test_img/phone_clear_template14.jpg",0);
-
-
 
             NextStep=2;
             break;
@@ -274,55 +252,4 @@ int main(){
             }
 
     */
-    /*
-
-    */
-
-}
-
-
-void deleAllFile(string folder){
-
-    char * names;
-    char search_path[200];
-    sprintf(search_path, "%s/*.jpg*", folder.c_str());
-    WIN32_FIND_DATA fd;
-    HANDLE hFind = ::FindFirstFile(search_path, &fd);
-    if(hFind != INVALID_HANDLE_VALUE) {
-        do {
-            // read all (real) files in current folder
-            // , delete '!' read other 2 default folder . and ..
-            if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
-                names=fd.cFileName;
-            }
-        }while(::FindNextFile(hFind, &fd));
-        ::FindClose(hFind);
-    }
-    filename=names;
-    string FilePath=PicFolder+"\\"+filename;
-    remove(FilePath.c_str());
-    filename="";
-    //cout<<names<<endl;
-
-
-}
-char *get_all_files_names_within_folder(string folder){
-    char * names;
-    char search_path[200];
-    sprintf(search_path, "%s/*.jpg*", folder.c_str());
-    WIN32_FIND_DATA fd;
-    HANDLE hFind = ::FindFirstFile(search_path, &fd);
-    if(hFind != INVALID_HANDLE_VALUE) {
-        do {
-            // read all (real) files in current folder
-            // , delete '!' read other 2 default folder . and ..
-            if(! (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) ) {
-                names=fd.cFileName;
-            }
-        }while(::FindNextFile(hFind, &fd));
-        ::FindClose(hFind);
-    }
-    filename=names;
-    //cout<<names<<endl;
-    return names;
 }
