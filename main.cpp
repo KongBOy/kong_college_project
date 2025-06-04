@@ -80,7 +80,7 @@ int main(){
     Mat SrcMusicSheet;
 
     // NextStep 2: 開始辨識 中間 用到的容器 在這邊宣告
-    // 小蝌蚪部分
+    // 音符部分
     Note_infos* note_infos = new Note_infos();
     // 五線譜部分
     int staff_count;
@@ -165,7 +165,7 @@ int main(){
             imshow(Title,UI1_2);
             // 初始化容器 後 開始辨識
             try{
-                // 初始化 容器, 小蝌蚪部分
+                // 初始化 容器, 音符部分
                 note_infos -> note_count  = 0;
                 note_infos -> go_note     = 0;
                 note_infos -> go_row_note = 0;
@@ -198,6 +198,7 @@ int main(){
 
             NextStep=3;
             break;
+
         // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
         case 3:
             cout<<"Case 3"<<endl;
@@ -210,6 +211,7 @@ int main(){
 
             NextStep=4;
             break;
+
         // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
         case 4:
             //imshow(Title,UI5);
@@ -244,7 +246,9 @@ int main(){
 
         }
     }
-    /*                              ///Animation
+
+    ///Animation
+    /* 
     for(int i = 0;i<=100;i++){
                 rectangle( UI0, Point( i*5, 0 ), Point( (i*5)+5, 5), Scalar( 0, 55, 255 ), CV_FILLED, 4 );
                 imshow("Title",UI0);
