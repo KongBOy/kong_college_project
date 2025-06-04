@@ -60,7 +60,7 @@ target_link_libraries     (Recognition_lib PUBLIC ${OpenCV_LIBS}
                                                   String_tool_lib)
 
 # main
-add_executable            (project_rebuild main.cpp src/UserEnterFile.cpp src/Generate_Play_Midi.cpp src/ScreenTool.cpp)
+add_executable            (project_rebuild main.cpp src/UserEnterFile.cpp src/Generate_Play_Midi.cpp src/ScreenTool.cpp src/DirectoryTool.cpp)
 target_include_directories(project_rebuild PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/include
