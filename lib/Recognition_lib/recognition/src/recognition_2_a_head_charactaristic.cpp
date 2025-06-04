@@ -11,6 +11,7 @@
 
 #include "recognition_0_array_tools.h"
 #include "recognition_0_debug_tools.h"
+#include "Note_infos.h"
 #include "recognition_2_a_head_charactaristic.h"
 
 using namespace cv;

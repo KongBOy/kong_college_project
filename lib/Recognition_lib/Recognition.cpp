@@ -26,6 +26,7 @@
 
 #include "recognition_0_array_tools.h"
 #include "recognition_0_debug_tools.h"
+#include "Note_infos.h"
 
 #include "recognition_0_all_head.h"
 

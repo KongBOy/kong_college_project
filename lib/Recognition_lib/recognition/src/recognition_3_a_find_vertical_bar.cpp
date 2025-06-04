@@ -10,6 +10,7 @@
 
 #include "recognition_0_array_tools.h"
 #include "recognition_0_debug_tools.h"
+#include "Note_infos.h"
 #include "recognition_3_a_find_vertical_bar.h"
 
 #define DOWNTOTOP 0

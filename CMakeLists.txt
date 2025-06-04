@@ -13,6 +13,10 @@ message(STATUS "(可省, 看一下變數內容而已)OpenCV_INCLUDE_DIRS: ${Open
 message(STATUS "(可省, 看一下變數內容而已)OpenCV_LIBS        : ${OpenCV_LIBS}" )
 message(STATUS "(可省, 看一下變數內容而已)CMAKE_BUILD_TYPE   : ${CMAKE_BUILD_TYPE}" )
 
+# Note_lib
+add_library               (Note_lib lib/Note_lib/Note_infos.cpp)
+target_include_directories(Note_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include )
+
 # String_tool_lib
 add_library               (String_tool_lib lib/String_tool_lib/string_tools.cpp)
 target_include_directories(String_tool_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/String_tool_lib/include )
@@ -53,6 +57,7 @@ target_include_directories(Recognition_lib PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/preprocess/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/String_tool_lib/include
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include 
                                                   )
 target_link_libraries     (Recognition_lib PUBLIC ${OpenCV_LIBS} 
                                                 #   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
@@ -67,9 +72,11 @@ target_include_directories(project_rebuild PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
                                                   "C:/Program Files (x86)/CodeBlocks/MinGW/include"
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/String_tool_lib/include # 可省, 因為 Recognition_lib 裡面已經有 link String_tool_lib 了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include        # 可省, 因為 Recognition_lib 裡面已經有 link Note_lib        了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   )
 target_link_libraries     (project_rebuild PUBLIC ${OpenCV_LIBS}
                                                   Recognition_lib
                                                   "C:/Program Files (x86)/CodeBlocks/MinGW/lib/libwinmm.a"
                                                   String_tool_lib  # 可省, 因為 Recognition_lib 裡面已經有 link String_tool_lib 了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
+                                                  Note_lib         # 可省, 因為 Recognition_lib 裡面已經有 link Note_lib        了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   )

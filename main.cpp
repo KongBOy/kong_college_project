@@ -15,7 +15,7 @@
 #include "UserEnterFile.h"
 #include "Recognition.h"
 
-#include "recognition_0_debug_tools.h"
+#include "Note_infos.h"
 
 #include "Generate_Play_Midi.h"
 #include "ScreenTool.h"
