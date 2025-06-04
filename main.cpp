@@ -127,7 +127,7 @@ int main(){
             // SrcMusicSheet=imread("Resource/test_img/phone_clear_template14.jpg",0);
 
             // 上次的結果移動到finish
-            MoveJPGFiles("Resource/iPhone 5c (Global)/photo",
+            Move_JPG_Files("Resource/iPhone 5c (Global)/photo",
                          "Resource/iPhone 5c (Global)/photo/finish");
             cout<<"Initail Finish"<<endl;
             cout<<"Please Upload your Picture"<<endl;
@@ -135,7 +135,7 @@ int main(){
             // 監聽 PicFolder 裡面有沒有 .jpg 傳進來, 沒有的話就卡在這個迴圈繼續監聽, 有傳進來的話就跳出迴圈進入下個step
             vector<string> files;
             while(true){
-                files = get_all_jpg_files_in_folder(PicFolder);
+                files = Get_all_JPG_Files_in_folder(PicFolder);
 
                 // 如果有檔案傳進來, 不管傳進來幾個, 只 讀取第一個.jpg檔案 
                 if(files.size() > 0){
