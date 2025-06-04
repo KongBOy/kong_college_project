@@ -179,7 +179,7 @@ try
 {
         double warp_angle = Find_Angle(src_img);
 ///        Wrap_Straight(src_img,warp_angle);
-        imwrite("Wrap_Straight.jpg",src_img);
+        imwrite("debug_img/Wrap_Straight.jpg",src_img);
 }
 catch (exception e)
 {
@@ -194,7 +194,7 @@ catch (exception e)
     test_bin = src_img.clone();
     Binary(test_bin,test_bin,15,40);
     test_Binary(src_img);
-    imwrite("test_bin.bmp",test_bin);
+    imwrite("debug_img/test_bin.bmp",test_bin);
 
 
     vector<Vec2f> lines;

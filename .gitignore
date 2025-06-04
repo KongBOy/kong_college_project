@@ -1,2 +1,4 @@
 build/*
 Resource/*
+debug_img/*
+*.exe

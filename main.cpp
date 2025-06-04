@@ -144,11 +144,11 @@ int main(){
                     SrcMusicSheet = imread(PicFolder+"\\" + files[0], 0);
 
                     // 如果讀取成功
-                if(!SrcMusicSheet.empty()){
-                        imwrite("Upload_img_OK-write_a_log.jpg",SrcMusicSheet);
+                    if(!SrcMusicSheet.empty()){
+                        imwrite("debug_img/Upload_img_OK-write_a_log.jpg",SrcMusicSheet);
                         cout<<"Music Sheet Upload Finish, go to NextStep"<<endl;
-                    break;
-                }
+                        break;
+                    }
                     // 如果讀取失敗, 把這批圖片傳進 read_failed, 才不會一直繼續讀失敗圖耗資源
                     else{
                         Move_JPG_Files("Resource/iPhone 5c (Global)/photo",
