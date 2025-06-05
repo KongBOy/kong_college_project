@@ -28,8 +28,8 @@ void bubbleSort(int amount,vector<Vec2f> &list/*,Mat cdst*/){
 		for(int j = i+1 ; j < amount ; j++){
 			if(list[i][1] > list[j][1]){
 				double temp0 = list[i][0];   double temp1 = list[i][1];
-				list[i][0] = list[j][0];  list[i][1] = list[j][1];
-				list[j][0] = temp0;        list[j][1] = temp1;
+				list[i][0]   = list[j][0];    list[i][1]  = list[j][1];
+				list[j][0]   = temp0     ;    list[j][1]  = temp1;
 			}
 		}
 	}

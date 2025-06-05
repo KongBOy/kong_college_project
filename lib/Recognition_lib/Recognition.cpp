@@ -123,8 +123,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
         string file_name = "note/find_template/1 ("+IntToString(i)+").bmp";
         Mat read_template = imread(file_name,0);
 
-        //imshow("read_template",read_template);
-        //waitKey(0);
+        // imshow("read_template",read_template);
+        // waitKey(0);
         for(int i = 0 ; i < read_template.rows ; i++)
             for(int j = 0 ; j < read_template.cols ; j++)
                 if(read_template.at<uchar>(i,j) == 0) find_template.at<uchar>(i,j)--;
