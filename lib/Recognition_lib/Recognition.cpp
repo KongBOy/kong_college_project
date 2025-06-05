@@ -97,7 +97,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
                 Mat UI_bass,string UI_WINDOW_NAME,
                  string Title,Mat UI2_5)
 {
- ///   camera();
+    // camera();
 
 /*
     Mat test_roi(100,100,CV_8UC1,Scalar(0));
@@ -131,14 +131,14 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     }
     imshow("find_template",find_template);
     imwrite("note/err_pic.bmp",find_template);
- //   imshow("find_template",find_template( Rect(0,6,14,12) ));
- //   imwrite("note/err_pic.bmp",find_template( Rect(0,6,14,12) ) );
+    // imshow("find_template",find_template( Rect(0,6,14,12) ));
+    // imwrite("note/err_pic.bmp",find_template( Rect(0,6,14,12) ) );
     cout<<find_template<<' '<<endl;
     waitKey(0);
 
 */
 
-///    Mat ord_img = imread("test_img/big_template.jpg",0);
+    // Mat ord_img = imread("test_img/big_template.jpg",0);
 
 
 
@@ -186,7 +186,7 @@ catch (exception e)
 {
     imshow(Title,UI2_5);
     waitKey(2000);
-///    NextStep=0;
+        // NextStep=0;
     return -1;
 }
 ///*******************************************************************
@@ -206,8 +206,8 @@ catch (exception e)
 
     bar_Roi(test_line, (string)ROI_DIR + "do_roi");
 
-//    imshow("test_roi",test_line);
- //   waitKey(0);
+    // imshow("test_roi",test_line);
+    // waitKey(0);
 
 
     Mat horizontal_img(test_line.rows,test_line.cols,CV_8UC1,Scalar(0));
@@ -216,21 +216,21 @@ catch (exception e)
     int * dist_level;
     //把计┮Τ絬 狥﹁甧竟
     Distance_detect(lines,dist_level);
-///    cout<<"distance_detect end"<<endl;
+    // cout<<"distance_detect end"<<endl;
 
-    //把计т碭舱絬甧竟     ┮Τ絬  ノㄓ縵匡distance
-/// 寫出去主程式用參數傳
+    // 把计т碭舱絬甧竟     ┮Τ絬  ノㄓ縵匡distance
+    // 寫出去主程式用參數傳
      staff_count = find_Staff2(lines,dist_level[0],dist_level[1]);
-//    Watch_Hough_Line(lines,test_bin,(string)HORIZONTAL_DIR + "mountain_hough_line",(string)HORIZONTAL_DIR + "mountain_hough_line");
-//    waitKey(0);
+    // Watch_Hough_Line(lines,test_bin,(string)HORIZONTAL_DIR + "mountain_hough_line",(string)HORIZONTAL_DIR + "mountain_hough_line");
+    // waitKey(0);
     cout<<"find_staff_sucess"<<endl;
 
 
 
 
-///*************************** 找頭 *********************************
-///*******************************************************************
-///因為我有改寫warp的function，水營的img轉正的會resize~~而且是對src存到src_img，所以不能用color_ord_img喔！
+    // *************************** 找頭 *********************************
+    // *******************************************************************
+    // 因為我有改寫warp的function，水營的img轉正的會resize~~而且是對src存到src_img，所以不能用color_ord_img喔！
     Mat color_src_img;
     cvtColor(src_img,color_src_img,CV_GRAY2BGR);
 
@@ -246,24 +246,24 @@ catch (exception e)
     imshow(Title,UI2_5);
     waitKey(2000);
     return -2;
-///    NextStep=0;
-///    break;
+    //    NextStep=0;
+    //    break;
 }
     Mat reduce_line_bin = test_bin.clone();
     Reduce_lines(lines , color_src_img ,(string)HORIZONTAL_DIR + "reduce_line" , reduce_line_bin);
 
-///*******************************************************************
-///*******************************************************************
-///    cout<<"reduce_line_end~~~"<<endl;
+    // *******************************************************************
+    // *******************************************************************
+    //     cout<<"reduce_line_end~~~"<<endl;
 
     UI_loading_preprocess(src_img,test_bin,staff_count,left_point,right_point,UI_bass,UI_WINDOW_NAME);
 
 
 
-///    Mat final_rl_img_roi[40]; 寫出去主程式用參數傳
-///    Mat final_img_roi[40]; 寫出去主程式用參數傳
-///    double trans_start_point_x[40]; 寫出去主程式用參數傳
-///    double trans_start_point_y[40]; 寫出去主程式用參數傳
+    // Mat final_rl_img_roi[40]; 寫出去主程式用參數傳
+    // Mat final_img_roi[40]; 寫出去主程式用參數傳
+    // double trans_start_point_x[40]; 寫出去主程式用參數傳
+    // double trans_start_point_y[40]; 寫出去主程式用參數傳
 try
 {
     Cut_staff(test_bin,reduce_line_bin,staff_count,left_point,right_point,
@@ -274,19 +274,19 @@ catch (exception e)
 {
     imshow(Title,UI2_5);
     waitKey(2000);
- ///   NextStep=0;
-///    break;
+        // NextStep=0;
+        // break;
     return -3;
 }
-///    cout<<"cut_staff_end~~"<<endl;
+    // cout<<"cut_staff_end~~"<<endl;
 
 
-/// *****************************************************************************************
-/// *****************************************************************************************
-/// *****************************************************************************************
+    // *****************************************************************************************
+    // *****************************************************************************************
+    // *****************************************************************************************
 
-///  寫出去主程式用參數傳
-    /// 自己設的資料結構 note ~~~~~~~ 存整張譜所有的row的note~~~~~~~~~
+    //  寫出去主程式用參數傳
+    // 自己設的資料結構 note ~~~~~~~ 存整張譜所有的row的note~~~~~~~~~
 /*
     int note[5][1000]; /// 0 = x , 1 = y , 2 = type , 3 = time_bar , 4 = 音高
     int note_count = 0;
@@ -298,9 +298,7 @@ catch (exception e)
 */
 
 
-    for(int go_staff = 0 ; go_staff < staff_count ; go_staff++)
-    {
-
+    for(int go_staff = 0 ; go_staff < staff_count ; go_staff++){
         Mat vertical_map(final_rl_img_roi[go_staff].rows,
                          final_rl_img_roi[go_staff].cols,CV_8UC1,Scalar(255));
 
@@ -345,11 +343,11 @@ catch (exception e)
 
         Mat template_img_9 = imread("Resource/note/9/9.bmp",0);
 
-///        recognition_0_all_head(2,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        // recognition_0_all_head(2,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
-    ///start_time = getTickCount();
-    ///end_time = getTickCount() - start_time;
-    ///cout<<"maybe_head cost Time = "<<end_time<<endl;
+        // start_time = getTickCount();
+        // end_time = getTickCount() - start_time;
+        // cout<<"maybe_head cost Time = "<<end_time<<endl;
 
         recognition_0_all_head(1,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
         recognition_0_all_head(3,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
@@ -364,7 +362,7 @@ catch (exception e)
         recognition_0_all_head(8,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
         recognition_0_all_head(6,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
-///        recognition_0_all_head(7,template_img_8,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        // recognition_0_all_head(7,template_img_8,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
 
 
@@ -379,11 +377,11 @@ catch (exception e)
         bubbleSort_note(row_note_count,row_note,Y_INDEX);
         bubbleSort_note(row_note_count,row_note,X_INDEX);
 
- ///       midi(row_note_count,row_note);
+        // midi(row_note_count,row_note);
 
 
 
-        /// 把row為單位的note 存進去所有的note的array~~~
+        // 把row為單位的note 存進去所有的note的array~~~
         for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++)
         {
             note[0][note_count+go_row_note] = row_note[0][go_row_note];
@@ -393,29 +391,29 @@ catch (exception e)
             note[4][note_count+go_row_note] = row_note[4][go_row_note];
         }
 
-        /// 把row為單位的note 存進去所有的note的array~~~
+        // 把row為單位的note 存進去所有的note的array~~~
         note_count += row_note_count;
         row_note_count_array[go_staff] = row_note_count;
-        ///play();
+        // play();
 
 
         Mat debug_img2 = final_img_roi[go_staff].clone();
         cvtColor(final_img_roi[go_staff],debug_img2,CV_GRAY2BGR);
 
         list_row_note_info(row_note_count,row_note);
-///**************************************************************
-///        watch_row_note(debug_img2,row_note_count,row_note);
+        // **************************************************************
+        // watch_row_note(debug_img2,row_note_count,row_note);
         UI_loading_recognition_row(staff_count,final_img_roi[go_staff],row_note_count,row_note,UI_bass,UI_WINDOW_NAME);
     }
 
-    ///UI_loading_recognition(staff_count,final_img_roi,note_count,note,row_note_count_array);
+    //UI_loading_recognition(staff_count,final_img_roi,note_count,note,row_note_count_array);
 
 
-/// ******************************************************************************
-///    midi(note_count,note,row_note_count_array,final_img_roi);
+    // ******************************************************************************
+    // midi(note_count,note,row_note_count_array,final_img_roi);
 
 
-///    waitKey(0);
+    // waitKey(0);
 
-///    return 0;
+    // return 0;
 }
