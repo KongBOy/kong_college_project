@@ -23,14 +23,10 @@ using namespace std;
 
 
 
-void bubbleSort(int amount,vector<Vec2f> &list/*,Mat cdst*/)
-{
-	for(int i = 0 ; i < amount-1 ; i++)
-	{
-		for(int j = i+1 ; j < amount ; j++)
-		{
-			if(list[i][1] > list[j][1])
-			{
+void bubbleSort(int amount,vector<Vec2f> &list/*,Mat cdst*/){
+	for(int i = 0 ; i < amount-1 ; i++){
+		for(int j = i+1 ; j < amount ; j++){
+			if(list[i][1] > list[j][1]){
 				double temp0 = list[i][0];   double temp1 = list[i][1];
 				list[i][0] = list[j][0];  list[i][1] = list[j][1];
 				list[j][0] = temp0;        list[j][1] = temp1;
@@ -112,8 +108,7 @@ double Find_Angle(Mat image)
 	return (max/PI)*180; //現在是徑度量喔~~~~我習慣度度量且我的Wrap_Straight也是用度度量，所以轉一下再return
 }
 
-void Wrap_Straight(Mat & image , double angle )
-{
+void Wrap_Straight(Mat & image , double angle ){
 		double rotate_angle = angle - 90;
 		cout<<"rotate_angle = "<<rotate_angle<<endl;
 		Point center = Point(image.cols/2,image.rows/2); // the center of the picture
@@ -121,33 +116,35 @@ void Wrap_Straight(Mat & image , double angle )
 		Mat rot(2,3,CV_64FC1);
 		rot = getRotationMatrix2D(center,rotate_angle,1);//produce wrapAffine_matrix
 
-///        imshow("before_warp",image);
+	// imshow("before_warp",image);
         imwrite("debug_preprocess/before_warp.bmp",image);
-///        cout<<"before_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
-///        waitKey(0);
+	// cout<<"before_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
+	// waitKey(0);
 
         Mat proc_img = image.clone();
         if(image.rows < image.cols) resize(proc_img,proc_img,Size(image.cols,image.cols),0,0, INTER_CUBIC);
-		warpAffine(image,proc_img,rot,proc_img.size(),0,0,255);
+	warpAffine(image, proc_img, rot, proc_img.size(), 0, 0, 255);
 		image = proc_img.clone();
 
-///		imshow("after_warp",image);
+	// imshow("after_warp",image);
 		imwrite("debug_preprocess/after_warp.bmp",image);
-///		cout<<"after_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
-///        waitKey(0);
+	// cout<<"after_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
+	// waitKey(0);
 
-///imwrite寫出去!!!寫裡面起天後自己就忘記了!!!!
-///******************************************************
-///		imwrite("Wrap_Straight.jpg",image);
+	//imwrite寫出去!!!寫裡面起天後自己就忘記了!!!!
+	//******************************************************
+	// imwrite("Wrap_Straight.jpg",image);
 		//waitKey();
 }
 
-void do_HoughLine(Mat image,vector<Vec2f> & lines,float threshold)
-{
-	///Mat dst,cdst;
-	///Canny(image, dst, 50, 100, 3);
-	///cvtColor(dst,cdst, CV_GRAY2BGR);
-// /**/    imshow("canny",cdst);
+void do_HoughLine(Mat image,vector<Vec2f> & lines,float threshold){
+	// threshold 用成 cols 的比例 可以比較好套用到 不同寬度的影像上
+
+	// 不一定要用Canny, 其實只要把圖片二值化就可以用 HoughLines 囉
+	// Mat dst,cdst;
+	// Canny(image, dst, 50, 100, 3);
+	// cvtColor(dst,cdst, CV_GRAY2BGR);
+    // imshow("canny",cdst);
 
 	HoughLines(image, lines, 1, CV_PI/180, image.cols * threshold/*175*/, 0, 0 );   //0.2是測試很多次覺得可以的值
 }
