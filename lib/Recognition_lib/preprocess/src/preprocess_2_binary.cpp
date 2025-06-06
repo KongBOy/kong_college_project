@@ -211,39 +211,32 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
         }
     }
 
-/*
-////顯示資料
-ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.txt",ios::trunc);
+    /*
+    ////顯示資料
+    ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.txt",ios::trunc);
 
-    for(int i = 0 ; i < color_range_count ;i++)
-    {
-
+    for(int i = 0 ; i < color_range_count ;i++){
         cout<<"i = "<<color[i];
         ofile<<"i = "<<color[i];
         cout<<" value= "<<setw(4)<<setfill('0')<<color_value[0][i];
         ofile<<" value= "<<setw(4)<<setfill('0')<<color_value[0][i];
 
 
-        if(i >=1 && i < color_range_count -0)
-        {
+        if(i >=1 && i < color_range_count -0){
             cout<<" ,dir= "<<setw(4)<<setfill('0')<<color_value[1][i-1];
             ofile<<" ,dir= "<<setw(4)<<setfill('0')<<color_value[1][i-1];
         }
-        if(i >=1 && i < color_range_count -1)
-        {
-
+        if(i >=1 && i < color_range_count -1){
             cout<<" ,dir= "<<setw(4)<<setfill('0')<<color_value[2][i-1];
             ofile<<" ,dir= "<<setw(4)<<setfill('0')<<color_value[2][i-1];
         }
 
 
         ofile<<' ';
-        for(int j = 0 ; j < color_value[0][i];j++)
-        {
+        for(int j = 0 ; j < color_value[0][i];j++){
             ofile<<'*';
         }
-        if(i >=1 && i < color_range_count -1)
-        {
+        if(i >=1 && i < color_range_count -1){
             if(color_value[2][i-1] < 0)ofile<<"●";
         }
 
@@ -252,8 +245,8 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
         cout<<endl;
     }
 
-*/
-////累積
+    */
+    ////累積
     int threshold_posi = 0;
     float area_rate = 0.50;
 
@@ -287,11 +280,11 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
     }
 
 
-//ofile.close();
+    //ofile.close();
 
 
-
-  /*  for(int i = 0 ; i < 256; i++)
+    /* 
+    for(int i = 0 ; i < 256; i++)
     {
         if(i == 0)
         {
@@ -344,10 +337,11 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
             color_low_range = 255-i;
         }
     }
-*/
+    */
 
     int shift2 = 30;
- /*   cout<<endl;
+    /*
+    cout<<endl;
 
     cout<<"src.cols = "<<src.cols<<" src.rows = "<<src.rows<<" area = "<<area<<endl;
     cout<<"area1 = "<<area * area_rate<<endl;
@@ -370,32 +364,30 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
     cout<<"color_high_range = "<<color_high_range<<endl;
     cout<<"color_range      = "<<color_high_range - color_low_range<<endl;
     cout<<"end~~~~~~~"<<endl<<endl;
-*/
+    */
 
-//    threshold = threshold2;
-//    threshold = ((float)threshold*0.5 +(float)threshold2*0.5);
+    // threshold = threshold2;
+    // threshold = ((float)threshold*0.5 +(float)threshold2*0.5);
     threshold -= shift2;
-//    imshow("src_img",src);
+    // imshow("src_img",src);
 
 
-//    waitKey(0);
-//    return 0;
-/*
+    // waitKey(0);
+    // return 0;
+
+    /*
     Mat temp_src_img = src.clone();
 
 	ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_src_data.txt",ios::trunc);
-	if(ofile.is_open())
-    {
-        for(int go_row = 0 ; go_row < src.rows ; go_row++)
-        {
-            for(int go_col = 0 ; go_col < src.cols ; go_col++)
-            {
+	if(ofile.is_open()){
+        for(int go_row = 0 ; go_row < src.rows ; go_row++){
+            for(int go_col = 0 ; go_col < src.cols ; go_col++){
                  ofile<<setw(3)<<setfill('0')<<(int)src.at<uchar>(go_row,go_col)<<' ';
             }
             ofile<<endl;
         }
         cout<<"mat is stored in src_txt"<<endl;
-//        ofile<<setw(3)<<setfill('0')<<src<<' '<<endl;
+        // ofile<<setw(3)<<setfill('0')<<src<<' '<<endl;
 
     }
     else cout<<"開檔失敗"<<endl;
@@ -415,17 +407,17 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
             ofile<<endl;
         }
         cout<<"mat is stored in can_txt"<<endl;
-//      ofile<<setw(3)<<setfill('0')<<temp_dst<<' '<<endl;
+        // ofile<<setw(3)<<setfill('0')<<temp_dst<<' '<<endl;
     }
     else cout<<"開檔失敗"<<endl;
     ofile.close();
     imwrite((string)BIN_DIR + "can_txt_img.bmp",temp_dst);
 	imshow("debug_can",temp_dst);
-//	waitKey();
+	// waitKey();
 
-*/
+    */
 
-/*
+    /*
 	/////////////////////////  步驟二 //////////////////////////
 	int color_hist[255] = {0}; //統計canny格子附近較深的顏色，較深的顏色就是五線譜、豆芽菜之類的囉!!!
 	int edge_point = 0; //統計有幾格canny的格子
@@ -446,10 +438,10 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
 		}
 	}
 
-//cout<<src.cols<<endl;
-//    cout<<"edge_point = "<<edge_point<<endl;
-//    imshow("debug_can",temp_dst);
-//	waitKey();
+    // cout<<src.cols<<endl;
+    // cout<<"edge_point = "<<edge_point<<endl;
+    // imshow("debug_can",temp_dst);
+	// waitKey();
 
 	float acc_color_hist[255]={0};
 	int temp_posi = 0;
@@ -457,33 +449,26 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
 	int decrease_point = 0; //統計直條圖的頂點，就是做多的點(微分開始往下掉的前一點 且 本身的值還要有一定的數量 約 2%)
 
 	//////////////////// 如果有輪廓的話 ///////////////////////////
-	if(edge_point > src.cols*3)
-	{
-		for(int i = 0 ; i < 255 ; i++)
-		{
-			if(color_hist[i])
-			{
-//							cout<<"color_hist["<<i<<"] = "<<color_hist[i];//////////
+	if(edge_point > src.cols*3)	{
+		for(int i = 0 ; i < 255 ; i++){
+			if(color_hist[i]){
+                // cout<<"color_hist["<<i<<"] = "<<color_hist[i];//////////
 				acc_color_hist[i] = (float)color_hist[i]/edge_point * 100;
-//							cout<<"  percent_hist["<<i<<"] = "<<acc_color_hist[i];/////////////////
-				if( (color_hist[i] - color_hist[temp_posi] <= 0))
-				{
-					 if(color_hist[temp_posi] > color_hist[decrease_point] )
-                     {
-                         decrease_point = temp_posi;
-                         //threshold = decrease_point;
- //                        cout<<"  in_decrease_point = "<< decrease_point;
+                // cout<<"  percent_hist["<<i<<"] = "<<acc_color_hist[i];/////////////////
+				if( (color_hist[i] - color_hist[temp_posi] <= 0)){
+					 if(color_hist[temp_posi] > color_hist[decrease_point] ){
+                        decrease_point = temp_posi;
+                        // threshold = decrease_point;
+                        // cout<<"  in_decrease_point = "<< decrease_point;
                      }
-
 				}
 
 				acc_color_hist[i] += acc_color_hist[temp_posi];
-	//						cout<<"  acc_hist["<<i<<"] = "<<acc_color_hist[i]<<endl;/////////////
+                // cout<<"  acc_hist["<<i<<"] = "<<acc_color_hist[i]<<endl;/////////////
 
 				//// 自動找出threshold，測試後覺得在頂點後面點比較好，因為note的邊框的顏色較淺！
-				if(i >=1)
-				{
-				//	if( ((acc_color_hist[i] - acc_color_hist[temp_posi]) > 3) ) threshold = i;
+				if(i >=1){
+                    // if( ((acc_color_hist[i] - acc_color_hist[temp_posi]) > 3) ) threshold = i;
 				}
 				if(acc_color_hist[i] <= 70) threshold = i;
 
@@ -492,7 +477,6 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
 		}
 
         threshold = (cvRound((float)threshold *1.0 + (float)decrease_point*0.0))*0.8;
-
 
         threshold += 15;
 
@@ -506,22 +490,19 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
 	//→判斷"周圍"的 threshold值
 	//因為是"周圍"，其實正常的流程應該要整張圖先做完一次取得所有的threshold，然後再重新Scan一次圖來判斷"周圍"
 	//但是太麻煩了，所以直接用目前有的周圍→左邊 和 上邊，來猜這格的note顏色大概是怎麼樣子，測試過後覺得OK！
-	else //edge_point == 0
-	{
-		if( (go_col == 0) && (go_row == 0) )
-		{
+	else //edge_point == 0{
+		if( (go_col == 0) && (go_row == 0) ){
 			if(src.at<uchar>(src.rows/2,src.cols/2) < exp_color) threshold = src.at<uchar>(src.rows/2,src.cols/2)+10;
 			else threshold = exp_color;
 		}
 		else if( (go_col != 0) && (go_row == 0)) threshold = threshold_map.at<uchar>(go_row,go_col-1);
 		else if( (go_col == 0) && (go_row != 0)) threshold = threshold_map.at<uchar>(go_row-1,go_col);
-		else
-		{
+		else{
 			threshold = threshold_map.at<uchar>(go_row-1,go_col) * 0.2;
 			threshold += (threshold_map.at<uchar>(go_row,go_col-1)*0.8);
 		}
 	}
-*/
+    */
 	const int shift = 0;
 	if(threshold >= shift) threshold -= shift ; else threshold = 0;
 
@@ -535,11 +516,11 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
 	}
 
 	dst = src.clone();// dst：會改掉原來傳進來的圖片~~所以複製一下二值化好的圖片就可以改道原來的圖囉!!!
-//~~    imshow("bin_img",dst);
-//    waitKey(0);
+    //~~    imshow("bin_img",dst);
+    // waitKey(0);
 
- //   waitKey(0);
-/*
+    // waitKey(0);
+    /*
     ofile.open("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_bin_data.txt",ios::trunc);
     if(ofile.is_open())
     {
@@ -553,7 +534,7 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
         }
         ofile<<"thresh9ld = "<<threshold<<endl;
         cout<<"mat is stored in bin_txt"<<endl;
-//      ofile<<setw(3)<<setfill('0')<<temp_dst<<' '<<endl;
+        // ofile<<setw(3)<<setfill('0')<<temp_dst<<' '<<endl;
     }
     else cout<<"開檔失敗"<<endl;
 
@@ -579,7 +560,7 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
         createTrackbar(CANNY_HIGH_BAR ,BAR_WINDOW ,&canny_h_slider ,500 ,on_Cannyy);
         while(waitKey() != ESC) {}
     }
-*/
+    */
 	return threshold;
 }
 
