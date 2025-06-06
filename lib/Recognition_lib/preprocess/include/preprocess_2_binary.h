@@ -11,7 +11,7 @@ using namespace cv;
 #endif // BINARY_H_INCLUDED
 
 
-void Binary(Mat , Mat & , const int , const int ); //切小塊，再做二值化
+void Binary_by_patch(Mat , Mat & , const int , const int ); //切小塊，再做二值化
 unsigned char Binary(Mat , Mat &);
 //第一個參數：想要二值化的原圖
 //第二個參數：二值化結果存的容器

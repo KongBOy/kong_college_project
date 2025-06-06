@@ -41,7 +41,7 @@ double Find_Angle(Mat image, bool debuging){
 	// 抓影像中間的小區域, 用該部分的五線譜轉動的角度 來找 影像被轉了幾度
 	Mat imgROI = image(Rect( (image.cols / 2) - (image.cols / 16), (image.rows / 2) - (image.rows / 16), (image.cols / 8), (image.rows) / 8) ); // 抓中間小區域
 	Mat bin_imgROI = imgROI.clone();    // copy一份保留原始影像
-	Binary(imgROI, bin_imgROI, 15, 50); // 影像二值化
+	Binary_by_patch(imgROI, bin_imgROI, 15, 50); // 影像二值化
     bin_imgROI = ~bin_imgROI; 		    // 五線譜、音符的地方 由黑轉白變前景, 其他背景由白轉黑變背景
 	if(debuging){
 		imwrite("debug_img/pre1_1_Find_Angle_1-ROI.bmp"            , imgROI);

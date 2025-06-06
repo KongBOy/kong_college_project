@@ -193,9 +193,9 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 ///*******************************************************************
 
     test_bin = src_img.clone();
-    Binary(test_bin, test_bin, 15, 40);
+    Binary_by_patch(test_bin, test_bin, 15, 40);
     test_Binary(src_img);
-    imwrite("debug_img/test_bin.bmp",test_bin);
+    imwrite("debug_img/pre2-Binarize.bmp", test_bin);
 
 
     vector<Vec2f> lines;
