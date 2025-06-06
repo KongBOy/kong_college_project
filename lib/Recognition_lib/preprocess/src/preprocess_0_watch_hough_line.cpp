@@ -31,7 +31,7 @@ using namespace std;
 void Watch_Hough_Line(vector<Vec2f> lines, Mat gdst, string window_name, string file_name)
 {
     Mat cdst;
-    cvtColor(gdst,cdst, CV_GRAY2BGR);
+    cvtColor(gdst, cdst, CV_GRAY2BGR);
 
 	// bubbleSort_H_rho(lines.size(),lines);
 

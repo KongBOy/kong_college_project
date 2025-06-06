@@ -165,8 +165,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     cout<<"screen.step(GRAY) = "<<screen.step<<endl;
 */
 
-    Mat src_img = ord_img.clone();
-    Mat test_bin = src_img.clone();
+    Mat src_img   = ord_img.clone();
+    Mat test_bin  = src_img.clone();
     Mat test_line = src_img.clone();
 
 ///*****************************************************
@@ -176,14 +176,14 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
 ///********************** 轉正 *************************
 ///*****************************************************
-try
-{
+    try{
+        
+        
         double warp_angle = Find_Angle(src_img);
 ///        Wrap_Straight(src_img,warp_angle);
         imwrite("debug_img/Wrap_Straight.jpg",src_img);
 }
-catch (exception e)
-{
+    catch (exception e){
     imshow(Title,UI2_5);
     waitKey(2000);
         // NextStep=0;
@@ -193,7 +193,7 @@ catch (exception e)
 ///*******************************************************************
 
     test_bin = src_img.clone();
-    Binary(test_bin,test_bin,15,40);
+    Binary(test_bin, test_bin, 15, 40);
     test_Binary(src_img);
     imwrite("debug_img/test_bin.bmp",test_bin);
 
@@ -210,8 +210,8 @@ catch (exception e)
     // waitKey(0);
 
 
-    Mat horizontal_img(test_line.rows,test_line.cols,CV_8UC1,Scalar(0));
-    Horizon_map_to_find_line(test_line,lines, horizontal_img,(string)HORIZONTAL_DIR,src_img,test_bin);
+    Mat horizontal_img(test_line.rows ,test_line.cols, CV_8UC1, Scalar(0));
+    Horizon_map_to_find_line(test_line, lines, horizontal_img, (string)HORIZONTAL_DIR, src_img, test_bin);
 
     int * dist_level;
     //把计┮Τ絬 狥﹁甧竟
@@ -220,7 +220,7 @@ catch (exception e)
 
     // 把计т碭舱絬甧竟     ┮Τ絬  ノㄓ縵匡distance
     // 寫出去主程式用參數傳
-     staff_count = find_Staff2(lines,dist_level[0],dist_level[1]);
+    staff_count = find_Staff2(lines,dist_level[0], dist_level[1]);
     // Watch_Hough_Line(lines,test_bin,(string)HORIZONTAL_DIR + "mountain_hough_line",(string)HORIZONTAL_DIR + "mountain_hough_line");
     // waitKey(0);
     cout<<"find_staff_sucess"<<endl;
@@ -236,13 +236,11 @@ catch (exception e)
 
     int*** left_point;// = new int**[staff_count];
     int*** right_point;// = new int**[staff_count];a
-try
-{
-    Find_Head_Interface(test_bin, lines , staff_count, left_point , right_point ,color_src_img);
+    try{
+        Find_Head_Interface(test_bin, lines, staff_count, left_point, right_point, color_src_img);
     cout<<"find_head_end~"<<endl;
 }
-catch (exception e)
-{
+    catch (exception e){
     imshow(Title,UI2_5);
     waitKey(2000);
     return -2;
@@ -250,13 +248,13 @@ catch (exception e)
     //    break;
 }
     Mat reduce_line_bin = test_bin.clone();
-    Reduce_lines(lines , color_src_img ,(string)HORIZONTAL_DIR + "reduce_line" , reduce_line_bin);
+    Reduce_lines(lines , color_src_img, (string)HORIZONTAL_DIR + "reduce_line", reduce_line_bin);
 
     // *******************************************************************
     // *******************************************************************
     //     cout<<"reduce_line_end~~~"<<endl;
 
-    UI_loading_preprocess(src_img,test_bin,staff_count,left_point,right_point,UI_bass,UI_WINDOW_NAME);
+    UI_loading_preprocess(src_img, test_bin, staff_count, left_point, right_point, UI_bass, UI_WINDOW_NAME);
 
 
 
@@ -264,14 +262,12 @@ catch (exception e)
     // Mat final_img_roi[40]; 寫出去主程式用參數傳
     // double trans_start_point_x[40]; 寫出去主程式用參數傳
     // double trans_start_point_y[40]; 寫出去主程式用參數傳
-try
-{
+    try{
     Cut_staff(test_bin,reduce_line_bin,staff_count,left_point,right_point,
               final_rl_img_roi,final_img_roi,
               trans_start_point_x,trans_start_point_y);
 }
-catch (exception e)
-{
+    catch (exception e){
     imshow(Title,UI2_5);
     waitKey(2000);
         // NextStep=0;
@@ -382,8 +378,7 @@ catch (exception e)
 
 
         // 把row為單位的note 存進去所有的note的array~~~
-        for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++)
-        {
+        for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){
             note[0][note_count+go_row_note] = row_note[0][go_row_note];
             note[1][note_count+go_row_note] = row_note[1][go_row_note];
             note[2][note_count+go_row_note] = row_note[2][go_row_note];

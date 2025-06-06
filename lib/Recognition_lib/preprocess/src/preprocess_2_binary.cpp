@@ -45,15 +45,15 @@ const int exp_color = 40;  //自己測試了很多圖大概估測note的顏色�
 
 void Binary(Mat src, Mat& dst , const int div_row,const int div_col)
 {
-	threshold_map.create(div_row,div_col,CV_8UC1);
+	threshold_map.create(div_row, div_col, CV_8UC1);
 	/////////////////// 試試看 二質化 //////////////////////////
 	const int height = src.rows;
-//	const int div_row = 80;
+	// const int div_row = 80;
 	const int div_height = height / div_row;
 	const int mod_height = height % div_row;
 
 	const int width = src.cols;
-//	const int div_col = 160;
+	// const int div_col = 160;
 	const int div_width = width / div_col;
 	const int mod_width = width % div_col;
 	/*
@@ -62,8 +62,8 @@ void Binary(Mat src, Mat& dst , const int div_row,const int div_col)
 	cout<<endl;
 	*/
 
-//	Mat debug = test_eliminate_roi1.clone();
-//	cvtColor(test_eliminate_roi1,debug,CV_GRAY2BGR);
+	// Mat debug = test_eliminate_roi1.clone();
+	// cvtColor(test_eliminate_roi1,debug,CV_GRAY2BGR);
 
 	int height_frame_acc = mod_height;
 	int height_acc = 0;
@@ -71,22 +71,18 @@ void Binary(Mat src, Mat& dst , const int div_row,const int div_col)
 	int width_frame_acc = mod_width;
 	int width_acc = 0;
 
-	for(go_row = 0 ; go_row < div_row ; go_row++)
-	{
+	for(go_row = 0 ; go_row < div_row ; go_row++){
 		//推出 下一格 height
 		int height_acc_next = height_acc + div_height - 1;
-		if(height_frame_acc/div_row)
-		{
+		if(height_frame_acc/div_row){
 			height_acc_next++;
 			height_frame_acc %= div_row;
 		}
 
-		for(go_col = 0 ; go_col < div_col ; go_col++)
-		{
+		for(go_col = 0 ; go_col < div_col ; go_col++){
 			//推出 下一格 width
 			int width_acc_next = width_acc + div_width - 1;
-			if(width_frame_acc/div_col)
-			{
+			if(width_frame_acc/div_col){
 				width_acc_next++;
 				width_frame_acc %= div_col;
 			}
@@ -102,7 +98,7 @@ void Binary(Mat src, Mat& dst , const int div_row,const int div_col)
 					      .colRange( width_acc, width_acc_next+1),
 				       temp_bin);
 			dst.rowRange(height_acc,height_acc_next+1)
-					      .colRange( width_acc, width_acc_next+1) = temp_bin.clone();
+               .colRange( width_acc, width_acc_next+1) = temp_bin.clone();
 
 
 			//更新 width
@@ -163,28 +159,24 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
     int color_value[3][256];
     int color_count_1[256];
     int color_count_2[256];
-    for(int i = 0 ; i < 256 ; i++)
-    {
+    for(int i = 0 ; i < 256 ; i++){
         color[i] = 0;
         color_count[i] = 0;
         color_count_1[i] = 0;
         color_count_2[i] = 0;
     }
-    for(int i = 0 ; i < 3 ; i++)
-    {
-        for(int j = 0 ; j < 256 ; j++)
-        {
+    for(int i = 0 ; i < 3 ; i++){
+        for(int j = 0 ; j < 256 ; j++){
              color_value[i][j] = 0;
         }
     }
+
     int color_high_range = 0;
     int color_low_range  = 0;
     int local_max[256];
 
-    for(int i = 0 ; i < src.rows ; i++)
-    {
-        for(int j = 0 ; j < src.cols ; j++)
-        {
+    for(int i = 0 ; i < src.rows ; i++){
+        for(int j = 0 ; j < src.cols ; j++){
             color_count[src.at<uchar>(i,j)]++;
         }
     }
@@ -196,10 +188,8 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
     int threshold = 0;
     int threshold_acc = 0;
 
-    for(int i = 0 ; i < 256 ; i++)
-    {
-        if(color_count[i])
-        {
+    for(int i = 0 ; i < 256 ; i++){
+        if(color_count[i]){
             color[color_range_count] = i;
             color_value[0][color_range_count]= color_count[i];
             color_range_count++;
@@ -208,18 +198,15 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
         }
 
 
-        if(color_count[255-i])
-        {
+        if(color_count[255-i]){
             color_low_range = 255-i;
         }
 
     }
 
 
-    for(int level = 1 ; level < 3 ; level++)
-    {
-        for(int i = 0 ; i < color_range_count-level ; i++)
-        {
+    for(int level = 1 ; level < 3 ; level++){
+        for(int i = 0 ; i < color_range_count-level ; i++){
             color_value[level][i] = color_value[level-1][i+1] - color_value[level-1][i];
         }
     }
@@ -274,20 +261,16 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
     int threshold_posi2 = 0;
     float area_rate2 = 0.03125;
 
-    for(int i = 0 ; i < color_range_count ; i++)
-    {
+    for(int i = 0 ; i < color_range_count ; i++){
         if(i== 0) color_acc_count[0] = color_value[0][0];
-        else
-        {
+        else{
             color_acc_count[i] = color_value[0][i] + color_acc_count[i-1];
-            if(color_acc_count[i] <area * area_rate)
-            {
+            if(color_acc_count[i] <area * area_rate){
                 threshold = color[i];
                 threshold_posi = i;
             }
 
-            if(color_acc_count[i] <area * area_rate2)
-            {
+            if(color_acc_count[i] <area * area_rate2){
                 threshold2 = color[i];
                 threshold_posi2 = i;
             }
@@ -295,11 +278,9 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
     }
 
 
-    for(int i = 0 ; i < color_range_count ; i++)
-    {
+    for(int i = 0 ; i < color_range_count ; i++){
         if(i== 0) color_acc_count[0] = color_value[0][0];
-        else
-        {
+        else{
             color_acc_count[i] = color_value[0][i] + color_acc_count[i-1];
 
         }
@@ -546,10 +527,8 @@ ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.t
 
 	//cout<<"threshold = "<<threshold<<endl;
 
-	for(int row = 0 ; row < src.rows; row++)
-	{
-		for(int col = 0 ; col < src.cols ; col++)
-		{
+	for(int row = 0 ; row < src.rows; row++){
+		for(int col = 0 ; col < src.cols ; col++){
 			if(src.at<uchar>(row,col) <= threshold) src.at<uchar>(row,col) = 0;
 			else src.at<uchar>(row,col) = 255;
 		}
@@ -614,17 +593,14 @@ void test_Binary(Mat src)  //src：原圖的copy ； dst：會改掉原來傳進
 	threshold_map = temp.clone();
 
 	Mat temp_dst;
-	Canny(src,temp_dst,75,75,3);
-//	imshow("debug",temp_dst);
-//	waitKey();
+	Canny(src, temp_dst, 75,75,3);
+	// imshow("debug",temp_dst);
+	// waitKey();
 
 	int threshold = 0;
-	for(go_row = 0 ; go_row < height ; go_row++) //因為要 當格的上下一格做運算 所以 +-1 控制不會超過圖片range
-	{
-		for(go_col = 0 ; go_col < width ; go_col++)
-		{
-			if(temp_dst.at<uchar>(go_row,go_col))  //canny出來的有值得話，代表該點為edge(周邊顏色變動很大)
-			{
+	for(go_row = 0 ; go_row < height; go_row++){ //因為要 當格的上下一格做運算 所以 +-1 控制不會超過圖片range
+		for(go_col = 0 ; go_col < width; go_col++){
+			if(temp_dst.at<uchar>(go_row, go_col)){  //canny出來的有值得話，代表該點為edge(周邊顏色變動很大)
 				//if( (go_col == 0) && (go_row == 0) ) threshold = src.at<uchar>(go_row+1,go_col+1); // 左上
 				//else if( (go_col == 0) && (go_row != 0) ) threshold = src.at<uchar>(go_row+1,go_col);//左
 				//else if( (go_col == 0) && (go_row == height-1) ) threshold = src.at<uchar>(go_row-1,go_col);//左下
@@ -634,18 +610,15 @@ void test_Binary(Mat src)  //src：原圖的copy ； dst：會改掉原來傳進
 				//else if( (go_col == width-1) && (go_row == 0) ) threshold = src.at<uchar>(go_row,go_col-1);//右上
 				//else if( (go_col != 0) && (go_row == 0) ) threshold = src.at<uchar>(go_row+1,go_col);//上
 				//else
-				if((go_col != 0) && (go_row != 0) && (go_col != width-1) && (go_row != height-1))
-				{
+				if((go_col != 0) && (go_row != 0) && (go_col != width-1) && (go_row != height-1)){
 					if( (src.at<uchar>(go_row-1,go_col-1) - src.at<uchar>(go_row+1,go_col+1)) > 0)  //canny該點還不夠準，可以仔細看圖，每個黑色的旁邊都有一咪咪的灰灰，所以找該格的附近，較靠近正確的顏色，&記錄下來
 						 threshold = src.at<uchar>(go_row+1,go_col+1);
 					else threshold = src.at<uchar>(go_row-1,go_col-1);
 
 					//threshold = src.at<uchar>(go_row,go_col);
 				}
-				else
-				{
-					if(src.at<uchar>(go_row,go_col) < exp_color )
-					{
+				else{
+					if(src.at<uchar>(go_row,go_col) < exp_color ){
 						threshold = src.at<uchar>(go_row,go_col); //雖然不準了點，但少了很多if else!!!
 						threshold += 10;
 					}
@@ -659,18 +632,16 @@ void test_Binary(Mat src)  //src：原圖的copy ； dst：會改掉原來傳進
 				//imshow("threshold_map",threshold_map);
 				//waitKey();
 			}
-			else //edge_point == 0
-			{
-				if( (go_col == 0) && (go_row == 0) )
-				{
+			else{ //edge_point == 0
+			
+				if( (go_col == 0) && (go_row == 0) ){
 					if(src.at<uchar>(go_row,go_col) < exp_color) threshold = src.at<uchar>(go_row,go_col)+10;
 					else threshold = exp_color;
 				}
 				else if( (go_col != 0) && (go_row == 0)) threshold = threshold_map.at<uchar>(go_row,go_col-1);
 				else if( (go_col == 0) && (go_row != 0)) threshold = threshold_map.at<uchar>(go_row-1,go_col);
 				else
-				if( (go_col != 0) && (go_row != 0))
-				{
+				if( (go_col != 0) && (go_row != 0)){
 					threshold = threshold_map.at<uchar>(go_row-1,go_col);
 					threshold += threshold_map.at<uchar>(go_row,go_col-1);
 					threshold /= 2;
