@@ -121,6 +121,7 @@ void Binary(Mat src, Mat& dst , const int div_row,const int div_col)
 //	imshow("threshold_map",threshold_map);
 //	cout<<threshold_map<<' '<<endl;
 }
+
 /*
 #define ENTER 13
 #define ESC 27
@@ -284,24 +285,19 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
 
 
     /* 
-    for(int i = 0 ; i < 256; i++)
-    {
-        if(i == 0)
-        {
+    for(int i = 0 ; i < 256; i++){
+        if(i == 0){
             color_acc_count[0] = color_count[0];
         }
-        else
-        {
+        else{
             color_acc_count[i] = color_count[i] + color_acc_count[i-1];
-            if(color_acc_count[i] < area/2)
-            {
+            if(color_acc_count[i] < area/2){
                 threshold = i - 30;
                 threshold_acc = color_acc_count[i];
             }
         }
 
-        if(color_count[i])
-        {
+        if(color_count[i]){
 
             cout<<"i = "<<i<<" value = "<<color_count[i];
 
@@ -309,8 +305,7 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
             if(color_range_count == 0) cout<<endl;
 
 
-            if(color_range_count >0)
-            {
+            if(color_range_count >0){
                 color_count_1[last_posi] = color_count[i] - color_count[last_posi];
                 cout<<"  dir1["<<last_posi<<"] = "<<color_count_1[last_posi];
             }
@@ -320,8 +315,7 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
 
 
 
-            if(color_range_count >1)
-            {
+            if(color_range_count >1){
                 color_count_2[last_posi] = color_count_1[i] - last_color_count_1;
                 cout<<"  dir2["<<last_posi<<"] = "<<color_count_2[last_posi]<<endl;
                 last_color_count_1 = color_count_1[last_posi];
@@ -332,8 +326,7 @@ unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改
             color_range_count++;
         }
 
-        if(color_count[255-i])
-        {
+        if(color_count[255-i]){
             color_low_range = 255-i;
         }
     }
