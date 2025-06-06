@@ -95,7 +95,8 @@ static string IntToString(int num)
 int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_img_roi[],double trans_start_point_x[],double trans_start_point_y[],
                 int& note_count , int note[][1000] , int row_note_count_array[],
                 Mat UI_bass,string UI_WINDOW_NAME,
-                 string Title,Mat UI2_5)
+                string Title,Mat UI2_5,
+                bool debuging)
 {
     // camera();
 
@@ -179,9 +180,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     try{
         
         
-        double warp_angle = Find_Angle(src_img);
-///        Wrap_Straight(src_img,warp_angle);
-        imwrite("debug_img/Wrap_Straight.jpg",src_img);
+        double warp_angle = Find_Angle(src_img, debuging);
+        Wrap_Straight(src_img, warp_angle, debuging);
 }
     catch (exception e){
     imshow(Title,UI2_5);

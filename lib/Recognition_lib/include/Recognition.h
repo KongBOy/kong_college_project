@@ -10,4 +10,5 @@ using namespace cv;
 int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_img_roi[],double trans_start_point_x[],double trans_start_point_y[],
                 int& note_count , int note[][1000] , int row_note_count_array[],
                 Mat UI_bass,string UI_WINDOW_NAME,
-                string Title,Mat UI2_5);
+                string Title,Mat UI2_5,
+                bool debuging=false);

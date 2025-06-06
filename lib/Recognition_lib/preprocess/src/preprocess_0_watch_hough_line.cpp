@@ -56,12 +56,15 @@ void Watch_Hough_Line(vector<Vec2f> lines, Mat gdst, string window_name, string 
 
 	}
 
-	// waitKey(0);
 	cout<<endl;
-	imshow(window_name,cdst);
+	if(window_name != ""){
+		imshow(window_name, cdst);
+		waitKey(0);
+	}
 	// ******************************************************
-	// imwrite(file_name + FILE_TYPE,cdst);
-	// imwrite(window_name + ".jpg",cdst);
+	if(file_name != ""){
+		imwrite(file_name + FILE_TYPE,cdst);
+	}
 }
 
 

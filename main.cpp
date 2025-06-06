@@ -187,7 +187,8 @@ int main(){
                 Recognition(SrcMusicSheet,staff_count,final_rl_img_roi,final_img_roi,trans_start_point_x,trans_start_point_y,
                             note_infos -> note_count,note_infos -> note,note_infos -> row_note_count_array,
                             UI2,Title,
-                            Title,UI2_5);
+                            Title,UI2_5, 
+                            true);
             }
             catch (exception e){
                 imshow(Title,UI2_5);
