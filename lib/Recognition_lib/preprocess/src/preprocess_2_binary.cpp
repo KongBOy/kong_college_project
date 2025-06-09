@@ -239,6 +239,22 @@ void Binary_by_patch(Mat& dst , const int div_row, const int div_col)
     // waitKey(0);
 	// cout<< threshold_map <<' '<<endl;
 }
+
+
+
+
+// 想法：
+// 我認為的"做二值化的目的"：區分"符號"和"背景"
+
+// 我們是如何判別"符號"和"背景"
+	// → 我覺得是看"輪廓"→再利用輪廓"分辨顏色"→利用顏色來區分"符號"和"背景"
+	// →反過來也可以~~ 先"分辨顏色"→ 在找出"輪廓"→再來區分"符號"和"背景"
+// 但用前者比較方便，因為已經有canny可以很方便的找輪廓了~~
+// 所以以下方法是：
+	// 先把圖片做canny 找出輪廓
+	// 再利用輪廓 找出 符號顏色
+    // 但實際用起來效果不是太好, 寫都寫了還是保留一下未來有機會可以再改善, 比如跟上面同理套 patch 切小塊做也許有機會更好
+void test_Binary_by_Canny(Mat src)  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
 {
 	const int width = src.cols;
 	const int height = src.rows;
@@ -318,6 +334,6 @@ void Binary_by_patch(Mat& dst , const int div_row, const int div_col)
 		//cout<<endl;
 	}
 	///******************************************************
-	///imwrite("test_binary.jpg",dst);
+	imwrite("debug_img/test_Binary_by_Canny.jpg",dst);
 	//dst = src.clone();// dst：會改掉原來傳進來的圖片~~所以複製一下二值化好的圖片就可以改道原來的圖囉!!!
 }

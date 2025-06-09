@@ -20,4 +20,4 @@ unsigned char Binary(Mat & dst);
 //步驟二：找出note的顏色
 
 //方法二：方法一的延伸，可以想像把方法一切的極小塊
-void test_Binary(Mat);
+void test_Binary_by_Canny(Mat);
