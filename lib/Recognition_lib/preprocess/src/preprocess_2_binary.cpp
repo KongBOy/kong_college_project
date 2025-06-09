@@ -23,34 +23,173 @@ Mat threshold_map; //把所有的threshold存起來的容器，debug用
 static int go_row = 0; //在Mat裡面跑的座標
 static int go_col = 0; //在Mat裡面跑的座標
 
-static Mat temp_bin;
 
 const int exp_color = 40;  //自己測試了很多圖大概估測note的顏色大概在30左右
 
 
-//方法一：速度比方法二快，
+// 嘗試找拐點, 但效果不好, 也是都寫了就保留也許未來有機會用到
+void Calculate_gradient(Mat src){
+    int color_value[256];
+    int color_count[256];
+    int color_gradi[3][256];
 
-void Binary_by_patch(Mat src, Mat& dst , const int div_row, const int div_col)
+    // 初始化容器
+    for(int i = 0 ; i < 256 ; i++){
+        color_value[i] = 0;
+        color_count[i] = 0;
+    }
+    for(int i = 0 ; i < 3 ; i++){
+        for(int j = 0 ; j < 256 ; j++){
+             color_gradi[i][j] = 0;
+        }
+    }
+
+    // 統計 src 裡面的 灰階 顏色數量
+    for(int i = 0 ; i < src.rows ; i++){
+        for(int j = 0 ; j < src.cols ; j++){
+            color_count[src.at<uchar>(i,j)]++;
+        }
+    }
+
+    
+    // 有用到的顏色 挑出來, 記錄其 顏色 和 使用次數
+    int go_color_value = 0;
+    for(int i = 0 ; i < 256 ; i++){
+        if(color_count[i]){
+            color_value[go_color_value] = i;
+            color_gradi[0][go_color_value]= color_count[i];
+            go_color_value++;
+        }
+    }
+    // 計算 1階, 2階 微分
+    for(int level = 1 ; level < 3 ; level++){
+        for(int i = 0 ; i < go_color_value-level ; i++){
+            color_gradi[level][i] = color_gradi[level-1][i+1] - color_gradi[level-1][i];
+        }
+    }
+    /*
+    // 顯示資料
+    ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.txt",ios::trunc);
+
+    for(int i = 0 ; i < go_color_value ;i++){
+        cout<<"i = "<<color_value[i];
+        ofile<<"i = "<<color_value[i];
+        cout<<" value= "<<setw(4)<<setfill('0')<<color_gradi[0][i];
+        ofile<<" value= "<<setw(4)<<setfill('0')<<color_gradi[0][i];
+
+
+        if(i >=1 && i < go_color_value -0){
+            cout<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[1][i-1];
+            ofile<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[1][i-1];
+        }
+        if(i >=1 && i < go_color_value -1){
+            cout<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[2][i-1];
+            ofile<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[2][i-1];
+        }
+
+        ofile<<' ';
+        for(int j = 0 ; j < color_gradi[0][i];j++){
+            ofile<<'*';
+        }
+        if(i >=1 && i < go_color_value -1){
+            if(color_gradi[2][i-1] < 0)ofile<<"●";
+        }
+
+        ofile<<endl;
+        cout<<endl;
+    }
+    */
+}
+
+
+unsigned char Binary(Mat & dst)  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
 {
-	threshold_map.create(div_row, div_col, CV_8UC1);
+    // 統計 dst 裡面的 灰階 顏色數量
+    // 初始化容器
+    int color_count[256];
+    for(int i = 0 ; i < 256 ; i++) color_count[i] = 0;
+    
+    // 開始走訪dst 每一個pixel 統計 裡面的 灰階 顏色數量
+    for(int i = 0 ; i < dst.rows ; i++){
+        for(int j = 0 ; j < dst.cols ; j++){
+            color_count[dst.at<uchar>(i,j)]++;
+        }
+    }
+    
+    // 有用到的顏色 挑出來, 記錄其 顏色 和 使用次數
+    int go_color_value = 0;
+    int color_value      [256];
+    int color_value_count[256];
+    for(int i = 0 ; i < 256 ; i++){
+        color_value      [i] = 0;
+        color_value_count[i] = 0;
+    }
+
+    for(int i = 0 ; i < 256 ; i++){
+        if(color_count[i]){
+            color_value      [go_color_value] = i;
+            color_value_count[go_color_value] = color_count[i];
+            go_color_value++;
+        }
+    }
+
+    // 計算影像面積
+    int area = dst.cols * dst.rows;
+
+
+    // (排除沒使用到顏色的部分, 只看有使用到顏色部分的)
+    // 累積灰階顏色 達到 總面積的 XX%(目前測50%效果好) 時 差不多就是內容物+雜訊了, 因為有雜訊所以 threshold 要再向左 shift 一些數值
+    int color_acc_count[256];
+    float area_rate    = 0.50;
+    int threshold      = 0;
+    int threshold_posi = 0;
+    int shift          = 30;
+
+    for(int i = 0 ; i < go_color_value ; i++){
+        if(i== 0) color_acc_count[0] = color_value_count[0];
+        else{
+            color_acc_count[i] = color_value_count[i] + color_acc_count[i-1];
+            if(color_acc_count[i] < area * area_rate){
+                threshold = color_value[i];
+                threshold_posi = i;
+            }
+        }
+    }
+
+    threshold -= shift;
+	if(threshold < 0) threshold = 0;
+	//cout<<"threshold = "<<threshold<<endl;
+
+    // 二值化
+	for(int row = 0 ; row < dst.rows; row++){
+		for(int col = 0 ; col < dst.cols ; col++){
+			if(dst.at<uchar>(row,col) <= threshold) dst.at<uchar>(row,col) = 0;
+			else                                    dst.at<uchar>(row,col) = 255;
+		}
+	}
+
+	return threshold;
+}
+
+void Binary_by_patch(Mat& dst , const int div_row, const int div_col)
+{
+    Mat patch_img;
+	threshold_map.create(div_row, div_col, CV_8UC1);  // debug用的, 觀察每個patch用什麼threshold
     // 切塊來做 二值化
-    const int height = src.rows;
+    const int height = dst.rows;
 	// const int div_row = 80;
 	const int div_height = height / div_row;
 	const int mod_height = height % div_row;
 
-	const int width = src.cols;
+	const int width = dst.cols;
 	// const int div_col = 160;
 	const int div_width = width / div_col;
 	const int mod_width = width % div_col;
 	/*
-	cout<<"width = "<<width<<" height = "<<height <<endl;
-	cout<<"mod_width = "<<mod_width<<" mod_height = "<<mod_height <<endl;
-	cout<<endl;
+	cout << "    width = " <<     width << "     height = " <<     height << endl;
+	cout << "mod_width = " << mod_width << " mod_height = " << mod_height << endl;
+	cout << endl;
 	*/
-
-	// Mat debug = test_eliminate_roi1.clone();
-	// cvtColor(test_eliminate_roi1,debug,CV_GRAY2BGR);
 
 	int height_frame_acc = mod_height;
 	int height_acc = 0;
@@ -74,177 +213,32 @@ void Binary_by_patch(Mat src, Mat& dst , const int div_row, const int div_col)
 				width_frame_acc %= div_col;
 			}
 			/*
-			cout<<"colRange = "<<width_acc<<" ~ "<<width_acc_next<<", "<<
-					"rowRange = "<<height_acc<<" ~ "<<height_acc_next<<endl;
+			cout<< "colRange = "<<width_acc  <<" ~ "<< width_acc_next  << ", " <<
+				   "rowRange = "<<height_acc <<" ~ "<< height_acc_next << endl;
 			*/
 
-			temp_bin = dst.rowRange(height_acc,height_acc_next+1)
-					      .colRange( width_acc, width_acc_next+1).clone();
-			threshold_map.at<uchar>(go_row,go_col) =
-				Binary(dst.rowRange(height_acc,height_acc_next+1)
-					      .colRange( width_acc, width_acc_next+1),
-				       temp_bin);
-			dst.rowRange(height_acc,height_acc_next+1)
-               .colRange( width_acc, width_acc_next+1) = temp_bin.clone();
-
+			patch_img = dst.rowRange(height_acc,height_acc_next+1)
+					       .colRange( width_acc, width_acc_next+1);
+			threshold_map.at<uchar>(go_row,go_col) = Binary(patch_img);
 
 			//更新 width
-			width_acc = width_acc_next + 1;
+			width_acc        = width_acc_next + 1;
 			width_frame_acc += mod_width;
 		}
 		//更新 height
-		height_acc = height_acc_next + 1;
+		height_acc        = height_acc_next + 1;
 		height_frame_acc += mod_height;
 
 		//下一row時，width從頭開始
 		width_acc = 0;
 		width_frame_acc = mod_width;
 	}
-
- //   /**/        imshow("ppt",dst);
- //    /**/       waitKey(0);
-
-//	cout<<endl;
-//	imshow("threshold_map",threshold_map);
-//	cout<<threshold_map<<' '<<endl;
+	// cout<<endl;
+	// imshow("threshold_map",threshold_map);
+    // imshow("dst", dst);
+    // waitKey(0);
+	// cout<< threshold_map <<' '<<endl;
 }
-
-
-
-unsigned char Binary(Mat src, Mat & dst)  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
-{
-	Mat temp_dst;
-	//Canny(src,temp_dst,25,75,3);
-    int color_value[256];
-    int color_count[256];
-    int color_gradi[3][256];
-    // 初始化容器
-    for(int i = 0 ; i < 256 ; i++){
-        color_value[i] = 0;
-        color_count[i] = 0;
-    }
-    for(int i = 0 ; i < 3 ; i++){
-        for(int j = 0 ; j < 256 ; j++){
-             color_gradi[i][j] = 0;
-        }
-    }
-    
-    
-    // 
-    // int color_high_range = 0;
-    // int color_low_range  = 0;
-    // int local_max[256];
-
-    for(int i = 0 ; i < src.rows ; i++){
-        for(int j = 0 ; j < src.cols ; j++){
-            color_count[src.at<uchar>(i,j)]++;
-        }
-    }
-
-    // int last_posi = 0;
-    int color_range_count = 0;
-    int color_acc_count[256];
-    int area = src.cols * src.rows;
-    int threshold = 0;
-    int threshold_acc = 0;
-
-    for(int i = 0 ; i < 256 ; i++){
-        if(color_count[i]){
-            color_value[color_range_count] = i;
-            color_gradi[0][color_range_count]= color_count[i];
-            color_range_count++;
-
-        }
-
-    }
-
-
-    for(int level = 1 ; level < 3 ; level++){
-        for(int i = 0 ; i < color_range_count-level ; i++){
-            color_gradi[level][i] = color_gradi[level-1][i+1] - color_gradi[level-1][i];
-        }
-    }
-
-    /*
-    // 顯示資料
-    ofstream ofile("C:\\Users\\may\\Desktop\\winter_week2\\1-Binary\\Mat_star_data.txt",ios::trunc);
-
-    for(int i = 0 ; i < color_range_count ;i++){
-        cout<<"i = "<<color_value[i];
-        ofile<<"i = "<<color_value[i];
-        cout<<" value= "<<setw(4)<<setfill('0')<<color_gradi[0][i];
-        ofile<<" value= "<<setw(4)<<setfill('0')<<color_gradi[0][i];
-
-
-        if(i >=1 && i < color_range_count -0){
-            cout<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[1][i-1];
-            ofile<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[1][i-1];
-        }
-        if(i >=1 && i < color_range_count -1){
-            cout<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[2][i-1];
-            ofile<<" ,dir= "<<setw(4)<<setfill('0')<<color_gradi[2][i-1];
-        }
-
-        ofile<<' ';
-        for(int j = 0 ; j < color_gradi[0][i];j++){
-            ofile<<'*';
-        }
-        if(i >=1 && i < color_range_count -1){
-            if(color_gradi[2][i-1] < 0)ofile<<"●";
-        }
-
-        ofile<<endl;
-        cout<<endl;
-    }
-    */
-
-    // 累積
-    int threshold_posi = 0;
-    float area_rate = 0.50;
-
-    // int threshold2 = 0;
-    // int threshold_posi2 = 0;
-    // float area_rate2 = 0.03125;
-
-    for(int i = 0 ; i < color_range_count ; i++){
-        if(i== 0) color_acc_count[0] = color_gradi[0][0];
-        else{
-            color_acc_count[i] = color_gradi[0][i] + color_acc_count[i-1];
-            if(color_acc_count[i] < area * area_rate){
-                threshold = color_value[i];
-                threshold_posi = i;
-            }
-
-            // if(color_acc_count[i] < area * area_rate2){
-            //     threshold2 = color_value[i];
-            //     threshold_posi2 = i;
-            // }
-        }
-    }
-
-
-
-    int shift2 = 30;
-    threshold -= shift2;
-	const int shift = 0;
-	if(threshold >= shift) threshold -= shift ; else threshold = 0;
-
-	//cout<<"threshold = "<<threshold<<endl;
-
-    // 二值化
-	for(int row = 0 ; row < src.rows; row++){
-		for(int col = 0 ; col < src.cols ; col++){
-			if(src.at<uchar>(row,col) <= threshold) src.at<uchar>(row,col) = 0;
-			else                                    src.at<uchar>(row,col) = 255;
-		}
-	}
-
-	dst = src.clone();// dst：會改掉原來傳進來的圖片~~所以複製一下二值化好的圖片就可以改道原來的圖囉!!!
-
-	return threshold;
-}
-
-void test_Binary(Mat src)  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
 {
 	const int width = src.cols;
 	const int height = src.rows;
