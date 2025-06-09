@@ -33,11 +33,10 @@ int roi_r_slider = ROI_R_SLIDER_DEFAULT;
 int roi_c_slider = ROI_C_SLIDER_DEFAULT;
 
 
-void on_Roi(int, void *)
-{
-    //Mat proc_img = (*(Mat*)in_data).clone();//如果接local資料，先強制轉換，在"*"，在整個括號才能".??()"
+void on_Roi(int, void *){
+    // Mat proc_img = (*(Mat*)in_data).clone();//如果接local資料，先強制轉換，在"*"，在整個括號才能".??()"
 
-//◎Step：做處理
+	// ◎Step：做處理
 	if ((roi_c_slider != 0) && (roi_r_slider != 0) )//&& ( (roi_c_slider != ROI_C_SLIDER_DEFAULT) || (roi_r_slider != ROI_R_SLIDER_DEFAULT) ))
 	{
 		Point2f center(src_img.cols / 2, src_img.rows / 2);
@@ -46,20 +45,19 @@ void on_Roi(int, void *)
 
 		proc_img = src_img(Rect(center.x - roi_width / 2, center.y - roi_heigh / 2, roi_width, roi_heigh));
 		//cout<<center.x - roi_width / 2<<endl;
-		//左上 往下延伸
-		//  roi_proc_img = ord_img(Rect(0,0,roi_width,roi_heigh));
-		//左中 往上下延伸
-		//  roi_proc_img = ord_img(Rect(0,ord_img.rows/2 - roi_heigh/2,roi_width,roi_heigh));
-	//	cout<<"finish roi"<<endl;
-		///*****************************************************************
+		// 左上 往下延伸
+		// roi_proc_img = ord_img(Rect(0,0,roi_width,roi_heigh));
+		// 左中 往上下延伸
+		// roi_proc_img = ord_img(Rect(0,ord_img.rows/2 - roi_heigh/2,roi_width,roi_heigh));
+		// cout<<"finish roi"<<endl;
+		// *****************************************************************
 		///imshow(BROWSE_WINDOW, proc_img);  //◎Step SHOW-1：做完處理的結果show出來
 
-	}///*****************************************************************
-	///else imshow(BROWSE_WINDOW, proc_img);  //◎Step SHOW-1：做完處理的結果show出來
+	}
+	// *****************************************************************
 }
 
-void bar_Roi(Mat & in_src_img , string window_name)
-{
+void bar_Roi(Mat & in_src_img , string window_name){
     namedWindow(SRC_IMG_WINDOW, WINDOW_AUTOSIZE);
 	// moveWindow(SRC_IMG_WINDOW, 0, BAR_WINDOW_HEIGHT + 30);
 	namedWindow(BROWSE_WINDOW, WINDOW_AUTOSIZE);
@@ -73,26 +71,25 @@ void bar_Roi(Mat & in_src_img , string window_name)
 	createTrackbar(ROI_COL_BAR, BAR_WINDOW, &roi_c_slider, 100, on_Roi);
 
     src_img = in_src_img.clone();
-///*****************************************************************
-///    imshow(SRC_IMG_WINDOW, src_img);
+	// *****************************************************************
+	// imshow(SRC_IMG_WINDOW, src_img);
 
     proc_img = src_img.clone();
     on_Roi(0,0);
 
-///*****************************************************************
-/*	unsigned char keyboard;
-	do
-    {
+	// *****************************************************************
+	unsigned char keyboard;
+	do{
         keyboard = waitKey();
     }
 	while ( (keyboard != ESC) && (keyboard != ENTER));
-*/
+
 	destroyWindow(BAR_WINDOW);
     destroyWindow(SRC_IMG_WINDOW);
     destroyWindow(BROWSE_WINDOW);
 
 	in_src_img = proc_img.clone();
-///******************************************************
-///	imwrite(window_name + ".bmp",in_src_img);
-//	return;
+	// ******************************************************
+	// imwrite(window_name + ".bmp",in_src_img);
+	// return;
 }

@@ -272,15 +272,15 @@ void test_Binary_by_Canny(Mat src)  //src：原圖的copy ； dst：會改掉原
 	for(go_row = 0 ; go_row < height; go_row++){ //因為要 當格的上下一格做運算 所以 +-1 控制不會超過圖片range
 		for(go_col = 0 ; go_col < width; go_col++){
 			if(temp_dst.at<uchar>(go_row, go_col)){  //canny出來的有值得話，代表該點為edge(周邊顏色變動很大)
-				//if( (go_col == 0) && (go_row == 0) ) threshold = src.at<uchar>(go_row+1,go_col+1); // 左上
-				//else if( (go_col == 0) && (go_row != 0) ) threshold = src.at<uchar>(go_row+1,go_col);//左
-				//else if( (go_col == 0) && (go_row == height-1) ) threshold = src.at<uchar>(go_row-1,go_col);//左下
-				//else if( (go_col != width-1) && (go_row == height-1) ) threshold = src.at<uchar>(go_row-1,go_col-1);//下
-				//else if( (go_col == width-1) && (go_row == height-1) ) threshold = src.at<uchar>(go_row-1,go_col-1);//右下
-				//else if( (go_col == width-1) && (go_row != height-1) ) threshold = src.at<uchar>(go_row-1,go_col-1);//右
-				//else if( (go_col == width-1) && (go_row == 0) ) threshold = src.at<uchar>(go_row,go_col-1);//右上
-				//else if( (go_col != 0) && (go_row == 0) ) threshold = src.at<uchar>(go_row+1,go_col);//上
-				//else
+				// if( (go_col == 0) && (go_row == 0) ) threshold = src.at<uchar>(go_row+1,go_col+1); // 左上
+				// else if( (go_col == 0) && (go_row != 0) ) threshold = src.at<uchar>(go_row+1,go_col);//左
+				// else if( (go_col == 0) && (go_row == height-1) ) threshold = src.at<uchar>(go_row-1,go_col);//左下
+				// else if( (go_col != width-1) && (go_row == height-1) ) threshold = src.at<uchar>(go_row-1,go_col-1);//下
+				// else if( (go_col == width-1) && (go_row == height-1) ) threshold = src.at<uchar>(go_row-1,go_col-1);//右下
+				// else if( (go_col == width-1) && (go_row != height-1) ) threshold = src.at<uchar>(go_row-1,go_col-1);//右
+				// else if( (go_col == width-1) && (go_row == 0) ) threshold = src.at<uchar>(go_row,go_col-1);//右上
+				// else if( (go_col != 0) && (go_row == 0) ) threshold = src.at<uchar>(go_row+1,go_col);//上
+				// else
 				if((go_col != 0) && (go_row != 0) && (go_col != width-1) && (go_row != height-1)){
 					if( (src.at<uchar>(go_row-1,go_col-1) - src.at<uchar>(go_row+1,go_col+1)) > 0)  //canny該點還不夠準，可以仔細看圖，每個黑色的旁邊都有一咪咪的灰灰，所以找該格的附近，較靠近正確的顏色，&記錄下來
 						 threshold = src.at<uchar>(go_row+1,go_col+1);
@@ -297,11 +297,10 @@ void test_Binary_by_Canny(Mat src)  //src：原圖的copy ； dst：會改掉原
 				}
 
 				threshold_map.at<uchar>(go_row,go_col) = threshold;
-
-				//cout<<"threshold = "<<threshold<<endl;
-				//imshow("test_binary",dst);
-				//imshow("threshold_map",threshold_map);
-				//waitKey();
+				// cout<<"threshold = "<<threshold<<endl;
+				// imshow("test_binary",dst);
+				// imshow("threshold_map",threshold_map);
+				// waitKey();
 			}
 			else{ //edge_point == 0
 			
@@ -327,13 +326,12 @@ void test_Binary_by_Canny(Mat src)  //src：原圖的copy ； dst：會改掉原
 				 dst.at<uchar>(go_row,go_col) = 255;
 			else dst.at<uchar>(go_row,go_col) = 0;
 
-			//threshold_map.at<uchar>(go_row,go_col) = threshold;
-			//cout<<"go_col = "<<go_col;
+			// threshold_map.at<uchar>(go_row,go_col) = threshold;
+			// cout<<"go_col = "<<go_col;
 		}
-
-		//cout<<endl;
+		// cout<<endl;
 	}
 	///******************************************************
 	imwrite("debug_img/test_Binary_by_Canny.jpg",dst);
-	//dst = src.clone();// dst：會改掉原來傳進來的圖片~~所以複製一下二值化好的圖片就可以改道原來的圖囉!!!
+	// dst = src.clone();// dst：會改掉原來傳進來的圖片~~所以複製一下二值化好的圖片就可以改道原來的圖囉!!!
 }
