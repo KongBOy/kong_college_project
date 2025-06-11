@@ -176,7 +176,6 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
 
     ///********************** 轉正 *************************
-    ///*****************************************************
     try{
         double warp_angle = Find_Angle(src_img, debuging);
         Wrap_Straight(src_img, warp_angle, debuging);
@@ -188,7 +187,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
         return -1;
     }
     // *******************************************************************
-    // *******************************************************************
+    
     ///********************** 二值化 *************************
     test_bin = src_img.clone();
     Binary_by_patch(test_bin, 15, 40);
@@ -213,7 +212,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     Horizon_map_to_find_line(test_line, lines, horizontal_img, (string)HORIZONTAL_DIR, src_img, test_bin);
 
     int * dist_level;
-    //把计┮Τ絬 狥﹁甧竟
+    // 把计┮Τ絬 狥﹁甧竟
     Distance_detect(lines,dist_level);
     // cout<<"distance_detect end"<<endl;
 
