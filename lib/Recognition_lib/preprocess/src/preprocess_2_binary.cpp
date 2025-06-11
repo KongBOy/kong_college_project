@@ -236,6 +236,8 @@ void Binary_by_patch(Mat& dst , const int div_row, const int div_col){
     // imshow("dst", dst);
     // waitKey(0);
 	// cout<< threshold_map <<' '<<endl;
+
+    imwrite("debug_img/pre2-Binarize.bmp", dst);
 }
 
 

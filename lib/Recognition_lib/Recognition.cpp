@@ -189,11 +189,12 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     }
     // *******************************************************************
     // *******************************************************************
-
+    ///********************** 二值化 *************************
     test_bin = src_img.clone();
     Binary_by_patch(test_bin, 15, 40);
-    test_Binary_by_Canny(src_img);
-    imwrite("debug_img/pre2-Binarize.bmp", test_bin);
+    // test_Binary_by_Canny(src_img);
+    // *******************************************************************
+    
 
 
     vector<Vec2f> lines;
