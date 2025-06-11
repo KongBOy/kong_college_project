@@ -102,8 +102,7 @@ void Calculate_gradient(Mat src){
 }
 
 
-unsigned char Binary(Mat & dst)  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
-{
+unsigned char Binary(Mat & dst){  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
     // 統計 dst 裡面的 灰階 顏色數量
     // 初始化容器
     int color_count[256];
@@ -171,8 +170,7 @@ unsigned char Binary(Mat & dst)  //src：原圖的copy ； dst：會改掉原來
 	return threshold;
 }
 
-void Binary_by_patch(Mat& dst , const int div_row, const int div_col)
-{
+void Binary_by_patch(Mat& dst , const int div_row, const int div_col){
     Mat patch_img;
 	threshold_map.create(div_row, div_col, CV_8UC1);  // debug用的, 觀察每個patch用什麼threshold
     // 切塊來做 二值化
@@ -254,8 +252,7 @@ void Binary_by_patch(Mat& dst , const int div_row, const int div_col)
 	// 先把圖片做canny 找出輪廓
 	// 再利用輪廓 找出 符號顏色
     // 但實際用起來效果不是太好, 寫都寫了還是保留一下未來有機會可以再改善, 比如跟上面同理套 patch 切小塊做也許有機會更好
-void test_Binary_by_Canny(Mat src)  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
-{
+void test_Binary_by_Canny(Mat src){  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
 	const int width = src.cols;
 	const int height = src.rows;
 	Mat dst = src.clone();

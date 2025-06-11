@@ -46,7 +46,7 @@ void Horizon_map_to_find_line(Mat src_img ,vector<Vec2f> & mountain_lines2 , Mat
     cout<<"distance_range_min = "<<distance_range_min<<endl;
     cout<<"mountain_area_min = "<<mountain_area_min<<endl;
     cout<<"mountain_area_max = "<<mountain_area_max<<endl;
- //   bool right_side_ok = true;
+    // bool right_side_ok = true;
 
     int * w_count = new int[src_img.rows];
     for(int i = 0 ; i < src_img.rows ; i++) w_count[i] = 0;
