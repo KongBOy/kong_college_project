@@ -52,24 +52,21 @@ static string file_name;
 //interface，先把東西包成對的格式，再丟到find_head找頭
 void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count, int***& left_point , int***& right_point  ,Mat color_ord_img)
 {
-//    staff = new vector<Vec2f>[staff_count];
+    // staff = new vector<Vec2f>[staff_count];
     left_point = new int**[staff_count];
     right_point = new int**[staff_count];
 
 
-    for(int i = 0 ; i < staff_count ; i++)
-    {
+    for(int i = 0 ; i < staff_count ; i++){
         left_point[i] = new int*[STAFF_LINE_COUNT];
         right_point[i] = new int*[STAFF_LINE_COUNT];
 
 
-        for(int j = 0 ; j < STAFF_LINE_COUNT ; j++)
-        {
+        for(int j = 0 ; j < STAFF_LINE_COUNT ; j++){
             left_point[i][j] = new int[X_Y_COUNT];
             right_point[i][j] = new int[X_Y_COUNT];
 
-            for(int k = 0 ; k < X_Y_COUNT ; k++)
-            {
+            for(int k = 0 ; k < X_Y_COUNT ; k++){
                 left_point[i][j][k] = 1000; /// 隨便很大的數
                 right_point[i][j][k] = -1000; /// 隨便很小的數
 
@@ -79,14 +76,12 @@ void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count,
 
 
 //要注意格式喔~~~包成五個五個為一組！！！
-    for(int i = 0 ; i < staff_count ; i++)
-    {
+    for(int i = 0 ; i < staff_count ; i++){
         int first_line = 5*i;
         int fifth_line = 5*(i+1)-1;
 
         vector<Vec2f> staff;
-        for(int j = first_line ; j <= fifth_line ; j++)
-        {
+        for(int j = first_line ; j <= fifth_line ; j++){
             staff.push_back(staff_lines[j]);
 //            cout<<"j = "<<j<<" data = "<<staff_lines[j][0]<<" "<<staff_lines[j][1]<<endl;
         }
@@ -103,12 +98,9 @@ void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count,
 int Check_shift(int,int,int,int);
 
 /*
-void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name)
-{
-
+void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name){
 	bubbleSort_H_rho(lines.size(),lines);
-	for(size_t i = 0; i < lines.size(); i++ )
-	{
+	for(size_t i = 0; i < lines.size(); i++ ){
 		cout<<"i = "<<i<<" , ";
 		float rho = lines[i][0], theta = lines[i][1];
 		double angle_value = (theta/PI)*180;
@@ -117,7 +109,7 @@ void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name)
 		//////////////// 起點走多少
 		int width = drew_img.cols;
 		int height = drew_img.rows;
-		//cout<<" , width = "<<width;
+		// cout<<" , width = "<<width;
 		double one_step_height = 1 / sin(theta);
 		int width_step = ( width / 2 ) - (width/100) * (15/2); //15是col的百分比
 
@@ -127,7 +119,7 @@ void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name)
 		cout<<" , x0  = "<<x0 <<" , y0 = "<<y0;
 		cout<<endl;
 		x0 += width_step; //y0 += width_step * one_step_height;
-		//double x0 = a*rho, y0 = b*rho;
+		// double x0 = a*rho, y0 = b*rho;
 
 
 		pt1.x = cvRound(x0 + 10*(-b));
@@ -136,25 +128,24 @@ void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name)
 		pt2.y = cvRound(y0 - 10*(a));
 		line( drew_img , pt1, pt2, Scalar(0,i,255), 1, CV_AA);
 
-	//	cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
+		// cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
 
-	//	imshow( "Hough", cdst );
+		// imshow( "Hough", cdst );
 
 	}
-//	waitKey(0);
+	// waitKey(0);
 	cout<<endl;
 	imshow(window_name,drew_img);
 	imwrite(window_name + ".bmp",drew_img);
 }
 */
 
-//用來測試某個 點 可能是否在線上
-//門檻值為 CHECK_LINE_LENGTH * CODA_RATE
-//回傳值：
-//  如果可能  是  在線上，回傳可能程度
-//  如果可能 不是 在線上，回傳失敗值
-int Check_shift(int x0,int y0,int one_step,int one_step_height)
-{
+// 用來測試某個 點 可能是否在線上
+// 門檻值為 CHECK_LINE_LENGTH * CODA_RATE
+// 回傳值：
+//   如果可能  是  在線上，回傳可能程度
+//   如果可能 不是 在線上，回傳失敗值
+int Check_shift(int x0,int y0,int one_step,int one_step_height){
     int count = 0;
     for(int i = 0 ; i < CHECK_LINE_LENGTH ; i++)
     {
@@ -168,32 +159,24 @@ int Check_shift(int x0,int y0,int one_step,int one_step_height)
 
 }
 /*
-void Erase_line(int x0 , int y0, int one_step, int one_step_height,int go_range)
-{
-
-    for(int go = 0 ; go < go_range ; go++)
-    {
-
+void Erase_line(int x0 , int y0, int one_step, int one_step_height,int go_range){
+    for(int go = 0 ; go < go_range ; go++){
         line_g_img.at<uchar>(y0  +go*one_step*one_step_height , x0+go*one_step) = 255;
         line_g_img.at<uchar>(y0-1+go*one_step*one_step_height , x0+go*one_step) = 255;
         line_g_img.at<uchar>(y0+1+go*one_step*one_step_height , x0+go*one_step) = 255;
         line_g_img.at<uchar>(y0-2+go*one_step*one_step_height , x0+go*one_step) = 255;
         line_g_img.at<uchar>(y0+2+go*one_step*one_step_height , x0+go*one_step) = 255;
-//        line_g_img.at<uchar>(y0-3+go*one_step*one_step_height , x0+go*one_step) = 255;
-//        line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
-
+        // line_g_img.at<uchar>(y0-3+go*one_step*one_step_height , x0+go*one_step) = 255;
+        // line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
     }
-
 }
 */
 //已經把蕭線分開寫了，所以把所有 Mat & 拿掉囉~~
-void Find_Head(vector<Vec2f> lines , Mat  drew_img , string window_name ,Mat bin_src_img,int**& left_point,int**& right_point)
-{
+void Find_Head(vector<Vec2f> lines , Mat  drew_img , string window_name ,Mat bin_src_img,int**& left_point,int**& right_point){
     line_g_img = bin_src_img.clone();
 	const int line_width = 2;
-//	bubbleSort_H_rho(lines.size(),lines);
-	for(size_t i = 0; i < lines.size(); i++ )
-	{
+	// bubbleSort_H_rho(lines.size(),lines);
+	for(size_t i = 0; i < lines.size(); i++ ){
 
 
 
@@ -217,8 +200,7 @@ void Find_Head(vector<Vec2f> lines , Mat  drew_img , string window_name ,Mat bin
 
 
 
-    for(int direction = 0 ; direction < 2 ; direction++)
-    {
+    for(int direction = 0 ; direction < 2 ; direction++){
 		////////******/////// 正確打法 ////////******////////
 		////////******/////////////////////////******////////
 		double x0 = a*rho, y0 = b*rho;  //這是一定在線上的某個點
@@ -233,8 +215,7 @@ void Find_Head(vector<Vec2f> lines , Mat  drew_img , string window_name ,Mat bin
 ////////******/////////////////////////******////////
 ///////*******//////// test ///////////******/////////
 
-        switch(direction)
-        {
+        switch(direction){
             case 0:
                 one_step = 1;
                 break;
@@ -243,8 +224,7 @@ void Find_Head(vector<Vec2f> lines , Mat  drew_img , string window_name ,Mat bin
                 break;
         }
 
-        for(int i = 0 ; i < width/2 + width * ((float)ROI_WIDTH/(float)100); i++)
-		{
+        for(int i = 0 ; i < width/2 + width * ((float)ROI_WIDTH/(float)100); i++){
 //			one_step = 1;//(i * 1 / b ) * b; //往左走了 -rho * cos 個 sin
 //            Erase_line(x0,y0,one_step,one_step_height,1);
 			x0 += one_step;
@@ -267,10 +247,8 @@ else break;
 //如果經過這個for，flag仍然沒有被更新成true的話，
 //一、就代表你右邊 JUMP_SPACE_LENGTH 格都可能不是在線上！！
 //二、X0 Y0 不會被更新喔喔喔喔喔喔！
-            for(int i = 0 ; i < JUMP_SPACE_LENGTH ; i++)
-            {
-                    if( Check_shift(x0+i*one_step , y0 +i*one_step*one_step_height +0 ,one_step,one_step_height) != CHECK_FAILED )
-                    {
+            for(int i = 0 ; i < JUMP_SPACE_LENGTH ; i++){
+                    if( Check_shift(x0+i*one_step , y0 +i*one_step*one_step_height +0 ,one_step,one_step_height) != CHECK_FAILED ){
                         //如果真的在線上，用flag標記一下為true，等等就不用做 彎曲測試直接continue做下一個點了
                         flag = true;
 
@@ -278,18 +256,14 @@ else break;
 //希望把點移到黑色的地方，就是二值化怕不小心誤刪線所以如果有空格先偵測是不是誤刪
 //(就那個空格來測測看像不像線)，同時也希望跳躍空洞
                         //往右10格
-                        if(line_g_img.at<uchar>(y0,x0+i*one_step) != 0)
-                        {
-                            for(int i = 1 ; i < CHECK_LINE_LENGTH * CODA_RATE ; i++)
-                            {
+                        if(line_g_img.at<uchar>(y0,x0+i*one_step) != 0){
+                            for(int i = 1 ; i < CHECK_LINE_LENGTH * CODA_RATE ; i++){
                                 //先 丟下一格要走的點 來預測他是不是線~~~ 如果是才移動喔！！
                                 if(   Check_shift(x0+i*one_step , y0 +i*one_step*one_step_height +0,one_step,one_step_height ) != CHECK_FAILED
-                                   && line_g_img.at<uchar>(y0 +i*one_step*one_step_height +0 ,x0+i*one_step) == 0 )
-                                {
+                                   && line_g_img.at<uchar>(y0 +i*one_step*one_step_height +0 ,x0+i*one_step) == 0 ){
 
  //                                   Erase_line(x0,y0,one_step,one_step_height,i);
-                                    for(int go = 0 ; go < i ; go++)
-                                    {
+                                    for(int go = 0 ; go < i ; go++){
  /*
                         line_g_img.at<uchar>(y0  +go*one_step*one_step_height , x0+go*one_step) = 255;
                         line_g_img.at<uchar>(y0-1+go*one_step*one_step_height , x0+go*one_step) = 255;
@@ -409,16 +383,14 @@ else break;
 
 ////彎曲測試：
 /////////////已經排除了誤刪的情況，那麼現在如果還不是在黑點上就代表很可能是線彎曲了！往上、下偵測ERROR_CODA格
-			if(line_g_img.at<uchar>(y0,x0) != 0)
-			{
+			if(line_g_img.at<uchar>(y0,x0) != 0){
 			    //如果線字的點不是黑色的，就代表還是有些偏差，希望可以位移到比較正確的位置
 			    //(不一定要移動到一定黑色的點才行，只要移到 "被認可是線的地方即可")
 
 ////第一種寫法：移動相同距離，來比較往up還往down移動比較好
                 int cmp_up   = -1;
                 int cmp_down = -1;
-                for(int i = 0 ; i <= ERROR_CODA ; i++)
-                {
+                for(int i = 0 ; i <= ERROR_CODA ; i++){
 ////////////////// Range防呆 ///////////////////
 if(y0 >= 0+i && y0 < height-i && x0 >= 0+i && x0 < width-i);//do nothing
 //if(y0 >= 0+5+ok_error && y0 < height-5-ok_error && x0 >= 0+5+ok_error && x0 < width-5-ok_error);//do nothing
@@ -427,12 +399,10 @@ else break;
                     //多加這個是希望他往比較 "像線"的地方跑
                     int cmp_up   = Check_shift(x0,y0-i,one_step,one_step_height);
                     int cmp_down = Check_shift(x0,y0+i,one_step,one_step_height);
-                    if( cmp_up >= cmp_down && cmp_up != CHECK_FAILED )
-                    {
+                    if( cmp_up >= cmp_down && cmp_up != CHECK_FAILED ){
                         y0 -= i;
 
-for(int go = 0 ; go <= i ; go++)
-{
+for(int go = 0 ; go <= i ; go++){
         pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
         pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
         pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
@@ -447,8 +417,7 @@ for(int go = 0 ; go <= i ; go++)
                     {
                         y0 += i;
 
-for(int go = 0 ; go <= i ; go++)
-{
+for(int go = 0 ; go <= i ; go++){
         pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
         pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
         pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
@@ -461,8 +430,8 @@ cout<<"bend detected"<<endl;
                 }
 
 /////////////////////// 如果上下測完仍然還是沒辦法~~~就print出來，表示也許不是線maybe已經找到頭囉！///////////////////
-				if(line_g_img.at<uchar>(y0,x0) != 0 && Check_shift(x0,y0,one_step,one_step_height) ==  CHECK_FAILED)// && error >= ok_error2)
-				{
+				if(line_g_img.at<uchar>(y0,x0) != 0 && Check_shift(x0,y0,one_step,one_step_height) ==  CHECK_FAILED){// && error >= ok_error2)
+				
 					break;
 				}
 			}	////////////////////////////////////
@@ -474,13 +443,11 @@ cout<<"bend detected"<<endl;
         pt2.y = cvRound(y0); //- 10*(a));
 		line( drew_img , pt1, pt2, Scalar(0,0,255), 20, CV_AA);
 
-		if(direction == 0)
-        {
+		if(direction == 0){
             right_point[i][0] = x0;
             right_point[i][1] = y0;
         }
-        else if(direction == 1)
-        {
+        else if(direction == 1){
             left_point[i][0] = x0;
             left_point[i][1] = y0;
         }
