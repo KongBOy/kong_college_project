@@ -147,7 +147,7 @@ void Wrap_Straight(Mat & image , double angle, bool debuging ){
 	rot = getRotationMatrix2D(center,rotate_angle,1); //produce wrapAffine_matrix
 	
 	if(debuging){
-		imwrite("debug_preprocess/pre1_2_Warp_Straight_1-before_warp.bmp",image);
+		imwrite("debug_img/pre1_2_Warp_Straight_1-before_warp.bmp",image);
 		// imshow("before_warp",image);
 		// waitKey(0);
 		cout<<"before_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
@@ -159,7 +159,7 @@ void Wrap_Straight(Mat & image , double angle, bool debuging ){
 	image = proc_img.clone();
 
 	if(debuging){
-		imwrite("debug_preprocess/pre1_2_Warp_Straight_2-after_warp.bmp",image);
+		imwrite("debug_img/pre1_2_Warp_Straight_2-after_warp.bmp",image);
 		// imshow("after_warp",image);
 		// waitKey(0);
 		cout<<"after_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
