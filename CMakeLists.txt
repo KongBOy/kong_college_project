@@ -29,7 +29,7 @@ add_library(Recognition_lib lib/Recognition_lib/Recognition.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_0_watch_hough_line.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_1_warp_straight_rough.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_2_binary.cpp
-                            lib/Recognition_lib/preprocess/src/preprocess_3_bar_roi.cpp
+                            lib/Recognition_lib/preprocess/src/preprocess_3_center_roi.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_3_horizon_map_to_find_line.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_4_distance_detect.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_5_find_staff.cpp
