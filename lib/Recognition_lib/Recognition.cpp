@@ -9,11 +9,11 @@
 
 
 
-#include "preprocess_0_bar_roi.h"
 #include "preprocess_0_watch_hough_line.h"
 
 #include "preprocess_1_warp_straight_rough.h"
 #include "preprocess_2_binary.h"
+#include "preprocess_3_bar_roi.h"
 #include "preprocess_3_horizon_map_to_find_line.h"
 #include "preprocess_4_distance_detect.h"
 #include "preprocess_5_find_staff.h"
