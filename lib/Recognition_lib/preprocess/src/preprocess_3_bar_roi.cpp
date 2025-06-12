@@ -34,7 +34,7 @@ int roi_r_slider = ROI_R_SLIDER_DEFAULT;
 int roi_c_slider = ROI_C_SLIDER_DEFAULT;
 
 
-void on_Roi(int, void * data){
+void Center_ROI(int, void * data){
 	Mat* dst_img_ptr = static_cast<Mat*>(data);
 	Mat& dst_img     = *dst_img_ptr;
 
@@ -59,12 +59,12 @@ void on_Roi(int, void * data){
 
 }
 
-void bar_Roi(Mat & dst_img , string window_name, bool debuging){
+void Center_ROI_by_slider(Mat & dst_img , string window_name, bool debuging){
 	debuging_roi = debuging;
 
 	if(debuging_roi){
 		Mat debug_img = dst_img.clone();
-		on_Roi(0, (void *)&debug_img);
+		Center_ROI(0, (void *)&debug_img);
 		// 建立 滑桿視窗
 		namedWindow   (BAR_WINDOW, WINDOW_AUTOSIZE);
 		cvMoveWindow  (BAR_WINDOW, 0, 0);
@@ -75,8 +75,8 @@ void bar_Roi(Mat & dst_img , string window_name, bool debuging){
 		cvMoveWindow  (BROWSE_WINDOW , BAR_WINDOW_WIDTH + 20, 0);
 		
 		// 建立滑桿視窗 和 連結相關 滑桿變數, 滑桿function
-		createTrackbar(ROI_ROW_BAR, BAR_WINDOW, &roi_r_slider, 100, on_Roi, (void *)&debug_img); //如果用local的丟資料，要強制轉換(void*)&ord_img
-		createTrackbar(ROI_COL_BAR, BAR_WINDOW, &roi_c_slider, 100, on_Roi, (void *)&debug_img);
+		createTrackbar(ROI_ROW_BAR, BAR_WINDOW, &roi_r_slider, 100, Center_ROI, (void *)&debug_img); //如果用local的丟資料，要強制轉換(void*)&ord_img
+		createTrackbar(ROI_COL_BAR, BAR_WINDOW, &roi_c_slider, 100, Center_ROI, (void *)&debug_img);
 	
 		// 按 ESC 或 ENTER 結束預覽
 		unsigned char keyboard;
@@ -89,9 +89,8 @@ void bar_Roi(Mat & dst_img , string window_name, bool debuging){
 		destroyWindow(BROWSE_WINDOW);
 	}
 
-
-	on_Roi(0, (void *)&dst_img);
+	Center_ROI(0, (void *)&dst_img);
 
 	dst_img = proc_img.clone();
-	imwrite("debug_img/pre3_horizontal_line_1_ROI.jpg",dst_img);
+	imwrite("debug_img/pre3_horizontal_line_1_Center_ROI.jpg",dst_img);
 }

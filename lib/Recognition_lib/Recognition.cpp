@@ -201,7 +201,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 	string file_name;
     file_name = (string)"test_bin_";
     test_line = ~test_bin;
-    bar_Roi(test_line, (string)ROI_DIR + "do_roi", debuging);
+    Center_ROI_by_slider(test_line, (string)ROI_DIR + "do_roi", debuging);
     // imshow("test_roi",test_line);
     // waitKey(0);
 
