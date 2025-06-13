@@ -21,6 +21,10 @@ target_include_directories(Note_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_
 add_library               (String_tool_lib lib/String_tool_lib/string_tools.cpp)
 target_include_directories(String_tool_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/String_tool_lib/include )
 
+# Directory_lib
+add_library               (Directory_lib lib/Directory_lib/DirectoryTool.cpp)
+target_include_directories(Directory_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/Directory_lib/include )
+
 
 # Recognition_lib
 add_library(Recognition_lib lib/Recognition_lib/Recognition.cpp
@@ -57,26 +61,31 @@ target_include_directories(Recognition_lib PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/preprocess/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/String_tool_lib/include
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/Directory_lib/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include 
                                                   )
 target_link_libraries     (Recognition_lib PUBLIC ${OpenCV_LIBS} 
                                                 #   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
                                                 #   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/preprocess/include
-                                                  String_tool_lib)
+                                                  String_tool_lib
+                                                  Directory_lib
+                                                  )
 
 # main
-add_executable            (project_rebuild main.cpp src/UserEnterFile.cpp src/Generate_Play_Midi.cpp src/ScreenTool.cpp src/DirectoryTool.cpp)
+add_executable            (project_rebuild main.cpp src/UserEnterFile.cpp src/Generate_Play_Midi.cpp src/ScreenTool.cpp)
 target_include_directories(project_rebuild PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/recognition/include
                                                   "C:/Program Files (x86)/CodeBlocks/MinGW/include"
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/String_tool_lib/include # 可省, 因為 Recognition_lib 裡面已經有 link String_tool_lib 了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
+                                                  ${CMAKE_CURRENT_SOURCE_DIR}/lib/Directory_lib/include   # 可省, 因為 Recognition_lib 裡面已經有 link Directory_lib   了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include        # 可省, 因為 Recognition_lib 裡面已經有 link Note_lib        了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   )
 target_link_libraries     (project_rebuild PUBLIC ${OpenCV_LIBS}
                                                   Recognition_lib
                                                   "C:/Program Files (x86)/CodeBlocks/MinGW/lib/libwinmm.a"
                                                   String_tool_lib  # 可省, 因為 Recognition_lib 裡面已經有 link String_tool_lib 了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
+                                                  Directory_lib    # 可省, 因為 Recognition_lib 裡面已經有 link Directory_lib   了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   Note_lib         # 可省, 因為 Recognition_lib 裡面已經有 link Note_lib        了, 所以其實這裡可省, 但是覺得 main 有用到 就應該也要加才合理 所以還是加一下
                                                   )
