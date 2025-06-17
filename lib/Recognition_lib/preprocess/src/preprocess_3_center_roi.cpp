@@ -85,12 +85,13 @@ void Center_ROI_by_slider(Mat & dst_img , string window_name, bool debuging){
 		}
 		while ( (keyboard != ESC) && (keyboard != ENTER));
 		// 關閉視窗
-		destroyWindow(BAR_WINDOW);
-		destroyWindow(BROWSE_WINDOW);
 	}
-
+	
 	Center_ROI(0, (void *)&dst_img);
 
 	dst_img = proc_img.clone();
-	if(debuging_roi) imwrite("debug_img/pre3_horizontal_line_1_Center_ROI.jpg",dst_img);
+	if(debuging_roi) imwrite("debug_img/pre3_HorizL_1_Center_ROI.jpg",dst_img);
+
+	destroyWindow(BAR_WINDOW);
+	destroyWindow(BROWSE_WINDOW);
 }
