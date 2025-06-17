@@ -26,14 +26,14 @@ using namespace cv;
 using namespace std;
 
 
-// gdst = gray_destination
-// cdst = color_destination
-void Watch_Hough_Line(vector<Vec2f> lines, Mat gdst, string window_name, string file_name)
+// gray_dst = gray_destination
+// color_dst = color_destination
+void Watch_Hough_Line(vector<Vec2f> lines, const Mat & gray_dst, string window_name, string file_name)
 {
-    Mat cdst;
-    cvtColor(gdst, cdst, CV_GRAY2BGR);
+    Mat color_dst;
+    cvtColor(gray_dst, color_dst, CV_GRAY2BGR);
 
-	// bubbleSort_H_rho(lines.size(),lines);
+	// bubbleSort_H_rho(lines);
 
 	for(size_t i = 0; i < lines.size(); i++ )
 	{
@@ -49,28 +49,28 @@ void Watch_Hough_Line(vector<Vec2f> lines, Mat gdst, string window_name, string 
 		pt1.y = cvRound(y0 + 1000*(a));
 		pt2.x = cvRound(x0 - 1000*(-b));
 		pt2.y = cvRound(y0 - 1000*(a));
-		line( cdst, pt1, pt2, Scalar(0,i,255), 1, CV_AA);
-	//	cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
+		line( color_dst, pt1, pt2, Scalar((i * 5 ) % 180, (i * 7 ) % 180, 255), 1, CV_AA);
+		// cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
 
-	//	imshow( "Hough", cdst );
+		// imshow( "Hough", color_dst );
 
 	}
 
 	cout<<endl;
 	if(window_name != ""){
-		imshow(window_name, cdst);
+		imshow(window_name, color_dst);
 		waitKey(0);
 	}
 	// ******************************************************
 	if(file_name != ""){
-		imwrite(file_name + FILE_TYPE,cdst);
+		imwrite(file_name + FILE_TYPE, color_dst);
 	}
 }
 
 
-void Watch_Hough_Line_Shift(vector<Vec4f> lines, Mat gdst, string window_name, string file_name){
-    Mat cdst;
-    cvtColor(gdst,cdst, CV_GRAY2BGR);
+void Watch_Hough_Line_Shift(vector<Vec4f> lines, Mat gray_dst, string window_name, string file_name){
+    Mat color_dst;
+    cvtColor(gray_dst,color_dst, CV_GRAY2BGR);
 
 
 	for(size_t i = 0; i < lines.size(); i++ ){
@@ -91,21 +91,21 @@ void Watch_Hough_Line_Shift(vector<Vec4f> lines, Mat gdst, string window_name, s
 		pt1.y = cvRound(y0 + 1000*(a));
 		pt2.x = cvRound(x0 - 1000*(-b));
 		pt2.y = cvRound(y0 - 1000*(a));
-		line( cdst, pt1, pt2, Scalar(0,i,255), 1, CV_AA);
+		line( color_dst, pt1, pt2, Scalar(0,i,255), 1, CV_AA);
 
 	}
 
 	cout<<endl;
-	imshow(window_name,cdst);
+	imshow(window_name,color_dst);
 	// ******************************************************
-	// imwrite(file_name + FILE_TYPE,cdst);
+	// imwrite(file_name + FILE_TYPE,color_dst);
 
 }
 
 /*
-void Watch_Hough_Line_Shift_Staff(vector<Vec5f> lines , Mat gdst,string window_name,string file_name){
-    Mat cdst;
-    cvtColor(gdst,cdst, CV_GRAY2BGR);
+void Watch_Hough_Line_Shift_Staff(vector<Vec5f> lines , Mat gray_dst,string window_name,string file_name){
+    Mat color_dst;
+    cvtColor(gray_dst,color_dst, CV_GRAY2BGR);
 
 
 	for(size_t i = 0; i < lines.size(); i++ ){
@@ -128,58 +128,58 @@ void Watch_Hough_Line_Shift_Staff(vector<Vec5f> lines , Mat gdst,string window_n
 		pt1.y = cvRound(y0 + 1000*(a));
 		pt2.x = cvRound(x0 - 1000*(-b));
 		pt2.y = cvRound(y0 - 1000*(a));
-		line( cdst, pt1, pt2, Scalar(0,i,255), 2, CV_AA);
+		line( color_dst, pt1, pt2, Scalar(0,i,255), 2, CV_AA);
 
 	}
 
 	cout<<endl;
-	imshow(window_name,cdst);
-	imwrite(file_name + FILE_TYPE,cdst);
+	imshow(window_name,color_dst);
+	imwrite(file_name + FILE_TYPE,color_dst);
 
 }
 */
 void Watch_Hough_roh(vector<Vec2f> lines , Mat& dst){
-	Mat cdst = dst.clone();
+	Mat color_dst = dst.clone();
 	for(size_t i = 0 ; i < lines.size();i++){
 		if(lines[i][0] > 0){
 		//想要看什麼訊息就把註解拿掉
-		// cout<<"i = "<<i<<" , line at y    = "<<lines[i][0]<<" , value = "<<(int)cdst.at<uchar>(lines[i][0] ,cdst.cols/2 )<<endl;
-		// cout<<"i = "<<i<<" , line at y -1 = "<<lines[i][0]-1<<" , value = "<<(int)cdst.at<uchar>(lines[i][0]-1 ,cdst.cols/2 )<<endl;
-		// cout<<"i = "<<i<<" , line at y -2 = "<<lines[i][0]+1<<" , value = "<<(int)cdst.at<uchar>(lines[i][0]-2 ,cdst.cols/2 )<<endl;
-		cdst.at<uchar>(lines[i][0] ,cdst.cols/2 ) = 50;
-		// cdst.at<uchar>(lines[i][0] ,cdst.cols/2 -1 ) = 50;
-		// cdst.at<uchar>(lines[i][0] ,cdst.cols/2 +1 ) = 50;
-		// cdst.at<uchar>(lines[i][0] -1 ,cdst.cols/2 ) = 50;
-		// cdst.at<uchar>(lines[i][0] +1 ,cdst.cols/2 ) = 50;
+		// cout<<"i = "<<i<<" , line at y    = "<<lines[i][0]<<" , value = "<<(int)color_dst.at<uchar>(lines[i][0] ,color_dst.cols/2 )<<endl;
+		// cout<<"i = "<<i<<" , line at y -1 = "<<lines[i][0]-1<<" , value = "<<(int)color_dst.at<uchar>(lines[i][0]-1 ,color_dst.cols/2 )<<endl;
+		// cout<<"i = "<<i<<" , line at y -2 = "<<lines[i][0]+1<<" , value = "<<(int)color_dst.at<uchar>(lines[i][0]-2 ,color_dst.cols/2 )<<endl;
+		color_dst.at<uchar>(lines[i][0] ,color_dst.cols/2 ) = 50;
+		// color_dst.at<uchar>(lines[i][0] ,color_dst.cols/2 -1 ) = 50;
+		// color_dst.at<uchar>(lines[i][0] ,color_dst.cols/2 +1 ) = 50;
+		// color_dst.at<uchar>(lines[i][0] -1 ,color_dst.cols/2 ) = 50;
+		// color_dst.at<uchar>(lines[i][0] +1 ,color_dst.cols/2 ) = 50;
 		}
 	}
-	imshow("Hough Point",cdst);
+	imshow("Hough Point",color_dst);
 }
 
 
-//void Watch_Hough_P_Line(vector<Vec4i> lines , Mat& cdst,string window_name)
-void Watch_Hough_P_Line(vector<Vec4i> lines , Mat gdst,string window_name,string file_name){
-    Mat cdst;
-    cvtColor(gdst,cdst,CV_GRAY2BGR);
+//void Watch_Hough_P_Line(vector<Vec4i> lines , Mat& color_dst,string window_name)
+void Watch_Hough_P_Line(vector<Vec4i> lines , Mat gray_dst,string window_name,string file_name){
+    Mat color_dst;
+    cvtColor(gray_dst,color_dst,CV_GRAY2BGR);
     /*
-	Mat dst = cdst.clone();
+	Mat dst = color_dst.clone();
 	Mat gray_dst;
 	cvtColor(dst,gray_dst,CV_BGR2GRAY);
 	*/
-	// bubbleSort_H_P_Y(lines.size(),lines);
+	// bubbleSort_H_P_Y(lines);
 	for(size_t i = 0 ; i < lines.size(); i++){
 		// cout<<"i = "<<i<<" , ";
 		Vec4i l = lines[i];
-		int point1_value = gdst.at<uchar>(l[1],l[0]);
-		int point2_value = gdst.at<uchar>(l[3],l[2]);
+		int point1_value = gray_dst.at<uchar>(l[1],l[0]);
+		int point2_value = gray_dst.at<uchar>(l[3],l[2]);
 		// cout<<"x = "<<l[0]<<" , "<<"y = "<<l[1]<<" , value = "<<point1_value<<" , "
 		// 	<<"x = "<<l[2]<<" , "<<"y = "<<l[3]<<" , value = "<<point2_value<<endl;
-		line(cdst,Point( l[0], l[1] ), Point( l[2], l[3]) , Scalar(186,88,255),1,CV_AA);
+		line(color_dst,Point( l[0], l[1] ), Point( l[2], l[3]) , Scalar(186,88,255),1,CV_AA);
 	}
 	cout<<endl;
-	// cdst = dst.clone();
-	imshow(window_name,cdst);
+	// color_dst = dst.clone();
+	imshow(window_name,color_dst);
 	// *****************************************
-	// imwrite(file_name + FILE_TYPE,cdst);
+	// imwrite(file_name + FILE_TYPE,color_dst);
 	// imwrite(window_name +".jpg",dst);
 }
