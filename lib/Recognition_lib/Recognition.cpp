@@ -207,7 +207,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
 
     Mat horizontal_img(test_line.rows ,test_line.cols, CV_8UC1, Scalar(0));
-    Horizon_map_to_find_line(test_line, lines, horizontal_img, (string)HORIZONTAL_DIR, src_img, test_bin);
+    Horizon_map_to_find_line(test_line, lines, horizontal_img, debuging);
 
     int * dist_level;
     // 把计┮Τ絬 狥﹁甧竟

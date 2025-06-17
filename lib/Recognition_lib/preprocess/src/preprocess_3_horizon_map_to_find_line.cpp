@@ -13,6 +13,7 @@
 
 #include "preprocess_3_horizon_map_to_find_line.h"
 #include "preprocess_0_watch_hough_line.h"
+#include "preprocess_0_hough_tool.h"
 
 #define HORIZONTAL_DIR "debug_preprocess/"
 
@@ -41,49 +42,49 @@ using namespace std;
 
 // debug用, 看找到的 五線譜山 的長怎樣
 void See_mountain(const Mat & src_img, int e_count, int l_edge[], int r_edge[], int distance[], int mountain_area[], string dir_path   , string file_name){
-    // 整張影像 用紅框框出候選區域 的影像  , 預設 debug_img/mountain.jpg
-    // 框出的候選影像區域 各自切出來的影像 , 預設 debug_img/mountain/各個紅框內影像.jpg
+    // 整張影像 用框框出候選區域 的影像  , 預設 debug_img/mountain.jpg
+    // 框出的候選影像區域 各自切出來的影像 , 預設 debug_img/mountain/各個框內影像.jpg
     if(file_name == "") file_name = "mountain";
     if(dir_path  == "") dir_path  = "debug_img";
-    string file_path     = dir_path + "/" + file_name + ".jpg";  // 大圖上畫紅框存一份
-    string file_name_dir = dir_path + "/" + file_name;           // 大圖上畫紅框裡面的影像也存一份
-    _mkdir(file_name_dir.c_str()); // 建立 紅框內影像 存放的資料夾
+    string file_path     = dir_path + "/" + file_name + ".jpg";  // 大圖上畫框存一份
+    string file_name_dir = dir_path + "/" + file_name;           // 大圖上畫框裡面的影像也存一份
+    _mkdir(file_name_dir.c_str()); // 建立 框內影像 存放的資料夾
 
     Mat visual_img;
     cvtColor(src_img, visual_img, CV_GRAY2BGR);
 
-    for(int go_mountain = 0; go_mountain < e_count; go_mountain++){
+    for(int go_m = 0; go_m < e_count; go_m++){
         cout << file_path + "_detail" << endl
-             << "go_mountain = " << setw(3) << go_mountain 
-             << ", l_edge = "    << setw(5) << l_edge       [go_mountain]
-             << ", r_edge = "    << setw(5) << r_edge       [go_mountain]
-             << ", distance = "  << setw(5) << distance     [go_mountain]
-             << ", mountain = "  << setw(5) << mountain_area[go_mountain]
+             << "go_m = "             << setw(3) << go_m 
+             << ", l_edge = "         << setw(4) << l_edge       [go_m]
+             << ", r_edge = "         << setw(4) << r_edge       [go_m]
+             << ", distance = "       << setw(3) << distance     [go_m]
+             << ", mountain_area = "  << setw(5) << mountain_area[go_m]
              << ", ";
 
-        // 大圖上 畫 紅框
-        Point  left_up    (           0, l_edge[go_mountain]);
-        Point  right_down (src_img.cols, l_edge[go_mountain] + distance[go_mountain]);
-        Scalar color(0, 0, 255); // BGR
+        // 大圖上 畫 框
+        Point  left_up    (           0, l_edge[go_m]);
+        Point  right_down (src_img.cols, l_edge[go_m] + distance[go_m]);
+        Scalar color      ((go_m * 5 ) % 180, (go_m * 7 ) % 180, 255); // BGR
         int    thickness = 2;    // 寬度 (-1 表示填滿)
         rectangle(visual_img, left_up, right_down, color, thickness);
 
-        // 紅框內的影像 存一份, 把檔名先弄好 編號-面積.jpg
+        // 框內的影像 存一份, 把檔名先弄好 編號-面積.jpg
         stringstream ss;
         // 編號
-        ss << setw(3) << setfill('0') << go_mountain;
-        string str_go_mountain = ss.str();
+        ss << setw(3) << setfill('0') << go_m;
+        string str_go_m = ss.str();
         // 清空 ss 給 面積用
         ss.str("");
         ss.clear();
         // 面積
-        ss << mountain_area[go_mountain];
+        ss << mountain_area[go_m];
         string str_mountain_area = ss.str();
         // 組起來 編號-面積.jpg
-        string visual_img_part_path = file_name_dir + "/" + str_go_mountain + "-" + str_mountain_area + ".jpg";
+        string visual_img_part_path = file_name_dir + "/" + str_go_m + "-" + str_mountain_area + ".jpg";
         cout << visual_img_part_path << endl;
         // 存圖
-        Mat proc_img = src_img(Rect(0, l_edge[go_mountain], src_img.cols, distance[go_mountain]));
+        Mat proc_img = src_img(Rect(0, l_edge[go_m], src_img.cols, distance[go_m]));
         imwrite(visual_img_part_path, proc_img);
     }
     // 大圖存一份
@@ -91,7 +92,7 @@ void See_mountain(const Mat & src_img, int e_count, int l_edge[], int r_edge[], 
 }
 
 // 把 轉正 和 二值化後的影像 裡面的白點 全部移到左邊形成直條圖 會形成像山一樣的形狀, 找出 由五線譜形成的山 並 再 該區間的影像找出五線譜的線
-void Horizon_map_to_find_line(Mat src_img ,vector<Vec2f> & mountain_lines2 , Mat & containor , string file_name,Mat ord_img,Mat test_bin){
+void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat & containor, bool debuging){
     // src_img  : 轉正 和 二值化後的影像
     // containor: src_img 一樣大小的 全黑 影像
     const int width = src_img.cols - THRESH_HOLD;
@@ -154,30 +155,30 @@ void Horizon_map_to_find_line(Mat src_img ,vector<Vec2f> & mountain_lines2 , Mat
             }
         }
     }
-    See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "mountain_1_before");
+    See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "pre3_HorizL_2_1_mountain_1_before");
 
 
     // 把 可能不是五線譜的山 刪掉囉~~
-    for(int i = 0 ; i < e_count ; i++){
-        if(mountain_area[i] > mountain_area_min && mountain_area[i] < mountain_area_max); //do nothing
+    for(int go_m = 0 ; go_m < e_count ; go_m++){
+        if(mountain_area[go_m] > mountain_area_min && mountain_area[go_m] < mountain_area_max); //do nothing
         else{
             //刪掉自己，右邊的東西往左平移
-            for(int j = i ; j < e_count-1 ; j++ ){
-                l_edge       [j] = l_edge       [j+1];
-                r_edge       [j] = r_edge       [j+1];
-                distance     [j] = distance     [j+1];
-                mountain_area[j] = mountain_area[j+1];
+            for(int i = go_m ; i < e_count-1 ; i++ ){
+                l_edge       [i] = l_edge       [i+1];
+                r_edge       [i] = r_edge       [i+1];
+                distance     [i] = distance     [i+1];
+                mountain_area[i] = mountain_area[i+1];
             }
-            i--;
+            go_m--;
             e_count--;
         }
     }
-    See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "mountain_2_after");
+    See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "pre3_HorizL_2_1_mountain_2_after");
 
 
     // 找出五線譜的線
-    for(int i = 0 ; i < e_count ; i++){
-        Mat proc_img = src_img(Rect(0,l_edge[i], width, distance[i]));
+    for(int go_m = 0 ; go_m < e_count ; go_m++){
+        Mat proc_img = src_img(Rect(0,l_edge[go_m], width, distance[go_m]));
 
         vector<Vec2f> lines;
 
@@ -189,36 +190,39 @@ void Horizon_map_to_find_line(Mat src_img ,vector<Vec2f> & mountain_lines2 , Mat
         while(lines.size() < 5 && hough_w_th_ratio >= hough_w_th_ratio_low_bound){
             HoughLines(proc_img, lines, 1 , CV_PI/180, src_img.cols * hough_w_th_ratio / 100 , 0  , 0 );
             hough_w_th_ratio -= 3;
-            // Watch_Hough_Line(lines,proc_img,"test","test");
+            
+            string watch_hough_process_name = "debug_img/pre3_HorizL_2_2_Part_line";
+            stringstream ss1; ss1 << setw(3) << setfill('0') << go_m;
+            stringstream ss2; ss2 << setw(3) << setfill('0') << hough_w_th_ratio;
+            watch_hough_process_name += ss1.str() + "_" + ss2.str();
+            Watch_Hough_Line(lines, proc_img, "", watch_hough_process_name);
             // waitKey(0);
         }
 
         // 如果這座山有找到線, 丟進去 mountain_lines2 容器內
         if(lines.size() > 0){
             // cout<<"find_line!!!"<<endl;
-            for(int j = 0 ; j < lines.size() ; j++){
+            for(int i = 0 ; i < lines.size() ; i++){
                 Vec2f temp_data2;
-                temp_data2[0] = (int)(l_edge[i] * sin(lines[j][1]) + lines[j][0]);
-                temp_data2[1] = lines[j][1];
+                temp_data2[0] = (int)(l_edge[go_m] * sin(lines[i][1]) + lines[i][0]);
+                temp_data2[1] = lines[i][1];
                 mountain_lines2.push_back(temp_data2);
             }
         }
         // 如果這座山找不到線, 就刪掉自己, 右邊的東西往左平移
         else{ 
             // 刪掉自己，右邊的東西往左平移
-            for(int j = i ; j < e_count-1 ; j++ ){
-                l_edge[j] = l_edge[j+1];
-                r_edge[j] = r_edge[j+1];
-                distance[j] = distance[j+1];
-                mountain_area[j] = mountain_area[j+1];
+            for(int i = go_m ; i < e_count-1 ; i++ ){
+                l_edge[i] = l_edge[i+1];
+                r_edge[i] = r_edge[i+1];
+                distance[i] = distance[i+1];
+                mountain_area[i] = mountain_area[i+1];
             }
-            i--;
+            go_m--;
             e_count--;
         }
-
         // ***********************************************************************
-        // Watch_Hough_Line(lines,proc_img,(string)HORIZONTAL_DIR + "mountain_hough_line",(string)HORIZONTAL_DIR + "mountain_hough_line");
-        // waitKey(0);
     }
+    Watch_Hough_Line(mountain_lines2, src_img, "", (string)"debug_img/" + "pre3_HorizL_2_2_All_line");
 
 }
