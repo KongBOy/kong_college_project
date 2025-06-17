@@ -11,10 +11,11 @@
 
 #include <iostream>
 
+#include "preprocess_0_hough_tool.h"
 #include "preprocess_0_watch_hough_line.h"
 #include "preprocess_1_warp_straight_rough.h"
 #include "preprocess_2_binary.h"
-//Watch_Hough_Line(lines,cdst);
+//Watch_Hough_Line(lines,color_dst);
 
 #define PI 3.14159
 
@@ -23,17 +24,7 @@ using namespace std;
 
 
 
-void bubbleSort_by_angle(int amount,vector<Vec2f> &list/*,Mat cdst*/){
-	for(int i = 0 ; i < amount-1 ; i++){
-		for(int j = i+1 ; j < amount ; j++){
-			if(list[i][1] > list[j][1]){
-				double temp0 = list[i][0];   double temp1 = list[i][1];
-				list[i][0]   = list[j][0];    list[i][1]  = list[j][1];
-				list[j][0]   = temp0     ;    list[j][1]  = temp1;
-			}
-		}
-	}
-}
+
 
 double Find_Angle(Mat image, bool debuging){
 	if(debuging) cout<<endl<<"in Find_Angle"<<endl;
@@ -63,7 +54,7 @@ double Find_Angle(Mat image, bool debuging){
 	// 如果 HoughLine 有找到線, 找出 哪個角度的線 是 最多的
 	if(lines.size() > 0){
 		// 先排序, 把相同角度的線聚在一起
-		bubbleSort_by_angle(lines.size(), lines);
+		bubbleSort_by_angle(lines);
 
 		// 分群數字統計的array 容器宣告與初始化
 		double * angle_cluster 		 = new double[lines.size()]; // 角度群 可能有幾群, 最差的情況就是 每條線自己各成一群 所以取 lines.size() 個群最保險
@@ -170,10 +161,10 @@ void do_HoughLine(Mat image,vector<Vec2f> & lines,float threshold){
 	// threshold 用成 cols 的比例 可以比較好套用到 不同寬度的影像上
 
 	// 不一定要用Canny, 其實只要把圖片二值化就可以用 HoughLines 囉
-	// Mat dst,cdst;
+	// Mat dst,color_dst;
 	// Canny(image, dst, 50, 100, 3);
-	// cvtColor(dst,cdst, CV_GRAY2BGR);
-    // imshow("canny",cdst);
+	// cvtColor(dst,color_dst, CV_GRAY2BGR);
+    // imshow("canny",color_dst);
 
 	HoughLines(image, lines, 1, CV_PI/180, image.cols * threshold/*175*/, 0, 0 );   //0.2是測試很多次覺得可以的值
 }

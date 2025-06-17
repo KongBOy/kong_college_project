@@ -10,16 +10,27 @@ using namespace cv;
 
 void bubbleSort_H_rho(vector<Vec2f> &list){
 	int amount = list.size();
-	for(int i = 0 ; i < amount-1 ; i++)
-	{
-		for(int j = i+1 ; j < amount ; j++)
-		{
-			if(list[i][0] > list[j][0])
-			{
+	for(int i = 0 ; i < amount-1 ; i++){
+		for(int j = i+1 ; j < amount ; j++){
+			if(list[i][0] > list[j][0]){
+				////////////// swap ///////////////
+				double temp0 = list[i][0];  double temp1 = list[i][1];
+				list[i][0]   = list[j][0];  list[i][1] = list[j][1];
+				list[j][0]   = temp0     ;  list[j][1] = temp1; 
+			}
+		}
+	}
+}
+
+void bubbleSort_by_angle(vector<Vec2f> &list){
+	int amount = list.size();
+	for(int i = 0 ; i < amount-1 ; i++){
+		for(int j = i+1 ; j < amount ; j++){
+			if(list[i][1] > list[j][1]){
 				////////////// swap ///////////////
 				double temp0 = list[i][0];   double temp1 = list[i][1];
-				list[i][0] = list[j][0];  list[i][1] = list[j][1];
-				list[j][0] = temp0;        list[j][1] = temp1; 
+				list[i][0]   = list[j][0];    list[i][1]  = list[j][1];
+				list[j][0]   = temp0     ;    list[j][1]  = temp1;
 			}
 		}
 	}
@@ -27,12 +38,9 @@ void bubbleSort_H_rho(vector<Vec2f> &list){
 
 void bubbleSort_H_P_Y(vector<Vec4i> &list){
 	int amount = list.size();
-	for(int i = 0 ; i < amount-1 ; i++)
-	{
-		for(int j = i+1 ; j < amount ; j++)
-		{
-			if(list[i][1] > list[j][1])
-			{
+	for(int i = 0 ; i < amount-1 ; i++){
+		for(int j = i+1 ; j < amount ; j++){
+			if(list[i][1] > list[j][1]){
 				////////////// swap ///////////////
 				Vec4i l = list[i];
 				for(int col = 0 ; col < 4 ; col++)
