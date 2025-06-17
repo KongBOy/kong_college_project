@@ -99,7 +99,7 @@ int Check_shift(int,int,int,int);
 
 /*
 void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name){
-	bubbleSort_H_rho(lines.size(),lines);
+	bubbleSort_H_rho(lines);
 	for(size_t i = 0; i < lines.size(); i++ ){
 		cout<<"i = "<<i<<" , ";
 		float rho = lines[i][0], theta = lines[i][1];
@@ -130,7 +130,7 @@ void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name)
 
 		// cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
 
-		// imshow( "Hough", cdst );
+		// imshow( "Hough", color_dst );
 
 	}
 	// waitKey(0);
@@ -175,7 +175,7 @@ void Erase_line(int x0 , int y0, int one_step, int one_step_height,int go_range)
 void Find_Head(vector<Vec2f> lines , Mat  drew_img , string window_name ,Mat bin_src_img,int**& left_point,int**& right_point){
     line_g_img = bin_src_img.clone();
 	const int line_width = 2;
-	// bubbleSort_H_rho(lines.size(),lines);
+	// bubbleSort_H_rho(lines);
 	for(size_t i = 0; i < lines.size(); i++ ){
 
 

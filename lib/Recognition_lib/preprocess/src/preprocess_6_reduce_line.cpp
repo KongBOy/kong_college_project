@@ -220,7 +220,7 @@ void Reduce_lines(vector<Vec2f> lines , Mat drew_img , string window_name ,Mat& 
 {
     line_g_img = bin_src_img.clone();
 	const int line_width = 2;
-//	bubbleSort_H_rho(lines.size(),lines);
+//	bubbleSort_H_rho(lines);
 	for(size_t i = 0; i < lines.size(); i++ )
 	{
 

@@ -48,7 +48,7 @@ void position_erase(vector<Vec2f>&src_lines,int position){
 void filter_distance(vector<Vec2f>& src_lines,int line_distance_err){
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////// 把90度的線找出來 /////////////////
-    bubbleSort_H_rho(src_lines.size(),src_lines);
+    bubbleSort_H_rho(src_lines);
 
 	// const int line_distance_err = 5;//第二條線以後要跟前一條線比較距離最小間隔，經過很多圖片測試(連手寫校歌也測了)， < 5 通常就是同條線
 	const double angle_err = 5;
@@ -85,7 +85,7 @@ void filter_distance(vector<Vec2f>& src_lines,int line_distance_err){
 int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line_num_array, int*& staff_num_array){ //第一個參數放要代找的線，第二個參數放容器
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////// 把90度的線找出來 /////////////////
-    bubbleSort_H_rho(src_lines.size(),src_lines);
+    bubbleSort_H_rho(src_lines);
 
     const double err = 5.0; //誤差
 	const int line_distance_err = 10;//第二條線以後要跟前一條線比較距離最小間隔=
@@ -194,7 +194,7 @@ int find_Staff2(vector<Vec2f>& select_lines,int dist_level_0,int dist_level_1){
     //////////////// 把90度的線找出來 /////////////////
 
     // 先根據rho做排序
-    bubbleSort_H_rho(select_lines.size(),select_lines);
+    bubbleSort_H_rho(select_lines);
 
 
     // 再把可能是相同線的線先濾掉
