@@ -8,8 +8,8 @@
 #include "preprocess_0_hough_tool.h"
 using namespace cv;
 
-void bubbleSort_H_rho(int amount,vector<Vec2f> &list/*,Mat cdst*/)
-{
+void bubbleSort_H_rho(vector<Vec2f> &list){
+	int amount = list.size();
 	for(int i = 0 ; i < amount-1 ; i++)
 	{
 		for(int j = i+1 ; j < amount ; j++)
@@ -19,13 +19,14 @@ void bubbleSort_H_rho(int amount,vector<Vec2f> &list/*,Mat cdst*/)
 				////////////// swap ///////////////
 				double temp0 = list[i][0];   double temp1 = list[i][1];
 				list[i][0] = list[j][0];  list[i][1] = list[j][1];
-				list[j][0] = temp0;        list[j][1] = temp1;
+				list[j][0] = temp0;        list[j][1] = temp1; 
 			}
 		}
 	}
 }
-void bubbleSort_H_P_Y(int amount,vector<Vec4i> &list/*,Mat cdst*/)
-{
+
+void bubbleSort_H_P_Y(vector<Vec4i> &list){
+	int amount = list.size();
 	for(int i = 0 ; i < amount-1 ; i++)
 	{
 		for(int j = i+1 ; j < amount ; j++)
