@@ -100,11 +100,13 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
     const int distance_range_max = src_img.rows / (STAFF_COUNT_MIN*2);
     const int mountain_area_min = STAFF_LINE_WIDTH_MIN * ERROR_RATE * width; //一條五線譜線 占的面積
     const int mountain_area_max = STAFF_LINE_WIDTH_MAX * ERROR_RATE * width + (TAIL + NOTE + CIRCLE_LINE + WORD + ELSE) * width; //一組五線譜 + 16分的尾巴 + 一堆NOTE + 圓滑線 + 字 + 其他雜訊
-    cout<<"src_img.cols = "<<src_img.cols<<endl;
-    cout<<"width = "<<width<<endl;
-    cout<<"distance_range_min = "<<distance_range_min<<endl;
-    cout<<"mountain_area_min = "<<mountain_area_min<<endl;
-    cout<<"mountain_area_max = "<<mountain_area_max<<endl;
+    if(debuging){
+        cout<<"src_img.cols = "<<src_img.cols<<endl;
+        cout<<"width = "<<width<<endl;
+        cout<<"distance_range_min = "<<distance_range_min<<endl;
+        cout<<"mountain_area_min = "<<mountain_area_min<<endl;
+        cout<<"mountain_area_max = "<<mountain_area_max<<endl;
+    }
 
     // 建立容器
     int * w_count = new int[src_img.rows]; // src_img 的每一個 row 有幾個 pixel 是白色的
@@ -155,7 +157,7 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
             }
         }
     }
-    See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "pre3_HorizL_2_1_mountain_1_before");
+    if(debuging) See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "pre3_HorizL_2_1_mountain_1_before");
 
 
     // 把 可能不是五線譜的山 刪掉囉~~
@@ -173,7 +175,7 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
             e_count--;
         }
     }
-    See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "pre3_HorizL_2_1_mountain_2_after");
+    if(debuging) See_mountain(src_img, e_count, l_edge, r_edge, distance, mountain_area, "debug_img", "pre3_HorizL_2_1_mountain_2_after");
 
 
     // 找出五線譜的線
@@ -191,12 +193,13 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
             HoughLines(proc_img, lines, 1 , CV_PI/180, src_img.cols * hough_w_th_ratio / 100 , 0  , 0 );
             hough_w_th_ratio -= 3;
             
-            string watch_hough_process_name = "debug_img/pre3_HorizL_2_2_Part_line";
-            stringstream ss1; ss1 << setw(3) << setfill('0') << go_m;
-            stringstream ss2; ss2 << setw(3) << setfill('0') << hough_w_th_ratio;
-            watch_hough_process_name += ss1.str() + "_" + ss2.str();
-            Watch_Hough_Line(lines, proc_img, "", watch_hough_process_name);
-            // waitKey(0);
+            if(debuging) {
+                string watch_hough_process_name = "debug_img/pre3_HorizL_2_2_Part_line";
+                stringstream ss1; ss1 << setw(3) << setfill('0') << go_m;
+                stringstream ss2; ss2 << setw(3) << setfill('0') << hough_w_th_ratio;
+                watch_hough_process_name += ss1.str() + "_" + ss2.str();
+                Watch_Hough_Line(lines, proc_img, "", watch_hough_process_name);
+            }
         }
 
         // 如果這座山有找到線, 丟進去 mountain_lines2 容器內
@@ -223,6 +226,6 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
         }
         // ***********************************************************************
     }
-    Watch_Hough_Line(mountain_lines2, src_img, "", (string)"debug_img/" + "pre3_HorizL_2_2_All_line");
+    if(debuging) Watch_Hough_Line(mountain_lines2, src_img, "", (string)"debug_img/" + "pre3_HorizL_2_2_All_line");
 
 }
