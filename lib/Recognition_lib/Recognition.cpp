@@ -214,8 +214,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     // dist_level[1]= 17   五線譜內五條線大概的距離
     // dist_level[2]= 241  五線譜之間大概的距離
     int * dist_level;
-    // 把计┮Τ絬 狥﹁甧竟
-    Distance_detect(lines,dist_level);
+    Distance_detect(lines, dist_level);
     // cout<<"distance_detect end"<<endl;
 
     // 把计т碭舱絬甧竟     ┮Τ絬  ノㄓ縵匡distance
