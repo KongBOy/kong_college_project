@@ -41,7 +41,7 @@ using namespace std;
 
 
 // debug用, 看找到的 五線譜山 的長怎樣
-void See_mountain(const Mat & src_img, int e_count, int l_edge[], int r_edge[], int distance[], int mountain_area[], string dir_path   , string file_name){
+void See_mountain(const Mat & src_img, int e_count, int l_edge[], int r_edge[], int distance[], int mountain_area[], string dir_path, string file_name){
     // 整張影像 用框框出候選區域 的影像  , 預設 debug_img/mountain.jpg
     // 框出的候選影像區域 各自切出來的影像 , 預設 debug_img/mountain/各個框內影像.jpg
     if(file_name == "") file_name = "mountain";

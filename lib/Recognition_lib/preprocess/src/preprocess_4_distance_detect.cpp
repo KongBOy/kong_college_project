@@ -12,11 +12,11 @@
 using namespace cv;
 using namespace std;
 
-
 #define CHANGE_DRAMATICLY_LEVEL_1 3
 #define CHANGE_DRAMATICLY_LEVEL_2 10
 #define CHANGE_DRAMATICLY_LEVEL_3 30
 #define ENOUGH_PEOPLE_HAVE_SAME_DISTANCE 3
+
 void array_position_erase(int* src_array , int position , int& array_size){
     if(array_size > 0){
         if(array_size == 1){
@@ -40,7 +40,7 @@ void array_position_erase(int* src_array , int position , int& array_size){
         }
     }
     else{
-        cout<<"沒有線可以刪，沒有做動作"<<endl;
+        cout << "沒有線可以刪，沒有做動作" << endl;
         return;
     }
 }
@@ -56,8 +56,8 @@ void bubbleSort(int amount,int *& data){
 		}
 	}
 }
-void Distance_detect(vector<Vec2f> mountain_lines2 , int *& dist_level)
-{
+
+void Distance_detect(vector<Vec2f> mountain_lines2 , int *& dist_level){
     int * rho = new int[mountain_lines2.size()];
     for(int i = 0 ; i < mountain_lines2.size() ; i++) rho[i] = mountain_lines2[i][0];
 
@@ -67,7 +67,7 @@ void Distance_detect(vector<Vec2f> mountain_lines2 , int *& dist_level)
     for(int i = 0 ; i < mountain_lines2.size() -1 ; i++) distance_0[i] = 0;
     for(int i = 0 ; i < mountain_lines2.size() -1 ; i++){
         distance_0[i] = rho[i+1] - rho[i];
-        // cout<<"distance_0["<<i<<"] = "<<distance_0[i]<<endl;
+        // cout << "distance_0[" << i << "] = " << distance_0[i] << endl;
     }
 
 
@@ -76,21 +76,21 @@ void Distance_detect(vector<Vec2f> mountain_lines2 , int *& dist_level)
 
     // 精隨：先排好，再微分
     bubbleSort(mountain_lines2.size()-1,distance_0);
-    // for(int i = 0 ; i < mountain_lines2.size() -1 ; i++) cout<<"distance_0["<<i<<"] = "<<distance_0[i]<<endl;
-    // cout<<endl;
+    // for(int i = 0 ; i < mountain_lines2.size() -1 ; i++) cout << "distance_0[" << i << "] = " << distance_0[i] << endl;
+    // cout << endl;
     int * distance_1 = new int[mountain_lines2.size()-1-1];
     for(int i = 0 ; i < mountain_lines2.size() -1-1 ; i++) distance_1[i] = 0;
 
     for(int i = 0 ; i < mountain_lines2.size() -1 -1; i++){
         distance_1[i] = distance_0[i+1] - distance_0[i];
-        cout<<"rho["<<i<<"]="<<rho[i]<<" , distance_0["<<i<<"] = "<<distance_0[i]<<" , distance_1["<<i<<"] = "<<distance_1[i]<<endl;
+        cout << "rho[" << i << "]=" << rho[i] << " , distance_0[" << i << "] = " << distance_0[i] << " , distance_1[" << i << "] = " << distance_1[i] << endl;
     }
-     cout<<"rho["<<mountain_lines2.size() -1 -1<<"]="<<rho[mountain_lines2.size() -1 -1]<<" , distance_0["<<mountain_lines2.size() -1 -1<<"] = "<<distance_0[mountain_lines2.size() -1 -1]<<endl;
-     cout<<"rho["<<mountain_lines2.size() -1 <<"]="<<rho[mountain_lines2.size() -1]<<endl;
+     cout << "rho[" << mountain_lines2.size() -1 -1 << "]=" << rho[mountain_lines2.size() -1 -1] << " , distance_0[" << mountain_lines2.size() -1 -1 << "] = " << distance_0[mountain_lines2.size() -1 -1] << endl;
+     cout << "rho[" << mountain_lines2.size() -1    << "]=" << rho[mountain_lines2.size() -1   ] << endl;
 
-    // cout<<"distance_0["<<mountain_lines.size()-1<<"] = "<<distance_0[mountain_lines.size()-1]<<endl;
+    // cout << "distance_0[" << mountain_lines.size()-1 << "] = " << distance_0[mountain_lines.size()-1] << endl;
 
-    cout<<endl;
+    cout << endl;
 
     dist_level = new int[100];
     // int dist_level[100];
@@ -108,30 +108,30 @@ void Distance_detect(vector<Vec2f> mountain_lines2 , int *& dist_level)
             flat_step = 0;
         }
     }
-    cout<<"總共找到了 "<<go_dist_level_count<<"個 distance_level"<<endl;
-    for(int i = 0 ; i < go_dist_level_count ; i++) cout<<"dist_level["<<i<<"]= "<<dist_level[i]<<endl;
-    cout<<endl;
+    cout << "總共找到了 " << go_dist_level_count << "個 distance_level" << endl;
+    for(int i = 0 ; i < go_dist_level_count ; i++) cout << "dist_level[" << i << "]= " << dist_level[i] << endl;
+    cout << endl;
 
 
     // 注意要 i = 1 開始喔！
-    //// 要再做一次的主要原因是，因為上面會受到 本來是同條線但找到很多條 的干擾，上面的dist_level[0]就已經找到了這level在哪，
-    //// 就直接在用dist_level[0]為底再來篩一次就可以更準的找到五線譜或其他他家有共同距離的距離囉
+    //   要再做一次的主要原因是，因為上面會受到 本來是同條線但找到很多條 的干擾，上面的dist_level[0]就已經找到了這level在哪，
+    //   就直接在用dist_level[0]為底再來篩一次就可以更準的找到五線譜或其他他家有共同距離的距離囉
     /////////// COPY START //////////
     for(int i = 1 ; i < go_dist_level_count -1 ; i++){
-        //+3是怕誤差，因為上面的偵測是有雜訊的(想想如果刪掉一條線，那刪掉的該條的上一條線到下一條線的距離就會增加~~~，now是假設刪掉了，所以要加上些誤差
+        // +3是怕誤差，因為上面的偵測是有雜訊的(想想如果刪掉一條線，那刪掉的該條的上一條線到下一條線的距離就會增加~~~，now是假設刪掉了，所以要加上些誤差
         if(dist_level[i+1] - dist_level[i] < dist_level[0]*5){  // CHANGE_DRAMATICLY_LEVEL_2)
             array_position_erase(dist_level,i,go_dist_level_count);
             i--;
         }
     }
-    cout<<"總共找到了 "<<go_dist_level_count<<"個 distance_level"<<endl;
-    for(int i = 0 ; i < go_dist_level_count ; i++) cout<<"dist_level["<<i<<"]= "<<dist_level[i]<<endl;
-    cout<<endl;
-    /////////COPY END////////////
+    cout << "總共找到了 " << go_dist_level_count << "個 distance_level" << endl;
+    for(int i = 0 ; i < go_dist_level_count ; i++) cout << "dist_level[" << i << "]= " << dist_level[i] << endl;
+    cout << endl;
+    ///////// COPY END ////////////
 
 
-    //怕誤差呀~~~(想想如果刪掉一條線，那刪掉的該條的上一條線到下一條線的距離就會增加~~~，now是假設刪掉了，所以要加上些誤差
-    //for(int i = 0 ; i < go_dist_level_count ; i++) dist_level[i] += 3;
+    // 怕誤差呀~~~(想想如果刪掉一條線，那刪掉的該條的上一條線到下一條線的距離就會增加~~~，now是假設刪掉了，所以要加上些誤差
+    // for(int i = 0 ; i < go_dist_level_count ; i++) dist_level[i] += 3;
     dist_level[0] += 0;
     dist_level[1] += 5;
 }
