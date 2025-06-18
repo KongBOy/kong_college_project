@@ -50,16 +50,16 @@ void filter_distance(vector<Vec2f>& src_lines,int line_distance_err){
     //////////////// 把90度的線找出來 /////////////////
     bubbleSort_H_rho(src_lines);
 
-	// const int line_distance_err = 5;//第二條線以後要跟前一條線比較距離最小間隔，經過很多圖片測試(連手寫校歌也測了)， < 5 通常就是同條線
+	// const int line_distance_err = 5;  // 第二條線以後要跟前一條線比較距離最小間隔，經過很多圖片測試(連手寫校歌也測了)， < 5 通常就是同條線
 	const double angle_err = 5;
 
 
 
-    // //step 1 接近水平
+    // step 1 接近水平
     // double angle_value = (theta/PI)*180;
 	for(int i = 0 ; i < src_lines.size() ; i++){
         if( abs( (src_lines[i][1]/PI*180) - 90 ) > angle_err ){
-            position_erase(src_lines,i);
+            position_erase(src_lines, i);
             i--;
         }
 
@@ -67,11 +67,11 @@ void filter_distance(vector<Vec2f>& src_lines,int line_distance_err){
             // cout<<abs( (src_lines[i][1]/PI*180) - 90)<<endl;
             // cout<<"i = "<<i <<endl;
             if( ( src_lines[i][0] - src_lines[i-1][0] <= line_distance_err ) ){
-                position_erase(src_lines,i);
+                position_erase(src_lines, i);
                 i--;
             }
             else if( abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI)) > 1.5 && ( src_lines[i][0] - src_lines[i-1][0] < line_distance_err )){
-                position_erase(src_lines,i);
+                position_erase(src_lines, i);
                 i--;
 
                 cout<<" angle_err = "<< abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI))<<endl;
@@ -94,8 +94,8 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
     vector<Vec2f> select_lines_1;
 */
 /*
-////step 1 接近水平
-//double angle_value = (theta/PI)*180;
+    ////step 1 接近水平
+    // double angle_value = (theta/PI)*180;
 	for(int i = 0 ; i < src_lines.size() ; i++){
         if( ((src_lines[i][1]/PI*180) <= 90 + err) && ((src_lines[i][1]/PI*180) >= 90-err) ){
 			if( i >= 1) //第二條線以後要跟前一條線比較距離，太近就代表同條線不用存喔{
@@ -114,9 +114,9 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
         }
     }
 
-////step 2 相近的兩條幾乎一樣
-    //vector<Vec2f> select_lines_2;
-    //cout<<"select_lines_1.size() = "<<select_lines_1.size()<<endl;
+    ////step 2 相近的兩條幾乎一樣
+    // vector<Vec2f> select_lines_2;
+    // cout<<"select_lines_1.size() = "<<select_lines_1.size()<<endl;
     if(select_lines_1.size() >= 5){
         select_lines_2.push_back(select_lines_1[0]);
         for(int i = 1 ; i < select_lines_1.size() ; i++){
@@ -137,8 +137,7 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
     //Watch_Hough_Line(select_lines_2,sobel_proc_color,HOUGH_SOBEL_WINDOW);
 /*
 	///////////// 幫找出來90度的線編號 //////////////
-	if(select_lines_2.size()>0)
-	{
+	if(select_lines_2.size()>0){
 		////////////// 線的距離 //////////////
 		int * distance = new int[select_lines_2.size()];
 		distance[0] = select_lines_2[0][0];
@@ -151,7 +150,7 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
 
 		///////////// 開始編號 ////////////////
 		const int staff_line_distance = 25;//這個25是從上面的測試distance資料得來，會想辦法自動取得
-		//int * line_num_array = new int[select_lines_2.size()]; //改到上面去
+		// int * line_num_array = new int[select_lines_2.size()]; //改到上面去
 		line_num_array = new int[select_lines_2.size()];
 
 		line_num_array[0] = 0; //first line index = 0, second line index = 1 .......
@@ -171,7 +170,7 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
 		for(int i = 0 ; i < select_lines_2.size() ; i++) num_count_array[line_num_array[i]]++;
 
 		/////////// 如果個數有剛好五個的，代表找到五線譜了，存入staff_num/////////////
-		//int * staff_num_array  = new int[select_lines_2.size()/4]; 一、寫上去 二、覺得大小改 num+1 ~~多存點沒差拉~~
+		// int * staff_num_array  = new int[select_lines_2.size()/4]; 一、寫上去 二、覺得大小改 num+1 ~~多存點沒差拉~~
 		staff_num_array  = new int[num + 1];
 		int staff_num_count = 0;
 		for(int i = 0 ; i <= num ; i++) //num is index喔!!!所以要 "="{
@@ -182,7 +181,7 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
 		return (staff_num_count);
 		/////////////////////////////////////////////
 
-//		cout<<"address of staff_num_array = "<< staff_num_array<<endl;
+		// cout<<"address of staff_num_array = "<< staff_num_array<<endl;
 	}
 }
 */
@@ -190,26 +189,24 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
 
 //不要用 vector<Vec2f>*& staff 原因寫在下面
 int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1){
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     //////////////// 把90度的線找出來 /////////////////
 
     // 先根據rho做排序
     bubbleSort_H_rho(select_lines);
 
-
     // 再把可能是相同線的線先濾掉
     filter_distance(select_lines,dist_level_0);
 
 
-//再來要check濾完以後的線
-//一、根據distance_level_1的距離來分類線
+    //再來要check濾完以後的線
+    //一、根據distance_level_1的距離來分類線
 
-//二、a、如果每個類別剛好五條，就成功
-//    b、如果大於五條，代表上面沒濾乾淨在濾一次
-//    c、如果小於五條，代表有問題把線那組線通通刪掉
+    //二、a、如果每個類別剛好五條，就成功
+    //    b、如果大於五條，代表上面沒濾乾淨在濾一次
+    //    c、如果小於五條，代表有問題把線那組線通通刪掉
     if(select_lines.size()>0){
 
-//一：
+    //一：
 		////////////// 傳進來的線的 第n條 到 自己下一條的 距離 //////////////
 		int * distance = new int[select_lines.size()];
 		distance[0] = select_lines[0][0];
@@ -220,16 +217,12 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
 		}
 		cout<<endl;
 
-
 		///////////// 開始根據五線譜線的距離(dist_level_1)編號 ////////////////
 		const int staff_line_distance = dist_level_1+STAFF_LINE_DISTANCE_ERROR;//+3還是怕誤差拉~~
 		// (想想如果刪掉一條線，那刪掉的該條的上一條線到下一條線的距離就會增加~~~，now是假設刪掉了，所以要加上些誤差
 
-
 		// int * line_num_array = new int[select_lines_2.size()]; //改到上面去
 		int * line_num_array = new int[select_lines.size()];
-
-
 
 		line_num_array[0] = 0;  // first line index = 0, second line index = 1 .......
 		int num = 0;  // num is index喔!!! 下面的for迴圈要小心!!!!!!!!!!!!!!!!!
@@ -242,7 +235,7 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
 		cout<<endl;
 
 
-//二：
+    // 二：
 		//////////// 找出五線譜 //////////////
 		///////////統計上面每個編號的個數//////////////
 		int * num_count_array = new int[num + 1]; //num is index喔!!!所以要 "+1"
@@ -256,7 +249,7 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
 		int go_line = 0;
 
 		for(int i = 0 ; i <= num ; i++){ //num is index喔!!!所以要 "="
-//b：		    //如果線大於五條的話，
+        // b： // 如果線大於五條的話，
 		    if(num_count_array[i] >5){
                 int staff_line_distance_2 = dist_level_0;
 
@@ -287,20 +280,20 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
 
                     }
                     staff_line_distance_2++;
-//                  cout<<"still while~~  ";
-//                  cout<<"staff_line_distance_2 = "<<staff_line_distance_2<<"  ";
-//                  cout<<"go_line = "<<go_line<<"  刪完後剩下"<<num_count_array[i]<<"條線"<<endl;
+                    // cout<<"still while~~  ";
+                    // cout<<"staff_line_distance_2 = "<<staff_line_distance_2<<"  ";
+                    // cout<<"go_line = "<<go_line<<"  刪完後剩下"<<num_count_array[i]<<"條線"<<endl;
 
-                }while(num_count_array[i] > 5);
-//                cout<<"staff_line_distance_2 = "<<staff_line_distance_2<<endl;
+                } while(num_count_array[i] > 5);
+                // cout<<"staff_line_distance_2 = "<<staff_line_distance_2<<endl;
 
-//                cout<<"go_line = "<<go_line<<"  刪完後剩下"<<num_count_array[i]<<"條線"<<endl;
+                // cout<<"go_line = "<<go_line<<"  刪完後剩下"<<num_count_array[i]<<"條線"<<endl;
                 go_line += num_count_array[i];
                 staff_num_array[staff_num_count++] = i;
 
             }
 
-//c：
+        //c：
             else if(num_count_array[i] <5)
             {
                 for(int j = 0 ; j < num_count_array[i] ; j++)
@@ -310,7 +303,7 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
                 }
             }
 
-//a：
+        //a：
 			else if(num_count_array[i] ==5)
             {
                 go_line += 5;
@@ -322,8 +315,8 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
 
 		for(int i = 0 ; i < staff_num_count ; i++) cout<<"The number of \""<<staff_num_array[i]<<"\" is the staff_number"<<endl;
 
-//不要包成vector<Vec2f>staff[i]好了，因為  一、傳function不知道怎麼丟(下面是失敗的喔)  二多此一舉的感覺，用下面的for寫法存原來的線就可以拉！
-        //staff = new vector<Vec2f>[staff_num_count];
+        // 不要包成vector<Vec2f>staff[i]好了，因為  一、傳function不知道怎麼丟(下面是失敗的喔)  二多此一舉的感覺，用下面的for寫法存原來的線就可以拉！
+        // staff = new vector<Vec2f>[staff_num_count];
         /*
         for(int i = 0 ; i < staff_num_count ; i++) staff[i].clear();
         for(int i = 0 ; i < staff_num_count ; i++){
@@ -338,12 +331,12 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
         cout<<endl;
         */
 
-//用這個for寫法就可以用 staff 為單位來用線囉！
+        // 用這個for寫法就可以用 staff 為單位來用線囉！
         for(int i = 0 ; i < staff_num_count ; i++){
             int first_line = 5*i;
             int fifth_line = 5*(i+1)-1;
             for(int j = first_line ; j <= fifth_line ; j++){
-//                cout<<"j = "<<j<<" data = "<<select_lines[j][0]<<" "<<select_lines[j][1]<<endl;
+                // cout<<"j = "<<j<<" data = "<<select_lines[j][0]<<" "<<select_lines[j][1]<<endl;
             }
         }
 
@@ -351,7 +344,7 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1)
 		return (staff_num_count);
 		/////////////////////////////////////////////
 
-//		cout<<"address of staff_num_array = "<< staff_num_array<<endl;
+		// cout<<"address of staff_num_array = "<< staff_num_array<<endl;
 	}
 	else{
         cout<<"ntmd沒有線找啥米呀ˊ口ˋ"<<endl;
