@@ -210,7 +210,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     Horizon_map_to_find_line(test_line, lines, horizontal_img, debuging);
 
     // 把線的 距離階層 找出來, 以目前抓出來的階層有三種：
-    // dist_level[0]= 3    一條粗線裡面可能有 可以找到多條細線 之間的距離
+    // dist_level[0]= 3    一條粗線裡面可能有 找到多條細線 之間的距離
     // dist_level[1]= 17   五線譜內五條線大概的距離
     // dist_level[2]= 241  五線譜之間大概的距離
     int * dist_level;
