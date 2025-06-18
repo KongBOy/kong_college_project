@@ -216,7 +216,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
     // 把计т碭舱絬甧竟     ┮Τ絬  ノㄓ縵匡distance
     // 寫出去主程式用參數傳
-    staff_count = find_Staff2(lines,dist_level[0], dist_level[1]);
+    staff_count = find_Staff2(lines, dist_level[0], dist_level[1]);
     // Watch_Hough_Line(lines,test_bin,(string)HORIZONTAL_DIR + "mountain_hough_line",(string)HORIZONTAL_DIR + "mountain_hough_line");
     // waitKey(0);
     cout<<"find_staff_sucess"<<endl;

@@ -26,7 +26,6 @@ void array_position_erase(int* src_array , int position , int& array_size){
         }
         else{
             if(position == array_size -1){ //刪最後一個
-            
                 array_size--;
                 return;
             }
