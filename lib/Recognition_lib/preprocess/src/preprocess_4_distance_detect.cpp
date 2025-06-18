@@ -107,7 +107,7 @@ void Distance_detect(vector<Vec2f> mountain_lines2 , int *& dist_level){
             flat_step = 0;
         }
     }
-    cout << "總共找到了 " << go_dist_level_count << "個 distance_level" << endl;
+    cout << "totally find out " << go_dist_level_count << " distance_level" << endl;
     for(int i = 0 ; i < go_dist_level_count ; i++) cout << "dist_level[" << i << "]= " << dist_level[i] << endl;
     cout << endl;
 
@@ -123,7 +123,7 @@ void Distance_detect(vector<Vec2f> mountain_lines2 , int *& dist_level){
             i--;
         }
     }
-    cout << "總共找到了 " << go_dist_level_count << "個 distance_level" << endl;
+    cout << "totally find out " << go_dist_level_count << " distance_level" << endl;
     for(int i = 0 ; i < go_dist_level_count ; i++) cout << "dist_level[" << i << "]= " << dist_level[i] << endl;
     cout << endl;
     ///////// COPY END ////////////
