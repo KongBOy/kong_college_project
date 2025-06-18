@@ -33,8 +33,6 @@ void Watch_Hough_Line(vector<Vec2f> lines, const Mat & gray_dst, string window_n
     Mat color_dst;
     cvtColor(gray_dst, color_dst, CV_GRAY2BGR);
 
-	// bubbleSort_H_rho(lines);
-
 	for(size_t i = 0; i < lines.size(); i++ )
 	{
 		cout<<"i = "<<i<<" , ";

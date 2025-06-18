@@ -226,6 +226,9 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
         }
         // ***********************************************************************
     }
+
+    // 找到所有線 對 rho 做排序
+    bubbleSort_H_rho(mountain_lines2);
     if(debuging) Watch_Hough_Line(mountain_lines2, src_img, "", (string)"debug_img/" + "pre3_HorizL_2_2_All_line");
 
 }
