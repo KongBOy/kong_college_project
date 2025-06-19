@@ -30,8 +30,9 @@ using namespace std;
 // color_dst = color_destination
 void Watch_Hough_Line(vector<Vec2f> lines, const Mat & gray_dst, string window_name, string file_name)
 {
-    Mat color_dst;
-    cvtColor(gray_dst, color_dst, CV_GRAY2BGR);
+	Mat color_dst;
+	if(!gray_dst.empty()) cvtColor(gray_dst, color_dst, CV_GRAY2BGR);
+	
 
 	for(size_t i = 0; i < lines.size(); i++ )
 	{
@@ -39,28 +40,27 @@ void Watch_Hough_Line(vector<Vec2f> lines, const Mat & gray_dst, string window_n
 		float rho = lines[i][0], theta = lines[i][1];
 		double angle_value = (theta/PI)*180;
 		cout<<"rho = "<<rho<<" , theta = "<<angle_value<<endl;
-
-		Point pt1, pt2;
-		double a = cos(theta), b = sin(theta);
-		double x0 = a*rho, y0 = b*rho;
-		pt1.x = cvRound(x0 + 1000*(-b));
-		pt1.y = cvRound(y0 + 1000*(a));
-		pt2.x = cvRound(x0 - 1000*(-b));
-		pt2.y = cvRound(y0 - 1000*(a));
-		line( color_dst, pt1, pt2, Scalar((i * 5 ) % 180, (i * 7 ) % 180, 255), 1, CV_AA);
-		// cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
-
-		// imshow( "Hough", color_dst );
-
+		
+		if(!gray_dst.empty()){
+			Point pt1, pt2;
+			double a = cos(theta), b = sin(theta);
+			double x0 = a*rho, y0 = b*rho;
+			pt1.x = cvRound(x0 + 1000*(-b));
+			pt1.y = cvRound(y0 + 1000*(a));
+			pt2.x = cvRound(x0 - 1000*(-b));
+			pt2.y = cvRound(y0 - 1000*(a));
+			line( color_dst, pt1, pt2, Scalar((i * 5 ) % 180, (i * 7 ) % 180, 255), 1, CV_AA);
+			// cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
+		}
 	}
 
 	cout<<endl;
-	if(window_name != ""){
+	if(window_name != "" && !color_dst.empty()){
 		imshow(window_name, color_dst);
 		waitKey(0);
 	}
 	// ******************************************************
-	if(file_name != ""){
+	if(file_name != "" && !color_dst.empty()){
 		imwrite(file_name + FILE_TYPE, color_dst);
 	}
 }
