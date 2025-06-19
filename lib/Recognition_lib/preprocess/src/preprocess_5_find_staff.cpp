@@ -9,6 +9,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <cmath>
 #include <iostream>
+#include <iomanip>
 
 #include "preprocess_0_watch_hough_line.h"
 #include "preprocess_5_find_staff.h"
@@ -57,9 +58,8 @@ void filter_multi_same_line(vector<Vec2f>& src_lines, int line_distance_err, boo
         }
 
         // 第二條線以後要還要跟前一條線比較距離，太近就代表同條線不用存喔，還有角度離上一條線差太多也不用存
-        if( i >= 1){ 
+        if( i >= 1){
             if(debuging) cout<< "line_" << i << " and line_" << i - 1 << " distance: " << src_lines[i][0] - src_lines[i-1][0]<<", angle_diff: "<< abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI)) << " , ";
-            
             
             // 太近就代表同條線不用存
             if( ( src_lines[i][0] - src_lines[i-1][0] <= line_distance_err ) ){
@@ -148,36 +148,36 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
 		cout<<endl;
 
 		///////////// 開始編號 ////////////////
-		const int staff_line_distance = 25;//這個25是從上面的測試distance資料得來，會想辦法自動取得
+		const int staff_lnter_distance = 25;//這個25是從上面的測試distance資料得來，會想辦法自動取得
 		// int * line_num_array = new int[select_lines_2.size()]; //改到上面去
 		line_num_array = new int[select_lines_2.size()];
 
 		line_num_array[0] = 0; //first line index = 0, second line index = 1 .......
-		int num = 0;//num is index喔!!! 下面的for迴圈要小心!!!!!!!!!!!!!!!!!
-		cout<<"i = "<< '0' <<" line_num "<<num<<endl;
+		int group_index = 0;//group_index is index喔!!! 下面的for迴圈要小心!!!!!!!!!!!!!!!!!
+		cout<<"i = "<< '0' <<" line_group "<<group_index<<endl;
 		for(int i = 1 ; i < select_lines_2.size(); i++){
-			if(distance[i] < staff_line_distance) line_num_array[i] = num;
-			else line_num_array[i] = ++num;
-			cout<<"i = "<< i <<" line_num "<<num<<endl;
+			if(distance[i] < staff_lnter_distance) line_num_array[i] = group_index;
+			else line_num_array[i] = ++group_index;
+			cout<<"i = "<< i <<" line_group "<<group_index<<endl;
 		}
 		cout<<endl;
 
 		//////////// 找出五線譜 //////////////
 		///////////統計上面每個編號的個數////////////=//
-		int * num_count_array = new int[num + 1]; //num is index喔!!!所以要 "+1"
-		for(int i = 0 ; i <= num ; i++) num_count_array[i] = 0; //num is index喔!!!所以要 "+1"
-		for(int i = 0 ; i < select_lines_2.size() ; i++) num_count_array[line_num_array[i]]++;
+		int * gid_count_array = new int[group_index + 1]; // group_index 是 index喔!!! index轉數量要 "+1"
+		for(int i = 0 ; i <= group_index ; i++) gid_count_array[i] = 0; // group_index 是 index喔!!! index轉數量要 "+1"
+		for(int i = 0 ; i < select_lines_2.size() ; i++) gid_count_array[line_num_array[i]]++;
 
 		/////////// 如果個數有剛好五個的，代表找到五線譜了，存入staff_num/////////////
-		// int * staff_num_array  = new int[select_lines_2.size()/4]; 一、寫上去 二、覺得大小改 num+1 ~~多存點沒差拉~~
-		staff_num_array  = new int[num + 1];
-		int staff_num_count = 0;
-		for(int i = 0 ; i <= num ; i++) //num is index喔!!!所以要 "="{
-			if(num_count_array[i] ==5) staff_num_array[staff_num_count++] = i;
+		// int * staff_num_array  = new int[select_lines_2.size()/4]; 一、寫上去 二、覺得大小改 group_index+1 ~~多存點沒差拉~~
+		staff_num_array  = new int[group_index + 1];
+		int staff_index = 0;
+		for(int i = 0 ; i <= group_index ; i++) //group_index is index喔!!!所以要 "="{
+			if(gid_count_array[i] ==5) staff_num_array[staff_index++] = i;
 		}
-		for(int i = 0 ; i < staff_num_count ; i++) cout<<"The number of \""<<staff_num_array[i]<<"\" is the staff_number"<<endl;
+		for(int i = 0 ; i < staff_index ; i++) cout<<"The number of \""<<staff_num_array[i]<<"\" is the staff_number"<<endl;
 
-		return (staff_num_count);
+		return (staff_index);
 		/////////////////////////////////////////////
 
 		// cout<<"address of staff_num_array = "<< staff_num_array<<endl;
@@ -199,76 +199,113 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1,
     //一、根據distance_level_1的距離來分類線
 
     //二、a、如果每個類別剛好五條，就成功
-    //    b、如果大於五條，代表上面沒濾乾淨在濾一次
+    //    b、如果大於五條，代表上面沒濾乾淨再濾一次
     //    c、如果小於五條，代表有問題把線那組線通通刪掉
-    if(select_lines.size()>0){
+    if(select_lines.size() > 0){
 
     //一：
-		////////////// 傳進來的線的 第n條 到 自己下一條的 距離 //////////////
+		////////////// 傳進來的線的 第n條 到 自己上一條的 距離 //////////////
 		int * distance = new int[select_lines.size()];
 		distance[0] = select_lines[0][0];
-		cout<<"i = "<<'0'<<" distance = "<<distance[0]<<endl;
-		for(int i = 1 ; i < select_lines.size() ; i++){
-			distance[i] = select_lines[i][0] - select_lines[i-1][0];
-			cout<<"i = "<<i<<" distance = "<<distance[i]<<endl;
-		}
-		cout<<endl;
+		for(int i = 1 ; i < select_lines.size() ; i++) distance[i] = select_lines[i][0] - select_lines[i-1][0];
+        
+        if(debuging){
+            cout << "i = " << setw(2) << '0' << " distance = " << distance[0] << endl;
+            for(int i = 1 ; i < select_lines.size() ; i++) cout<<"i = "<< setw(2) << i << " distance = " << distance[i] << endl;
+            cout << endl;
+        }
+        // 大概像這樣子:
+        // i =  0 distance = 889
+        // i =  1 distance = 17
+        // i =  2 distance = 19
+        // i =  3 distance = 18
+        // i =  4 distance = 18
+        // i =  5 distance = 243
+        // i =  6 distance = 19
+        // i =  7 distance = 17
+        // i =  8 distance = 18
+        // i =  9 distance = 18
+        // i = 10 distance = 244
+        // i = 11 distance = 16
+        // i = 12 distance = 18
+        // i = 13 distance = 18
+        // i = 14 distance = 17
+        // i = 15 distance = 241
+        // i = 16 distance = 18
+        // i = 17 distance = 17
+        // i = 18 distance = 18
+        // i = 19 distance = 18
+        // i = 20 distance = 243
+        // i = 21 distance = 17
+        // i = 22 distance = 19
+        // i = 23 distance = 16
+        // i = 24 distance = 18
+        // i = 25 distance = 242
+        // i = 26 distance = 20
+        // i = 27 distance = 18
+        // i = 28 distance = 18
+        // i = 29 distance = 18
+        // i = 30 distance = 245
+        // i = 31 distance = 18
+        // i = 32 distance = 18
+        // i = 33 distance = 18
+        // i = 34 distance = 18
+        // i = 35 distance = 250
+        // i = 36 distance = 19
+        // i = 37 distance = 19
+        // i = 38 distance = 18
+        // i = 39 distance = 19
 
-		///////////// 開始根據五線譜線的距離(dist_level_1)編號 ////////////////
-		const int staff_line_distance = dist_level_1+STAFF_LINE_DISTANCE_ERROR;//+3還是怕誤差拉~~
-		// (想想如果刪掉一條線，那刪掉的該條的上一條線到下一條線的距離就會增加~~~，now是假設刪掉了，所以要加上些誤差
-
-		// int * line_num_array = new int[select_lines_2.size()]; //改到上面去
-		int * line_num_array = new int[select_lines.size()];
-
-		line_num_array[0] = 0;  // first line index = 0, second line index = 1 .......
-		int num = 0;  // num is index喔!!! 下面的for迴圈要小心!!!!!!!!!!!!!!!!!
-		cout<<"i = "<< '0' <<" line_num "<<num<<endl;
+		///////////// 每條線 根據自己跟上一條線的距離 和 五線譜線內部的距離(dist_level_1) 比對來做編號 ////////////////
+		int group_index = 0;                                  // 標示第幾組五線譜
+		int * line_num_array = new int[select_lines.size()];  // 標示 每條線 屬於第幾組五線譜 的容器
+		line_num_array[0] = 0;                                // 第一條線 一定是第0組
+		const int staff_lnter_distance = dist_level_1 + STAFF_LINE_DISTANCE_ERROR;  // + 3還是怕誤差, 反正目前的五線譜內的距離 跟五線譜間的距離還是有點差距, 所以 +3 問題不大
+        // 走訪每條線, 如果跟上一條線的距離 <= staff_lnter_distance, 屬於同一組五線譜, 如果 > staff_lnter_distance, 就屬於下一組五線譜
 		for(int i = 1 ; i < select_lines.size(); i++){
-			if(distance[i] < staff_line_distance) line_num_array[i] = num;
-			else line_num_array[i] = ++num;
-			cout<<"i = "<< i <<" line_num "<<num<<endl;
+            if(distance[i] <= staff_lnter_distance) line_num_array[i] = group_index;
+			else line_num_array[i] = ++group_index;
 		}
-		cout<<endl;
 
-
+        if(debuging) for(int i = 0 ; i < select_lines.size(); i++) cout<<"i = "<< i <<" line_group "<<group_index<<endl<<endl;
+        
     // 二：
 		//////////// 找出五線譜 //////////////
-		///////////統計上面每個編號的個數//////////////
-		int * num_count_array = new int[num + 1]; //num is index喔!!!所以要 "+1"
-		for(int i = 0 ; i <= num ; i++) num_count_array[i] = 0; //num is index喔!!!所以要 "+1"
-		for(int i = 0 ; i < select_lines.size() ; i++) num_count_array[line_num_array[i]]++;
+		/////////// 統計上面每個編號的個數 //////////////
+		int * gid_count_array = new int[group_index + 1];                        // group_index 是 index喔!!! index轉數量要 "+1"
+		for(int i = 0 ; i <= group_index         ; i++) gid_count_array[i] = 0;  // group_index 是 index喔!!! 所以用 "=", 初始化 array
+		for(int i = 0 ; i <  select_lines.size() ; i++) gid_count_array[line_num_array[i]]++;
 
-		/////////// 如果個數有剛好五個的，代表找到五線譜了，存入staff_num/////////////
-		int * staff_num_array  = new int[num + 1];//num is index喔!!!所以要 "+1"
-		int staff_num_count = 0;
+		/////////// 如果個數有剛好五個的，代表找到五線譜了，存入staff_num /////////////
+		int * staff_num_array  = new int[group_index + 1];  // group_index 是 index喔!!! index轉數量要 "+1"
+		int staff_index = 0;
 
 		int go_line = 0;
 
-		for(int i = 0 ; i <= num ; i++){ //num is index喔!!!所以要 "="
+		for(int i = 0 ; i <= group_index ; i++){  // group_index 是 index喔!!! 所以用 "="
         // b： // 如果線大於五條的話，
-		    if(num_count_array[i] >5){
+		    if(gid_count_array[i] >5){
                 int staff_line_distance_2 = dist_level_0;
 
 
                 float ave_theta = 0;
-                for(int j = go_line ; j < num_count_array[i]+ go_line ; j++) ave_theta += select_lines[j][1];
-                ave_theta /= num_count_array[i];
+                for(int j = go_line ; j < gid_count_array[i]+ go_line ; j++) ave_theta += select_lines[j][1];
+                ave_theta /= gid_count_array[i];
 
                 do{
-                    for(int j = go_line ; j < num_count_array[i]+go_line ; j++){
+                    for(int j = go_line ; j < gid_count_array[i]+go_line ; j++){
                         // 因為是 現在這條 跟 下一條 相減來看距離，所以最後一條不能做(因為沒有下一條了)，一定要這個if
-                        if( j < num_count_array[i]+ go_line -1){
+                        if( j < gid_count_array[i]+ go_line -1){
                             // 不用distance是因為~~~要多寫處理array的position_erase麻煩且當除沒想到ˊ口ˋ，所以乾脆直接減拉~~
                             if( (select_lines[j+1][0] - select_lines[j][0]) < staff_line_distance_2 ){
                                 if(abs(select_lines[j+1][1] - ave_theta) > abs(select_lines[j][1] - ave_theta)){
                                     position_erase(select_lines,j+1);
-                                    num_count_array[i]--;
+                                    gid_count_array[i]--;
                                     j--;
                                 }
                                 else{
                                     position_erase(select_lines,j);
-                                    num_count_array[i]--;
+                                    gid_count_array[i]--;
                                     j--;
                                 }
                             }
@@ -279,21 +316,21 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1,
                     staff_line_distance_2++;
                     // cout<<"still while~~  ";
                     // cout<<"staff_line_distance_2 = "<<staff_line_distance_2<<"  ";
-                    // cout<<"go_line = "<<go_line<<"  刪完後剩下"<<num_count_array[i]<<"條線"<<endl;
+                    // cout<<"go_line = "<<go_line<<"  刪完後剩下"<<gid_count_array[i]<<"條線"<<endl;
 
-                } while(num_count_array[i] > 5);
+                } while(gid_count_array[i] > 5);
                 // cout<<"staff_line_distance_2 = "<<staff_line_distance_2<<endl;
 
-                // cout<<"go_line = "<<go_line<<"  刪完後剩下"<<num_count_array[i]<<"條線"<<endl;
-                go_line += num_count_array[i];
-                staff_num_array[staff_num_count++] = i;
+                // cout<<"go_line = "<<go_line<<"  刪完後剩下"<<gid_count_array[i]<<"條線"<<endl;
+                go_line += gid_count_array[i];
+                staff_num_array[staff_index++] = i;
 
             }
 
         //c：
-            else if(num_count_array[i] <5)
+            else if(gid_count_array[i] <5)
             {
-                for(int j = 0 ; j < num_count_array[i] ; j++)
+                for(int j = 0 ; j < gid_count_array[i] ; j++)
                 {
                     position_erase(select_lines,go_line);
                     cout<<"go_line = "<<go_line<<endl;
@@ -301,22 +338,22 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1,
             }
 
         //a：
-			else if(num_count_array[i] ==5)
+			else if(gid_count_array[i] ==5)
             {
                 go_line += 5;
-                staff_num_array[staff_num_count++] = i;
+                staff_num_array[staff_index++] = i;
             }
 
 		}
 
 
-		for(int i = 0 ; i < staff_num_count ; i++) cout<<"The number of \""<<staff_num_array[i]<<"\" is the staff_number"<<endl;
+		for(int i = 0 ; i < staff_index ; i++) cout<<"The number of \""<<staff_num_array[i]<<"\" is the staff_number"<<endl;
 
         // 不要包成vector<Vec2f>staff[i]好了，因為  一、傳function不知道怎麼丟(下面是失敗的喔)  二多此一舉的感覺，用下面的for寫法存原來的線就可以拉！
-        // staff = new vector<Vec2f>[staff_num_count];
+        // staff = new vector<Vec2f>[staff_index];
         /*
-        for(int i = 0 ; i < staff_num_count ; i++) staff[i].clear();
-        for(int i = 0 ; i < staff_num_count ; i++){
+        for(int i = 0 ; i < staff_index ; i++) staff[i].clear();
+        for(int i = 0 ; i < staff_index ; i++){
             int first_line = 5*i;
             int fifth_line = 5*(i+1)-1;
             for(int j = first_line ; j <= fifth_line ; j++)
@@ -329,7 +366,7 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1,
         */
 
         // 用這個for寫法就可以用 staff 為單位來用線囉！
-        for(int i = 0 ; i < staff_num_count ; i++){
+        for(int i = 0 ; i < staff_index ; i++){
             int first_line = 5*i;
             int fifth_line = 5*(i+1)-1;
             for(int j = first_line ; j <= fifth_line ; j++){
@@ -338,7 +375,7 @@ int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1,
         }
 
 
-		return (staff_num_count);
+		return (staff_index);
 		/////////////////////////////////////////////
 
 		// cout<<"address of staff_num_array = "<< staff_num_array<<endl;
