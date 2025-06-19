@@ -54,7 +54,7 @@ void See_mountain(const Mat & src_img, int e_count, int l_edge[], int r_edge[], 
     cvtColor(src_img, visual_img, CV_GRAY2BGR);
 
     for(int go_m = 0; go_m < e_count; go_m++){
-        cout << file_path + "_detail" << endl
+        cout << file_path + " detail: "
              << "go_m = "             << setw(3) << go_m 
              << ", l_edge = "         << setw(4) << l_edge       [go_m]
              << ", r_edge = "         << setw(4) << r_edge       [go_m]
