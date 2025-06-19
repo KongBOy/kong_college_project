@@ -10,6 +10,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "preprocess_0_watch_hough_line.h"
 #include "preprocess_5_find_staff.h"
 
 #define STAFF_LINE_DISTANCE_ERROR 3
@@ -45,39 +46,39 @@ void position_erase(vector<Vec2f>&src_lines,int position){
         return;
     }
 }
-void filter_distance(vector<Vec2f>& src_lines,int line_distance_err){
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //////////////// 把90度的線找出來 /////////////////
 
-	// const int line_distance_err = 5;  // 第二條線以後要跟前一條線比較距離最小間隔，經過很多圖片測試(連手寫校歌也測了)， < 5 通常就是同條線
-	const double angle_err = 5;
-
-
-
-    // step 1 接近水平
-    // double angle_value = (theta/PI)*180;
+void filter_multi_same_line(vector<Vec2f>& src_lines, int line_distance_err, bool debuging){
+    // 去除重複線, 走訪每一條線, 第二條線以後 和前一條線比 如果太相近 或 差太多 就去掉
 	for(int i = 0 ; i < src_lines.size() ; i++){
-        if( abs( (src_lines[i][1]/PI*180) - 90 ) > angle_err ){
+        // 每一條線都不可以跟90度差太遠, 差太遠就不存, 經過很多圖片測試(連手寫校歌也測了)， < 5 通常就是同條線
+        if( abs( (src_lines[i][1]/PI*180) - 90 ) > 5 ){
             position_erase(src_lines, i);
             i--;
         }
 
-        if( i >= 1){ //第二條線以後要跟前一條線比較距離，太近就代表同條線不用存喔，還有角度離90度差太多也不用存
-            // cout<<abs( (src_lines[i][1]/PI*180) - 90)<<endl;
-            // cout<<"i = "<<i <<endl;
+        // 第二條線以後要還要跟前一條線比較距離，太近就代表同條線不用存喔，還有角度離上一條線差太多也不用存
+        if( i >= 1){ 
+            if(debuging) cout<< "line_" << i << " and line_" << i - 1 << " distance: " << src_lines[i][0] - src_lines[i-1][0]<<", angle_diff: "<< abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI)) << " , ";
+            
+            
+            // 太近就代表同條線不用存
             if( ( src_lines[i][0] - src_lines[i-1][0] <= line_distance_err ) ){
+                if(debuging) cout<< "line_" << i <<" distance_too_short: "<< src_lines[i][0] - src_lines[i-1][0] << endl;
                 position_erase(src_lines, i);
                 i--;
+                continue;
             }
-            else if( abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI)) > 1.5 && ( src_lines[i][0] - src_lines[i-1][0] < line_distance_err )){
+            // 如果稍近 但 角度離上一條線差太多也不用存, 測試後覺得 1.5度不錯
+            if( ( src_lines[i][0] - src_lines[i-1][0] <= line_distance_err * 2 ) && abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI)) > 1.5 ){
+                if(debuging) cout<< "line_" << i <<" angle_diff_too_big: "<< abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI)) << endl;
                 position_erase(src_lines, i);
                 i--;
-
-                cout<<" angle_err = "<< abs((src_lines[i-1][1]*180/PI) - (src_lines[i][1]*180/PI))<<endl;
+                continue;
             }
+            if(debuging) cout << endl;
         }
-        else ; //do nothing
     }
+    if(debuging) Watch_Hough_Line(src_lines);
     return;
 }
 /*
@@ -186,12 +187,12 @@ int find_Staff(vector<Vec2f> src_lines,vector<Vec2f>& select_lines_2, int*& line
 
 
 //不要用 vector<Vec2f>*& staff 原因寫在下面
-int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1){
+int find_Staff2(vector<Vec2f>& select_lines, int dist_level_0, int dist_level_1, bool debuging){
     //////////////// 把90度的線找出來 /////////////////
 
 
     // 把可能是相同線的線先濾掉
-    filter_distance(select_lines,dist_level_0);
+    filter_multi_same_line(select_lines, dist_level_0, debuging);
 
 
     //再來要check濾完以後的線
