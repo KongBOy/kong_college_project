@@ -93,49 +93,6 @@ void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count,
 
 
 int Check_shift(int,int,int,int);
-
-/*
-void Watch_Hough_Line2 (vector<Vec2f> lines , Mat drew_img , string window_name){
-	for(size_t i = 0; i < lines.size(); i++ ){
-		cout<<"i = "<<i<<" , ";
-		float rho = lines[i][0], theta = lines[i][1];
-		double angle_value = (theta/PI)*180;
-		cout<<"rho = "<<rho<<" , theta = "<<angle_value;
-
-		//////////////// 起點走多少
-		int width = drew_img.cols;
-		int height = drew_img.rows;
-		// cout<<" , width = "<<width;
-		double one_step_height = 1 / sin(theta);
-		int width_step = ( width / 2 ) - (width/100) * (15/2); //15是col的百分比
-
-		Point pt1, pt2;
-		double a = cos(theta), b = sin(theta);
-		double x0 = 0, y0 = b*rho;//rho / (sin(theta)*sin(theta));
-		cout<<" , x0  = "<<x0 <<" , y0 = "<<y0;
-		cout<<endl;
-		x0 += width_step; //y0 += width_step * one_step_height;
-		// double x0 = a*rho, y0 = b*rho;
-
-
-		pt1.x = cvRound(x0 + 10*(-b));
-		pt1.y = cvRound(y0 + 10*(a));
-		pt2.x = cvRound(x0 - 10*(-b));
-		pt2.y = cvRound(y0 - 10*(a));
-		line( drew_img , pt1, pt2, Scalar(0,i,255), 1, CV_AA);
-
-		// cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
-
-		// imshow( "Hough", color_dst );
-
-	}
-	// waitKey(0);
-	cout<<endl;
-	imshow(window_name,drew_img);
-	imwrite(window_name + ".bmp",drew_img);
-}
-*/
-
 // 用來測試某個 點 可能是否在線上
 // 門檻值為 CHECK_LINE_LENGTH * CODA_RATE
 // 回傳值：
