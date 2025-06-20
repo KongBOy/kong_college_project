@@ -80,7 +80,7 @@ void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count,
         vector<Vec2f> staff;
         for(int j = first_line ; j <= fifth_line ; j++){
             staff.push_back(staff_lines[j]);
-            // cout<<"j = "<<j<<" data = "<<staff_lines[j][0]<<" "<<staff_lines[j][1]<<endl;
+            // cout << "j = " << j << " data = " << staff_lines[j][0] << " " << staff_lines[j][1] << endl;
         }
         Find_Head( staff, color_ord_img ,(string)HORIZONTAL_DIR + "find_head",test_bin,left_point[i],right_point[i]);
     }
@@ -129,15 +129,15 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
     line_g_img = bin_src_img.clone();
 	const int line_width = 2;
 	for(int i = 0; i < lines.size(); i++ ){
-		cout<<"go_staff_line = "<<i<<" ,";
+		cout << "go_staff_line = " << i << " ,";
 		float rho = lines[i][0], theta = lines[i][1];
 		double angle_value = (theta/PI)*180;
-		//cout<<"rho = "<<rho<<" ,theta = "<<angle_value;
+		// cout << "rho = " << rho << " ,theta = " << angle_value;
 
 		// 起點走多少
 		int width = drew_img.cols;
 		int height = drew_img.rows;
-		// cout<<" ,width = "<<width;
+		// cout << " ,width = " << width;
 
 		Point pt1, pt2;
 		double a = cos(theta), b = sin(theta);
@@ -346,7 +346,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                                 pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
                                 pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
                                 line( drew_img , pt1, pt2, Scalar(50,255,50), 2, CV_AA);
-                                cout<<"bend detected"<<endl;
+                                cout << "bend detected" << endl;
                             }
                             break;
                         }
@@ -359,7 +359,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                                 pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
                                 pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
                                 line( drew_img , pt1, pt2, Scalar(50,50,255), 2, CV_AA);
-                                cout<<"bend detected"<<endl;
+                                cout << "bend detected" << endl;
                             }
                             break;
                         }
@@ -386,7 +386,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                 left_point[i][1] = y0;
             }
 
-            cout<<"test "<<i<<" = "<<"x0="<<x0 <<" , y0="<<y0<<endl;
+            cout << "test " << i << " = " << "x0=" << x0 << " , y0=" << y0 << endl;
 
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -564,7 +564,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
         pt2.x = cvRound(x0); //- 10*(-b));
         pt2.y = cvRound(y0); //- 10*(a));
 		line( drew_img , pt1, pt2, Scalar(0,0,255), 2, CV_AA);
-		cout<<"test "<<i<<" = "<<"x0="<<x0 <<" , y0="<<y0<<endl;
+		cout << "test " << i << " = " << "x0=" << x0 << " , y0=" << y0 << endl;
 
 		left_point[i][0] = x0;
 		left_point[i][1] = y0;
