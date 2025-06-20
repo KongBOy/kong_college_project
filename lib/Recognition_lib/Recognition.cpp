@@ -236,7 +236,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     int*** left_point;// = new int**[staff_count];
     int*** right_point;// = new int**[staff_count];a
     try{
-        Find_Head_Interface(test_bin, lines, staff_count, left_point, right_point, color_src_img);
+        Find_Head_Interface(test_bin, lines, staff_count, left_point, right_point, color_src_img, debuging);
         cout<<"find_head_end~"<<endl;
     }
     catch (exception e){
