@@ -35,7 +35,7 @@
 
 
 ///#define HORIZONTAL_DIR "horizontal_test/"
-#define HORIZONTAL_DIR "debug_preprocess/"
+#define HORIZONTAL_DIR "debug_img/pre6_"
 
 
 
@@ -50,7 +50,7 @@ static string file_name;
 
 
 //interface，先把東西包成對的格式，再丟到find_head找頭
-void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count, int***& left_point, int***& right_point, Mat color_ord_img){
+void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count, int***& left_point, int***& right_point, Mat color_ord_img, bool debuging){
     // staff = new vector<Vec2f>[staff_count];
     left_point  = new int**[staff_count];
     right_point = new int**[staff_count];
@@ -82,7 +82,7 @@ void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count,
             staff.push_back(staff_lines[j]);
             // cout << "j = " << j << " data = " << staff_lines[j][0] << " " << staff_lines[j][1] << endl;
         }
-        Find_Head( staff, color_ord_img ,(string)HORIZONTAL_DIR + "find_head",test_bin,left_point[i],right_point[i]);
+        Find_Head( staff, color_ord_img ,(string)HORIZONTAL_DIR + "find_head",test_bin,left_point[i],right_point[i], debuging);
     }
 }
 
@@ -98,7 +98,7 @@ int Check_shift(int,int,int,int);
 // 回傳值：
 //   如果可能  是  在線上，回傳可能程度
 //   如果可能 不是 在線上，回傳失敗值
-int Check_shift(int x0,int y0,int one_step,int one_step_height){
+int Check_shift(int x0, int y0, int one_step, int one_step_height){
     int count = 0;
     for(int i = 0 ; i < CHECK_LINE_LENGTH ; i++)
     {
@@ -125,39 +125,54 @@ void Erase_line(int x0 , int y0, int one_step, int one_step_height,int go_range)
 }
 */
 // 已經把消線分開寫了，所以把所有 Mat & 拿掉囉~~
-void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_src_img, int**& left_point, int**& right_point){
+void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_src_img, int**& left_point, int**& right_point, bool debuging){
+    if(debuging) cout << "Find_Head" << endl;
     line_g_img = bin_src_img.clone();
 	const int line_width = 2;
 	for(int i = 0; i < lines.size(); i++ ){
-		cout << "go_staff_line = " << i << " ,";
-		float rho = lines[i][0], theta = lines[i][1];
+        float rho = lines[i][0], theta = lines[i][1];
 		double angle_value = (theta/PI)*180;
-		// cout << "rho = " << rho << " ,theta = " << angle_value;
+		if(debuging){
+            cout << "go_staff_line = " << i << " ,";
+            cout << "rho = " << rho << ", angle_value = " << angle_value << endl;
+        }
 
 		// 起點走多少
-		int width = drew_img.cols;
+		int width  = drew_img.cols;
 		int height = drew_img.rows;
-		// cout << " ,width = " << width;
+        if(debuging){
+            cout << "width  = " << width  << endl;
+            cout << "height = " << height << endl;
+        }
 
 		Point pt1, pt2;
-		double a = cos(theta), b = sin(theta);
+		double cos_th = cos(theta), sin_th = sin(theta);
 		// 正確打法 -1 * cos(theta)
-		double one_step_height = -1 * a; //1 / b * -1;
+		double one_step_height = -1 * cos_th; //1 / sin_th * -1;
 		// 因為我們是用 "擷取正中間左右10%的圖來做hough" 所得到的線，所以一開始的x要位移到正確的位置才行
-		int width_step = ( (double)width / 2 ) - ((double)width/100) * ((double)ROI_WIDTH/2); //ROI_WIDTH是col的百分比
+		int center_roi_start_x = ( (double)width / 2 ) - ((double)width) * ((double)ROI_WIDTH / 100 /2); //ROI_WIDTH是col的百分比
 
 
         for(int direction = 0 ; direction < 2 ; direction++){
             ////////******/////// 正確打法 ////////******////////
             ////////******/////////////////////////******////////
-            double x0 = a*rho, y0 = b*rho;  //這是一定在線上的某個點
-
+            double x0 = cos_th * rho, y0 = sin_th * rho;  //這是一定在線上的某個點
+            
             // 因為我們是用 "擷取正中間左右 ROI_WIDTH%的圖來做hough" 所得到的線，所以一開始的x要位移到正確的位置才行
-            x0 += width_step;
-
-            double one_step = (-1 * rho * a ) * b; //往左走了 -rho * cos 個 sin，就可以把點走回原點
+            x0 += center_roi_start_x;
+            
+            double one_step = (-1 * rho * cos_th ) * sin_th; //往左走了 -rho * cos 個 sin，就可以把點走回原點
+            cout << "rho            : " << rho << endl;
+            cout << "x0             : " << x0 << endl;
+            cout << "y0             : " << y0 << endl;
+            cout << "cos_th         : " << cos_th << endl;
+            cout << "sin_th         : " << sin_th << endl;
+            cout << "one_step       : " << one_step << endl;
+            cout << "one_step_height: " << one_step_height << endl;
+            cout << endl;
             x0 += one_step;
             y0 += one_step * one_step_height;
+            // cout << "停" << endl;
             ////////******/////////////////////////******////////
             ////////******/////////////////////////******////////
             ///////*******//////// test ///////////******/////////
@@ -172,7 +187,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
             }
 
             for(int j = 0 ; j < width/2 + width * ((float)ROI_WIDTH/(float)100); j++){
-    			// one_step = 1;//(j * 1 / b ) * b; //往左走了 -rho * cos 個 sin
+    			// one_step = 1;//(j * 1 / sin_th ) * sin_th; //往左走了 -rho * cos 個 sin
                 // Erase_line(x0,y0,one_step,one_step_height,1);
                 x0 += one_step;
                 y0 += one_step * one_step_height;
@@ -195,7 +210,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                 // 一、就代表你右邊 JUMP_SPACE_LENGTH 格都可能不是在線上！！
                 // 二、X0 Y0 不會被更新喔喔喔喔喔喔！
                 for(int k = 0; k < JUMP_SPACE_LENGTH; k++){
-                    if( Check_shift(x0+k*one_step , y0 +k*one_step*one_step_height +0 ,one_step,one_step_height) != CHECK_FAILED ){
+                    if( Check_shift(x0 + k * one_step, y0 + k * one_step * one_step_height + 0, one_step, one_step_height) != CHECK_FAILED ){
                         //如果真的在線上，用flag標記一下為true，等等就不用做 彎曲測試直接continue做下一個點了
                         flag = true;
 
@@ -220,10 +235,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                                         line_g_img.at<uchar>(y0-3+go*one_step*one_step_height , x0+go*one_step) = 255;
                                         line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
                                         */
-                                        pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                                        pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                                        pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                                        pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                                        pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                                        pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                                        pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                                        pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                                         line( drew_img , pt1, pt2, Scalar(255,0,0), 2, CV_AA);
                                     }
 
@@ -261,10 +276,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                                     line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
                                     */
 
-                                    pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                                    pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                                    pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                                    pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                                    pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                                    pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                                    pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                                    pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                                     line( drew_img , pt1, pt2, Scalar(0,255,0), 2, CV_AA);
                                 }
                                 x0 += k*one_step;
@@ -284,10 +299,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                                     line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
                                     */
 
-                                    pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                                    pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                                    pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                                    pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                                    pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                                    pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                                    pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                                    pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                                     line( drew_img , pt1, pt2, Scalar(0,0,255), 2, CV_AA);
 
                                 }
@@ -307,10 +322,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                         line_g_img.at<uchar>(y0+3,x0) = 255;
                         */
                         /*
-                        pt1.x = cvRound(x0); //+ 10*(-b));
-                        pt1.y = cvRound(y0); //+ 10*(a));
-                        pt2.x = cvRound(x0); //- 10*(-b));
-                        pt2.y = cvRound(y0); //- 10*(a));
+                        pt1.x = cvRound(x0); //+ 10*(-sin_th));
+                        pt1.y = cvRound(y0); //+ 10*(cos_th));
+                        pt2.x = cvRound(x0); //- 10*(-sin_th));
+                        pt2.y = cvRound(y0); //- 10*(cos_th));
                         line( drew_img , pt1, pt2, Scalar(50,100,150), 2, CV_AA);
                         */
                     }
@@ -341,10 +356,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                             y0 -= j;
 
                             for(int go = 0 ; go <= j ; go++){
-                                pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                                pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                                pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                                pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                                pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                                pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                                pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                                pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                                 line( drew_img , pt1, pt2, Scalar(50,255,50), 2, CV_AA);
                                 cout << "bend detected" << endl;
                             }
@@ -354,10 +369,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                             y0 += j;
 
                             for(int go = 0 ; go <= j ; go++){
-                                pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                                pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                                pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                                pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                                pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                                pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                                pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                                pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                                 line( drew_img , pt1, pt2, Scalar(50,50,255), 2, CV_AA);
                                 cout << "bend detected" << endl;
                             }
@@ -371,10 +386,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                     }
                 }	////////////////////////////////////
 		    }
-            pt1.x = cvRound(x0); //+ 10*(-b));
-            pt1.y = cvRound(y0); //+ 10*(a));
-            pt2.x = cvRound(x0); //- 10*(-b));
-            pt2.y = cvRound(y0); //- 10*(a));
+            pt1.x = cvRound(x0); //+ 10*(-sin_th));
+            pt1.y = cvRound(y0); //+ 10*(cos_th));
+            pt2.x = cvRound(x0); //- 10*(-sin_th));
+            pt2.y = cvRound(y0); //- 10*(cos_th));
             line( drew_img , pt1, pt2, Scalar(0,0,255), 20, CV_AA);
 
             if(direction == 0){
@@ -398,10 +413,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
 
     /*
     //只有這裡不一樣，上面宣告過了//
-    x0 = a*rho, y0 = b*rho;
-    x0 += width_step;
+    x0 = cos_th*rho, y0 = sin_th*rho;
+    x0 += center_roi_start_x;
 
-    one_step = (-1 * rho * a ) * b; //往左走了 -rho * cos 個 sin
+    one_step = (-1 * rho * cos_th ) * sin_th; //往左走了 -rho * cos 個 sin
     x0 += one_step;
     y0 += one_step * one_step_height;
 
@@ -410,7 +425,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
     // 只有這裡不一樣，range不一樣而已 //
     for(int i = 0 ; i < width/2 - width * ((float)ROI_WIDTH/(float)100)/2; i++){
         // 只有這裡不一樣，變成往左走//
-        one_step = -1;  //(i * 1 / b ) * b;  //往左走了 -rho * cos 個 sin
+        one_step = -1;  //(i * 1 / sin_th ) * sin_th;  //往左走了 -rho * cos 個 sin
         x0 += one_step;
         y0 += one_step * one_step_height;
 
@@ -447,10 +462,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                                 line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
 
 
-                                pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                                pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                                pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                                pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                                pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                                pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                                pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                                pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                                 line( drew_img , pt1, pt2, Scalar(255,50,50), 2, CV_AA);
 
                             }
@@ -479,10 +494,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                             line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
 
 
-                            pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                            pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                            pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                            pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                            pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                            pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                            pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                            pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                             line( drew_img , pt1, pt2, Scalar(50,255,50), 2, CV_AA);
 
                         }
@@ -501,10 +516,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                             line_g_img.at<uchar>(y0+3+go*one_step*one_step_height , x0+go*one_step) = 255;
 
 
-                            pt1.x = cvRound(x0+go*one_step); //+ 10*(-b));
-                            pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(a));
-                            pt2.x = cvRound(x0+go*one_step); //- 10*(-b));
-                            pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(a));
+                            pt1.x = cvRound(x0+go*one_step); //+ 10*(-sin_th));
+                            pt1.y = cvRound(y0+go*one_step*one_step_height); //+ 10*(cos_th));
+                            pt2.x = cvRound(x0+go*one_step); //- 10*(-sin_th));
+                            pt2.y = cvRound(y0+go*one_step*one_step_height); //- 10*(cos_th));
                             line( drew_img , pt1, pt2, Scalar(50,50,255), 2, CV_AA);
 
                             }
@@ -522,10 +537,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                 line_g_img.at<uchar>(y0-3,x0) = 255;
                 line_g_img.at<uchar>(y0+3,x0) = 255;
 
-                pt1.x = cvRound(x0); //+ 10*(-b));
-                pt1.y = cvRound(y0); //+ 10*(a));
-                pt2.x = cvRound(x0); //- 10*(-b));
-                pt2.y = cvRound(y0); //- 10*(a));
+                pt1.x = cvRound(x0); //+ 10*(-sin_th));
+                pt1.y = cvRound(y0); //+ 10*(cos_th));
+                pt2.x = cvRound(x0); //- 10*(-sin_th));
+                pt2.y = cvRound(y0); //- 10*(cos_th));
                 line( drew_img , pt1, pt2, Scalar(150,100,50), 2, CV_AA);
 
             }
@@ -559,10 +574,10 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
 			}
 		}
 
-        pt1.x = cvRound(x0); //+ 10*(-b));
-        pt1.y = cvRound(y0); //+ 10*(a));
-        pt2.x = cvRound(x0); //- 10*(-b));
-        pt2.y = cvRound(y0); //- 10*(a));
+        pt1.x = cvRound(x0); //+ 10*(-sin_th));
+        pt1.y = cvRound(y0); //+ 10*(cos_th));
+        pt2.x = cvRound(x0); //- 10*(-sin_th));
+        pt2.y = cvRound(y0); //- 10*(cos_th));
 		line( drew_img , pt1, pt2, Scalar(0,0,255), 2, CV_AA);
 		cout << "test " << i << " = " << "x0=" << x0 << " , y0=" << y0 << endl;
 
