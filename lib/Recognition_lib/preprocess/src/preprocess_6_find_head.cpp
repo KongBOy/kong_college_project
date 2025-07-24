@@ -100,8 +100,7 @@ int Check_shift(int,int,int,int);
 //   如果可能 不是 在線上，回傳失敗值
 int Check_shift(int x0, int y0, int one_step, int one_step_height){
     int count = 0;
-    for(int i = 0 ; i < CHECK_LINE_LENGTH ; i++)
-    {
+    for(int i = 0 ; i < CHECK_LINE_LENGTH ; i++){
         if     ( line_g_img.at<uchar>(y0 + i * one_step_height * one_step    ,x0 + i * one_step) == 0 ) count++;
         else if( line_g_img.at<uchar>(y0 + i * one_step_height * one_step -1 ,x0 + i * one_step) == 0 ) count++;
         else if( line_g_img.at<uchar>(y0 + i * one_step_height * one_step +1 ,x0 + i * one_step) == 0 ) count++;
