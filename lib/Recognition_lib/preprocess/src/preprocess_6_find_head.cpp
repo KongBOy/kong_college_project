@@ -60,13 +60,13 @@ void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count,
         right_point[i] = new int*[STAFF_LINE_COUNT];
 
 
-        for(int j = 0 ; j < STAFF_LINE_COUNT ; j++){
-            left_point[i][j] = new int[X_Y_COUNT];
-            right_point[i][j] = new int[X_Y_COUNT];
+        for(int go_width = 0 ; go_width < STAFF_LINE_COUNT ; go_width++){
+            left_point[i][go_width] = new int[X_Y_COUNT];
+            right_point[i][go_width] = new int[X_Y_COUNT];
 
             for(int k = 0 ; k < X_Y_COUNT ; k++){
-                left_point[i][j][k] = 1000; /// 隨便很大的數
-                right_point[i][j][k] = -1000; /// 隨便很小的數
+                left_point[i][go_width][k] = 1000; /// 隨便很大的數
+                right_point[i][go_width][k] = -1000; /// 隨便很小的數
             }
         }
     }
@@ -78,9 +78,9 @@ void Find_Head_Interface(Mat test_bin,vector<Vec2f>staff_lines, int staff_count,
         int fifth_line = 5*(i+1)-1;
 
         vector<Vec2f> staff;
-        for(int j = first_line ; j <= fifth_line ; j++){
-            staff.push_back(staff_lines[j]);
-            // cout << "j = " << j << " data = " << staff_lines[j][0] << " " << staff_lines[j][1] << endl;
+        for(int go_width = first_line ; go_width <= fifth_line ; go_width++){
+            staff.push_back(staff_lines[go_width]);
+            // cout << "go_width = " << go_width << " data = " << staff_lines[go_width][0] << " " << staff_lines[go_width][1] << endl;
         }
         Find_Head( staff, color_ord_img ,(string)HORIZONTAL_DIR + "find_head",test_bin,left_point[i],right_point[i], debuging);
     }
