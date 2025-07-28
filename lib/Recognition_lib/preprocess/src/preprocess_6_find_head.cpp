@@ -191,8 +191,6 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
             }
             
             cout << endl;
-            //  這個之前OK~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 
             double next_x = x0;
             double next_y = y0;
@@ -217,13 +215,13 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
                         //如果真的在線上，用flag標記一下為true，等等就不用做 彎曲測試直接continue做下一個點了
                         next_high_prob_on_line_flag = true;
 
-                        // 就算測試完的結果顯示 "很像線上的點" ， 但因為畫質關係二值化後也不一定會真的在線上(誤刪到線)，所以現在希望調整到在線上這樣子
-                        // 希望把點移到黑色的地方，就是二值化怕不小心誤刪線所以如果有空格先偵測是不是誤刪
-                        // (就那個空格來測測看像不像線)，同時也希望跳躍空洞
-                        // 往右10格
-                        if(line_g_img.at<uchar>(next_y, next_x + k*one_step) != 0){
+                        // 就算測試完的結果顯示 "很像線上的點" ， 但因為畫質關係二值化後也不一定會真的在線上(誤刪到線)，
+                        // 所以如果目前位置如果不是黑色, 
+                        // case1 就往右探勘 CHECK_LINE_LENGTH * CODA_RATE 格 希望調整到在線上這樣子
+                        if(line_g_img.at<uchar>(next_y + k*one_step*one_step_height, next_x + k*one_step) != 0){
+                            //往右探勘 的格子 CHECK_LINE_LENGTH * CODA_RATE 格
                             for(int l = 1 ; l < CHECK_LINE_LENGTH * CODA_RATE ; l++){
-                                //先 丟下一格要走的點 來預測他是不是線~~~ 如果是才移動喔！！
+                                //探勘的格子 如果高機率是線 且 該格是黑點, 就是在線上的點囉, 就移動過去這樣子
                                 if(   Check_shift(next_x + l*one_step , next_y + l*one_step*one_step_height +0, one_step, one_step_height ) != CHECK_FAILED
                                    && line_g_img.at<uchar>(next_y + l*one_step*one_step_height +0 ,next_x + l*one_step) == 0 ){
 
@@ -246,7 +244,7 @@ void Find_Head(vector<Vec2f> lines, Mat drew_img, string window_name, Mat bin_sr
 
                         // 反正就是不會有出現 往右跳完以後，還會在往上下跳的狀況！因為往右跳，代表已經在線上，在線上下面的if就會擋掉了！
 
-                        // 往上下各一格看哪個比較好
+                        // case2 往上下探勘各一格看哪個比較好
                         // 如果有需要做到這個，就一定代表右邊 CHECK_LINE_LENGTH 個格子 都可能不是線！！
                         if(line_g_img.at<uchar>(next_y, next_x + k*one_step) != 0){
                             // 多加這個是希望他往比較 "像線"的地方跑
