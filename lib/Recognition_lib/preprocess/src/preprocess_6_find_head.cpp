@@ -222,7 +222,6 @@ void Find_Head(vector<Vec2f> lines, string window_name, Mat src_bin, int**& left
                 
                 // 順著線走 如果現在是黑點, 代表在線上, 繼續走下一格
                 if(src_bin.at<uchar>(next_y, next_x) == 0){
-                    // 畫一下現在位置
                     Debug_draw(next_x, next_y, Scalar(0, 242, 255), 1);  // 黃色
                     continue;
                 }
@@ -232,14 +231,12 @@ void Find_Head(vector<Vec2f> lines, string window_name, Mat src_bin, int**& left
                 //   有可能已經走到盡頭
 
                 // 測試一下現在的點 是否高機率在線上
-                bool next_high_prob_on_line_flag = false;
-                
-                
+
                 for(int go_jump = 0; go_jump < JUMP_SPACE_LENGTH; go_jump++){
                     if( Check_shift(src_bin, next_x + go_jump * one_step, next_y + go_jump * one_step * one_step_height_go + 0, one_step, one_step_height_go) != CHECK_FAILED ){
                         // 如果真的 很可能在線上，用flag標記一下為true，等等就不用做 彎曲測試直接continue做下一個點了
                         // 也代表還沒走到盡頭 還需要 continue 繼續測試下一個點
-                        next_high_prob_on_line_flag = true;
+
                         
                         // 就算測試完的結果顯示 "很像線上的點" ， 但因為畫質關係二值化後也不一定會真的在線上(誤刪到線)，
                         // 所以如果目前位置如果不是黑色, 做 case1 往線方向的右邊探勘, 如果探不到再做 case2 往線方向的正上下方 探勘
@@ -331,7 +328,9 @@ void Find_Head(vector<Vec2f> lines, string window_name, Mat src_bin, int**& left
                     // 有可能是已經走到頭了
                     Debug_draw(next_x + go_jump * one_step, next_y + go_jump * one_step * one_step_height_go, Scalar(165, go_jump * 4, 96 + go_jump * 4), 1);  // 深深紫色
                 }
-                if(next_high_prob_on_line_flag == true) continue;
+                // 如果真的 很可能在線上，用flag標記一下為true，等等就不用做 彎曲測試直接continue做下一個點了
+                // 也代表還沒走到盡頭 還需要 continue 繼續測試下一個點
+
                 
 
                 // 經過 上面的 jump space 已經排除了 線誤刪的 但 仍然沒辦法 把點移動到線上的話
