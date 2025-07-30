@@ -28,28 +28,31 @@ using namespace std;
 
 // gray_dst = gray_destination
 // color_dst = color_destination
-void Watch_Hough_Line(vector<Vec2f> lines, const Mat & gray_dst, string window_name, string file_name)
+void Watch_Hough_Line(vector<Vec2f> lines, const Mat & gray_dst, string window_name, string file_name, double x_shift)
 {
 	Mat color_dst;
 	if(!gray_dst.empty()) cvtColor(gray_dst, color_dst, CV_GRAY2BGR);
 	
 
-	for(size_t i = 0; i < lines.size(); i++ )
-	{
+	for(size_t i = 0; i < lines.size(); i++ ){
 		cout<<"i = "<<i<<" , ";
-		float rho = lines[i][0], theta = lines[i][1];
+		double rho = lines[i][0], theta = lines[i][1];
 		double angle_value = (theta/PI)*180;
 		cout<<"rho = "<<rho<<" , theta = "<<angle_value<<endl;
 		
 		if(!gray_dst.empty()){
-			Point pt1, pt2;
+			Point2f pt1, pt2, pt_init;
 			double a = cos(theta), b = sin(theta);
 			double x0 = a*rho, y0 = b*rho;
+			x0 += x_shift;
+			pt_init.x = x0;
+			pt_init.y = y0;
 			pt1.x = cvRound(x0 + 1000*(-b));
 			pt1.y = cvRound(y0 + 1000*(a));
 			pt2.x = cvRound(x0 - 1000*(-b));
 			pt2.y = cvRound(y0 - 1000*(a));
-			line( color_dst, pt1, pt2, Scalar((i * 5 ) % 180, (i * 7 ) % 180, 255), 1, CV_AA);
+			line( color_dst, pt1    , pt2    , Scalar((i * 5 ) % 180, (i * 7 ) % 180, 255), 1, CV_AA);
+			line( color_dst, pt_init, pt_init, Scalar(             0,            102, 255), 3, CV_AA);  // 橘色 畫 起始點
 			// cout<<"pt1.x = "<<pt1.x<<",pt1.y = "<<pt1.y<<" , pt2.x = "<<pt2.x<<"pt2.y = "<<pt2.y<<endl;
 		}
 	}
