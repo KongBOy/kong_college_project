@@ -166,9 +166,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     cout<<"screen.step(GRAY) = "<<screen.step<<endl;
     */
 
-    Mat src_img   = ord_img.clone();
-    Mat test_bin  = src_img.clone();
-    Mat test_line = src_img.clone();
+    Mat src_img     = ord_img.clone();
+    Mat src_bin     = src_img.clone();
 
     ///*****************************************************
     /// for iphone~~~~
@@ -189,25 +188,25 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     // *******************************************************************
     
     ///********************** 二值化 *************************
-    test_bin = src_img.clone();
-    Binary_by_patch(test_bin, 15, 40);
+    src_bin = src_img.clone();
+    Binary_by_patch(src_bin, 15, 40);
     // test_Binary_by_Canny(src_img);
     // *******************************************************************
     
 
 
-    vector<Vec2f> lines;
-	vector<Vec4i> lines_p;
 	string file_name;
     file_name = (string)"test_bin_";
-    test_line = ~test_bin;
-    Center_ROI_by_slider(test_line, (string)ROI_DIR + "do_roi", debuging);
-    // imshow("test_roi",test_line);
+    Mat src_bin_roi = ~src_bin;
+    Center_ROI_by_slider(src_bin_roi, (string)ROI_DIR + "do_roi", debuging);
+    // imshow("test_roi",src_bin_roi);
     // waitKey(0);
-
-
-    Mat horizontal_img(test_line.rows ,test_line.cols, CV_8UC1, Scalar(0));
-    Horizon_map_to_find_line(test_line, lines, horizontal_img, debuging);
+    
+    
+    vector<Vec2f> lines;
+	vector<Vec4i> lines_p;
+    Mat horizontal_img(src_bin_roi.rows ,src_bin_roi.cols, CV_8UC1, Scalar(0));
+    Horizon_map_to_find_line(src_bin_roi, lines, horizontal_img, debuging);
 
     // 把線的 距離階層 找出來, 以目前抓出來的階層有三種：
     // dist_level[0]= 3    一條粗線裡面可能有 找到多條細線 之間的距離
@@ -217,10 +216,11 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     dist_level = Distance_detect(lines, debuging);
     // cout<<"distance_detect end"<<endl;
 
-    // 把计т碭舱絬甧竟     ┮Τ絬  ノㄓ縵匡distance
-    // 寫出去主程式用參數傳
+
+    // 利用 dist_level 找出五線譜
     staff_count = find_Staff2(lines, dist_level[0], dist_level[1], debuging);
-    // Watch_Hough_Line(lines,test_bin,(string)HORIZONTAL_DIR + "mountain_hough_line",(string)HORIZONTAL_DIR + "mountain_hough_line");
+    Watch_Hough_Line(lines, src_bin    , "",(string)"debug_img/" + "pre5_staff_line"    , 1066);
+    Watch_Hough_Line(lines, src_bin_roi, "",(string)"debug_img/" + "pre5_staff_line_roi"      );
     // waitKey(0);
     cout<<"find_staff_sucess"<<endl;
 
@@ -231,12 +231,12 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     // *******************************************************************
     // 因為我有改寫warp的function，水營的img轉正的會resize~~而且是對src存到src_img，所以不能用color_ord_img喔！
     Mat color_src_img;
-    cvtColor(src_img,color_src_img,CV_GRAY2BGR);
+    cvtColor(src_img, color_src_img, CV_GRAY2BGR);
 
     int*** left_point;// = new int**[staff_count];
     int*** right_point;// = new int**[staff_count];a
     try{
-        Find_Head_Interface(test_bin, lines, staff_count, left_point, right_point, color_src_img, debuging);
+        Find_Head_Interface(src_bin, lines, staff_count, left_point, right_point, color_src_img, debuging);
         cout<<"find_head_end~"<<endl;
     }
     catch (exception e){
@@ -246,14 +246,14 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     //    NextStep=0;
     //    break;
     }
-    Mat reduce_line_bin = test_bin.clone();
+    Mat reduce_line_bin = src_bin.clone();
     Reduce_lines(lines , color_src_img, (string)HORIZONTAL_DIR + "reduce_line", reduce_line_bin);
 
     // *******************************************************************
     // *******************************************************************
     //     cout<<"reduce_line_end~~~"<<endl;
 
-    UI_loading_preprocess(src_img, test_bin, staff_count, left_point, right_point, UI_bass, UI_WINDOW_NAME);
+    UI_loading_preprocess(src_img, src_bin, staff_count, left_point, right_point, UI_bass, UI_WINDOW_NAME);
 
 
 
@@ -262,7 +262,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     // double trans_start_point_x[40]; 寫出去主程式用參數傳
     // double trans_start_point_y[40]; 寫出去主程式用參數傳
     try{
-        Cut_staff(test_bin,reduce_line_bin,staff_count,left_point,right_point,
+        Cut_staff(src_bin,reduce_line_bin,staff_count,left_point,right_point,
                 final_rl_img_roi,final_img_roi,
                 trans_start_point_x,trans_start_point_y);
     }
