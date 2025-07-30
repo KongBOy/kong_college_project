@@ -234,57 +234,58 @@ void Find_Head(vector<Vec2f> lines, string window_name, Mat src_bin, int**& left
                 // 測試一下現在的點 是否高機率在線上
                 bool next_high_prob_on_line_flag = false;
                 
-                // 如果經過這個for，flag仍然沒有被更新成true的話，
-                //     一、就代表你右邊 JUMP_SPACE_LENGTH 格都可能不是在線上！！ 有可能就是已經到盡頭了
-                //     二、X0 Y0 不會被更新喔喔喔喔喔喔！
-                for(int k = 0; k < JUMP_SPACE_LENGTH; k++){
-                    if( Check_shift(src_bin, next_x + k * one_step, next_y + k * one_step * one_step_height_go + 0, one_step, one_step_height_go) != CHECK_FAILED ){
+                
+                for(int go_jump = 0; go_jump < JUMP_SPACE_LENGTH; go_jump++){
+                    if( Check_shift(src_bin, next_x + go_jump * one_step, next_y + go_jump * one_step * one_step_height_go + 0, one_step, one_step_height_go) != CHECK_FAILED ){
                         // 如果真的 很可能在線上，用flag標記一下為true，等等就不用做 彎曲測試直接continue做下一個點了
                         // 也代表還沒走到盡頭 還需要 continue 繼續測試下一個點
                         next_high_prob_on_line_flag = true;
-                        bool next_real_on_line_flag = false;
-
+                        
                         // 就算測試完的結果顯示 "很像線上的點" ， 但因為畫質關係二值化後也不一定會真的在線上(誤刪到線)，
-                        // 所以如果目前位置如果不是黑色, 
-                        // case1 就往右探勘 CHECK_LINE_LENGTH * CODA_RATE 格 希望調整到在線上這樣子
-                        if(src_bin.at<uchar>(next_y + k*one_step*one_step_height_go, next_x + k*one_step) != 0){
-                            //往右探勘 的格子 CHECK_LINE_LENGTH * CODA_RATE 格
-                            for(int l = 1 ; l < CHECK_LINE_LENGTH * CODA_RATE ; l++){
+                        // 所以如果目前位置如果不是黑色, 做 case1 往線方向的右邊探勘, 如果探不到再做 case2 往線方向的正上下方 探勘
+
+                        // case1 就往線方向的右邊探勘 CHECK_LINE_LENGTH * CODA_RATE 格 希望調整到在線上這樣子
+                        bool go_Right_on_line_flag = false;
+                        if(src_bin.at<uchar>(next_y + go_jump*one_step*one_step_height_go, next_x + go_jump*one_step) != 0){
+                            //往右探勘 CHECK_LINE_LENGTH * CODA_RATE 格
+                            for(int go_R = 1 ; go_R < CHECK_LINE_LENGTH * CODA_RATE ; go_R++){
                                 //探勘的格子 如果高機率是線 且 該格是黑點, 就是在線上的點囉, 就移動過去這樣子
-                                if(   Check_shift(src_bin, next_x + l*one_step , next_y + l*one_step*one_step_height_go +0, one_step, one_step_height_go ) != CHECK_FAILED
-                                   && src_bin.at<uchar>(next_y + l*one_step*one_step_height_go +0 ,next_x + l*one_step) == 0 ){
+                                if(   Check_shift(src_bin, next_x + go_R*one_step , next_y + go_R*one_step*one_step_height_go +0, one_step, one_step_height_go ) != CHECK_FAILED
+                                   && src_bin.at<uchar>(next_y + go_R*one_step*one_step_height_go +0 ,next_x + go_R*one_step) == 0 ){
 
                                     Debug_draw(next_x, next_y, Scalar(255, 0, 0), 1);  // 藍色
                                     
-                                    next_x += l*one_step;
-                                    next_y += l*one_step*one_step_height_go ;
-                                    next_real_on_line_flag = true;
+                                    next_x += go_R*one_step;
+                                    next_y += go_R*one_step*one_step_height_go ;
+                                    go_Right_on_line_flag = true;
                                     
                                     Debug_draw(next_x, next_y, Scalar(255, 0, 0), 1);  // 藍色
-                                    break; //這個break是因為這裡測10格所以必須寫for迴圈，一測到要需要跳出去才加的所以不能少喔！
+                                    break;  //這個break是因為這裡測10格所以必須寫for迴圈，一測到要需要跳出去才加的所以不能少喔！
                                 }
                             }
                         }
-                        if(next_real_on_line_flag) break;
-                        // 到這裡為止，如果上面有順利移動成功，那麼現在的點 就會在線上囉！ 所以下面的 "看上下哪一格比較好" 就不會執行了，不要再搞混了！
-                        // 如果沒有順利移動成功，x0,y0也會在原地不動呦要注意別再搞混了~~~
+                        // 往右探勘已經順利找到點了, 就可以跳出 jump_sapce 繼續順著線往下走囉
+                        if(go_Right_on_line_flag) break;
 
-                        // 反正就是不會有出現 往右跳完以後，還會在往上下跳的狀況！因為往右跳，代表已經在線上，在線上下面的if就會擋掉了！
+                        // 到這裡為止，如果上面有順利移動成功，那麼現在的點 就會在線上囉！ 所以下面的 "case2 往線方向走 的 正上下探勘各一格看哪個比較好" 就不會執行了，不要再搞混了！
+                        // 如果沒有順利移動成功, next_x, next_y 也會在原地不動呦要注意別再搞混了~~~
 
-                        // case2 往上下探勘各一格看哪個比較好
+                        // 反正就是不會有出現 往右跳完以後，還會在往上下跳的狀況！因為往右跳，代表已經在線上，在線上下面的 if不在線上 就會擋掉了！
+
+                        // case2 往線方向走 的 正上下探勘各一格看哪個比較好
                         // 如果有需要做到這個，就一定代表右邊 CHECK_LINE_LENGTH 個格子 都可能不是線！！往線方向走的 上下一格 找找看
-                        if(src_bin.at<uchar>(next_y, next_x + k*one_step) != 0){
+                        if(src_bin.at<uchar>(next_y, next_x + go_jump*one_step) != 0){
                             // 往線方向走 的 正上下一格 找找看
-                            int cmp_up   = Check_shift(src_bin, next_x + k*one_step , next_y + k*one_step*one_step_height_go - 1 ,one_step,one_step_height_go);
-                            int cmp_down = Check_shift(src_bin, next_x + k*one_step , next_y + k*one_step*one_step_height_go + 1 ,one_step,one_step_height_go);
+                            int cmp_up   = Check_shift(src_bin, next_x + go_jump*one_step , next_y + go_jump*one_step*one_step_height_go - 1 ,one_step,one_step_height_go);
+                            int cmp_down = Check_shift(src_bin, next_x + go_jump*one_step , next_y + go_jump*one_step*one_step_height_go + 1 ,one_step,one_step_height_go);
 
                             // 往線方向走 的 正下一格 如果看起來比 正上一格 更像線 且 該格是黑點, 移動到那一格(往線的方向移動 和 往正下方偏移一格)
-                            if(cmp_up >= cmp_down && cmp_up != CHECK_FAILED && src_bin.at<uchar>(next_y + k*one_step*one_step_height_go -1, next_x + k*one_step) == 0){
+                            if(cmp_up >= cmp_down && cmp_up != CHECK_FAILED && src_bin.at<uchar>(next_y + go_jump*one_step*one_step_height_go -1, next_x + go_jump*one_step) == 0){
                                 
                                 Debug_draw(next_x, next_y, Scalar(0, 255, 0), 1);  // 綠色
                                 
-                                next_x += k*one_step;
-                                next_y += k*one_step*one_step_height_go ;
+                                next_x += go_jump*one_step;
+                                next_y += go_jump*one_step*one_step_height_go ;
                                 next_y--;
                                 
                                 Debug_draw(next_x, next_y, Scalar(0, 255, 0), 1);  // 綠色
@@ -301,12 +302,12 @@ void Find_Head(vector<Vec2f> lines, string window_name, Mat src_bin, int**& left
                                 // cout<< "one_step_height_go: " << one_step_height_go <<endl<<endl;
                             }
                             // 往線方向走 的 正上一格 如果看起來比 正下一格 更像線 且 該格是黑點, 移動到那一格(往線的方向移動 和 往正上方偏移一格)
-                            else if(cmp_down > cmp_up && cmp_down != CHECK_FAILED && src_bin.at<uchar>(next_y +k*one_step*one_step_height_go +1 ,next_x+k*one_step) == 0 ){ //if( cmp_up != CHECK_FAILED && cmp_down == CHECK_FAILED)                                
+                            else if(cmp_down > cmp_up && cmp_down != CHECK_FAILED && src_bin.at<uchar>(next_y +go_jump*one_step*one_step_height_go +1 ,next_x+go_jump*one_step) == 0 ){ //if( cmp_up != CHECK_FAILED && cmp_down == CHECK_FAILED)                                
                                 
                                 Debug_draw(next_x, next_y, Scalar(0, 0, 255), 1);  // 紅色
                                 
-                                next_x += k*one_step;
-                                next_y += k*one_step*one_step_height_go ;
+                                next_x += go_jump*one_step;
+                                next_y += go_jump*one_step*one_step_height_go ;
                                 next_y++;
                                 
                                 Debug_draw(next_x, next_y, Scalar(0, 0, 255), 1);  // 紅色
@@ -328,14 +329,18 @@ void Find_Head(vector<Vec2f> lines, string window_name, Mat src_bin, int**& left
                     // 有可能只是在 影像品質差的 間格內而已, do nothing 繼續往下測試
                     // 有可能是上下偏差太大
                     // 有可能是已經走到頭了
-                    Debug_draw(next_x + k * one_step, next_y + k * one_step * one_step_height_go, Scalar(165, k * 4, 96 + k * 4), 1);  // 深深紫色
+                    Debug_draw(next_x + go_jump * one_step, next_y + go_jump * one_step * one_step_height_go, Scalar(165, go_jump * 4, 96 + go_jump * 4), 1);  // 深深紫色
                 }
                 if(next_high_prob_on_line_flag == true) continue;
+                
 
-                // 能走到這裡 代表走了 JUMP_SPACE_LENGTH 都沒沒落在黑點上
+                // 經過 上面的 jump space 已經排除了 線誤刪的 但 仍然沒辦法 把點移動到線上的話
+                //     一: 代表線很可能是彎曲了, 或者線微幅彎曲但被符號誤導了以為還沒彎曲後累積放大後就變彎曲了
+                //     二: 有可能就是已經到盡頭了
+                //     補充一下: 走到這裡 next_x, next_y 都還沒被更新喔～
 
-                ////彎曲測試： 和上面不同的是 這裡是測 原地的上下狀況, 上面是測 順著線走的上下狀況
-                /////////////已經排除了誤刪的情況，那麼現在如果還不是在黑點上就代表很可能是線彎曲了, 或者線微幅彎曲但被符號誤導了以為還沒彎曲後累積放大後就變彎曲了, 往上、下偵測ERROR_CODA格
+                // 彎曲測試： 和上面不同的是 這裡是測 原地的上下方的狀況, 跟上面不同(上面是測 順著線走的正上下方的狀況)
+                // 往上、下偵測ERROR_CODA格
                 if(src_bin.at<uchar>(next_y,next_x) != 0){
                     // 如果線字的點不是黑色的，就代表還是有些偏差，希望可以位移到比較正確的位置
                     // (不一定要移動到一定黑色的點才行，只要移到 "被認可是線的地方即可")
