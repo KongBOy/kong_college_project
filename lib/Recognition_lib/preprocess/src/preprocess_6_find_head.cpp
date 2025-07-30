@@ -404,11 +404,8 @@ void Find_Head(vector<Vec2f> lines, string window_name, Mat src_bin, int**& left
         }
 	}
 
-	// imshow(window_name,drew_img);
     // /******************************************************
+	// imshow(window_name,drew_img);
 	imwrite(window_name + "3.bmp"     , drew_img_debug);
 	imwrite(window_name + "_g_img.bmp", src_bin_debug );
-    cout << "停" << endl;
-    // 不用消線拉，所以這個就不用了
-    // src_bin = src_bin.clone();
 }
