@@ -247,7 +247,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     //    break;
     }
     Mat reduce_line_bin = src_bin.clone();
-    Reduce_lines(lines , color_src_img, (string)HORIZONTAL_DIR + "reduce_line", reduce_line_bin);
+    Reduce_lines(lines , color_src_img, (string)"debug_img/pre6_" + "reduce_line", reduce_line_bin);
 
     // *******************************************************************
     // *******************************************************************
