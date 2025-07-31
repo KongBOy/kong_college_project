@@ -37,8 +37,7 @@ add_library(Recognition_lib lib/Recognition_lib/Recognition.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_3_horizon_map_to_find_line.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_4_distance_detect.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_5_find_staff.cpp
-                            lib/Recognition_lib/preprocess/src/preprocess_6_find_head.cpp
-                            lib/Recognition_lib/preprocess/src/preprocess_6_reduce_line.cpp
+                            lib/Recognition_lib/preprocess/src/preprocess_6_find_head_and_erase_line.cpp
                             lib/Recognition_lib/preprocess/src/preprocess_7_cut_according_staff.cpp
 
                             lib/Recognition_lib/recognition/src/recognition_0_all_head.cpp

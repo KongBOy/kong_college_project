@@ -11,7 +11,7 @@
 #include <math.h>
 
 
-#include "preprocess_6_find_head.h"
+#include "preprocess_6_find_head_and_erase_line.h"
 
 #include "preprocess_5_find_staff.h"
 #include "preprocess_0_hough_tool.h"
@@ -54,7 +54,6 @@ static Point pt1, pt2;
 //interface，先把東西包成對的格式，再丟到find_head找頭
 void Find_Head_and_Erase_Line_Interface(Mat src_bin,vector<Vec2f>staff_lines, int staff_count, int***& left_point, int***& right_point, Mat color_ord_img, Mat& src_bin_erase_line, bool debuging){
 
-
     drew_img_debug = color_ord_img.clone();
     src_bin_reduce_line_debug = src_bin.clone();
     cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
@@ -96,7 +95,7 @@ void Find_Head_and_Erase_Line_Interface(Mat src_bin,vector<Vec2f>staff_lines, in
 
 
 
-void Erase_line2(Mat& src_bin, int x0, int y0, int one_step, int one_step_height, int go_range){
+void Erase_line(Mat& src_bin, int x0, int y0, int one_step, int one_step_height, int go_range){
     for(int go = 0 ; go < go_range ; go++){
         //方法二：定這個點的上面和下面，然後測試之間的距離，如果小於 線寬 就代表是線 就消線~~
         int up = y0 + go*one_step*one_step_height;
@@ -265,7 +264,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
             cout << "one_step_height_go: " << one_step_height_go << endl;
             cout << endl;
 
-            Erase_line2(src_bin_erase_line, x0, y0, one_step, one_step_height, 5);
+            Erase_line(src_bin_erase_line, x0, y0, one_step, one_step_height, 5);
 
             double next_x = x0;
             double next_y = y0;
@@ -282,7 +281,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                 // 順著線走 如果現在是黑點, 代表在線上, 繼續走下一格
                 if(src_bin.at<uchar>(next_y, next_x) == 0){
                     Debug_draw_dot(next_x, next_y, Scalar(0, 242, 255), 1);  // 黃色
-                    Erase_line2(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
+                    Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
                     continue;
                 }
                 
@@ -302,7 +301,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             if(   Check_shift(src_bin, next_x + go_R*one_step , next_y + go_R*one_step*one_step_height_go +0, one_step, one_step_height_go ) != CHECK_FAILED
                                     && src_bin.at<uchar>(next_y + go_R*one_step*one_step_height_go +0 ,next_x + go_R*one_step) == 0 ){
                                 for(int go_erase = 1; go_erase <= go_R; go_erase++){
-                                    Erase_line2(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
+                                    Erase_line(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
                                 }
 
                                         
@@ -336,7 +335,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                         // 往線方向走 的 正下一格 如果看起來比 正上一格 更像線 且 該格是黑點, 移動到那一格(往線的方向移動 和 往正下方偏移一格)
                         if(cmp_up >= cmp_down && cmp_up != CHECK_FAILED && src_bin.at<uchar>(next_y + go_jump*one_step*one_step_height_go -1, next_x + go_jump*one_step) == 0){
                             for(int go_erase = 1; go_erase <= go_jump; go_erase++){
-                                Erase_line2(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
+                                Erase_line(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
                             }
                             go_UpDown_on_line_flag = true;
                             
@@ -351,7 +350,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             pt2.x = next_x, pt2.y = next_y;
                             Debug_draw_line(pt1, pt2, Scalar(0, 255, 0), 1);  // 綠色
 
-                            Erase_line2(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
+                            Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
                             // cout<< "UP before" << endl;
                             // cout<< "theta_go: " << theta_go << endl;
@@ -367,7 +366,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                         // 往線方向走 的 正上一格 如果看起來比 正下一格 更像線 且 該格是黑點, 移動到那一格(往線的方向移動 和 往正上方偏移一格)
                         else if(cmp_down > cmp_up && cmp_down != CHECK_FAILED && src_bin.at<uchar>(next_y +go_jump*one_step*one_step_height_go +1 ,next_x+go_jump*one_step) == 0 ){ //if( cmp_up != CHECK_FAILED && cmp_down == CHECK_FAILED)                                
                             for(int go_erase = 1; go_erase <= go_jump; go_erase++){
-                                Erase_line2(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
+                                Erase_line(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
                             }
                             go_UpDown_on_line_flag = true;
 
@@ -382,7 +381,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             pt2.x = next_x, pt2.y = next_y;
                             Debug_draw_line(pt1, pt2, Scalar(0, 0, 255), 1);  // 紅色
 
-                            Erase_line2(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
+                            Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
                             // cout<< "DOWN before" << endl;
                             // cout<< "theta_go: " << theta_go << endl;
@@ -426,7 +425,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                         int cmp_down = Check_shift(src_bin, next_x, next_y+go_UD_range, one_step, one_step_height_go);
                         if( cmp_up >= cmp_down && cmp_up != CHECK_FAILED ){
                             for(int go_erase = 1; go_erase <= go_UD_range; go_erase++){
-                                Erase_line2(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
+                                Erase_line(src_bin_erase_line, next_x + go_erase*one_step, next_y + go_erase*one_step*one_step_height_go, one_step, one_step_height, 5);
                             }
                             // 畫一下現在位置
                             pt1.x = next_x, pt1.y = next_y;
@@ -438,7 +437,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             Debug_draw_line(pt1, pt2, Scalar(  0,  22, 165), 5);  // 深灰色
                             cout << "bend detected up" << endl;
 
-                            Erase_line2(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
+                            Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
                             break;
                         }
@@ -453,7 +452,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             Debug_draw_line(pt1, pt2, Scalar(127,  0, 255), 5);  // 淺灰色
                             cout << "bend detected down" << endl;
 
-                            Erase_line2(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
+                            Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
                             break;
                         }

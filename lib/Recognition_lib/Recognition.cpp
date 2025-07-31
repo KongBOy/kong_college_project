@@ -17,8 +17,7 @@
 #include "preprocess_3_horizon_map_to_find_line.h"
 #include "preprocess_4_distance_detect.h"
 #include "preprocess_5_find_staff.h"
-#include "preprocess_6_find_head.h"
-#include "preprocess_6_reduce_line.h"
+#include "preprocess_6_find_head_and_erase_line.h"
 #include "preprocess_7_cut_according_staff.h"
 
 
@@ -245,12 +244,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     //    NextStep=0;
     //    break;
     }
-    // Mat src_bin_erase_line = src_bin.clone();
-    // Reduce_lines(lines , color_src_img, (string)"debug_img/pre6_" + "reduce_line", src_bin_erase_line);
-
     // *******************************************************************
     // *******************************************************************
-    //     cout<<"reduce_line_end~~~"<<endl;
 
     UI_loading_preprocess(src_img, src_bin, staff_count, left_point, right_point, UI_bass, UI_WINDOW_NAME);
 
