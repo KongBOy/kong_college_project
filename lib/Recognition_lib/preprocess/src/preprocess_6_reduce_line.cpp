@@ -36,14 +36,12 @@ static string file_name;
 static int Check_shift(Mat src_bin, int x0,int y0,int one_step,int one_step_height){
     int count = 0;
     for(int i = 0 ; i < CHECK_LINE_LENGTH ; i++){
-             if( src_bin.at<uchar>(y0 + i * one_step_height * one_step    ,x0 + i * one_step) == 0 ) count++;
+        if     ( src_bin.at<uchar>(y0 + i * one_step_height * one_step    ,x0 + i * one_step) == 0 ) count++;
         else if( src_bin.at<uchar>(y0 + i * one_step_height * one_step -1 ,x0 + i * one_step) == 0 ) count++;
         else if( src_bin.at<uchar>(y0 + i * one_step_height * one_step +1 ,x0 + i * one_step) == 0 ) count++;
-
     }
     if( (float)count >= (float)CHECK_LINE_LENGTH * CODA_RATE ) return count;
     else return CHECK_FAILED;
-
 }
 
 void Erase_line(Mat& src_bin,int x0 , int y0, int one_step, int one_step_height,int go_range){
