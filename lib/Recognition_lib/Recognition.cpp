@@ -228,15 +228,14 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
 
     // *************************** 找頭 *********************************
-    // *******************************************************************
-    // 因為我有改寫warp的function，水營的img轉正的會resize~~而且是對src存到src_img，所以不能用color_ord_img喔！
-    Mat color_src_img;
+    Mat color_src_img;  // debug用
+    Mat src_bin_erase_line = src_bin.clone();
     cvtColor(src_img, color_src_img, CV_GRAY2BGR);
 
     int*** left_point;// = new int**[staff_count];
     int*** right_point;// = new int**[staff_count];a
     try{
-        Find_Head_Interface(src_bin, lines, staff_count, left_point, right_point, color_src_img, debuging);
+        Find_Head_and_Erase_Line_Interface(src_bin, lines, staff_count, left_point, right_point, color_src_img, src_bin_erase_line, debuging);
         cout<<"find_head_end~"<<endl;
     }
     catch (exception e){
@@ -246,8 +245,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     //    NextStep=0;
     //    break;
     }
-    Mat reduce_line_bin = src_bin.clone();
-    Reduce_lines(lines , color_src_img, (string)"debug_img/pre6_" + "reduce_line", reduce_line_bin);
+    // Mat src_bin_erase_line = src_bin.clone();
+    // Reduce_lines(lines , color_src_img, (string)"debug_img/pre6_" + "reduce_line", src_bin_erase_line);
 
     // *******************************************************************
     // *******************************************************************
