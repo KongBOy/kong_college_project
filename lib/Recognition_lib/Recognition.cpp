@@ -256,7 +256,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
     // double trans_start_point_x[40]; 寫出去主程式用參數傳
     // double trans_start_point_y[40]; 寫出去主程式用參數傳
     try{
-        Cut_staff(src_bin,reduce_line_bin,staff_count,left_point,right_point,
+        Cut_staff(src_bin,src_bin_erase_line,staff_count,left_point,right_point,
                 final_rl_img_roi,final_img_roi,
                 trans_start_point_x,trans_start_point_y);
     }
