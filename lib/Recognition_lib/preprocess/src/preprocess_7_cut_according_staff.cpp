@@ -40,8 +40,7 @@ void Perspective_trans(double x,double y,Mat warp_matrix,double & result_x,doubl
     // cout << "_1[0] = " << trans_proc_1[0] << " , _1[1] = " << trans_proc_1[1] << " , _1[2] = " << trans_proc_1[2] << endl;
 
     float trans_proc_2[3];
-    for(int j = 0 ; j < 3 ; j++)
-    {
+    for(int j = 0 ; j < 3 ; j++){
         trans_proc_2[j]  = trans_proc_1[0]*warp_matrix.at<double>(j,0);
         trans_proc_2[j] += trans_proc_1[1]*warp_matrix.at<double>(j,1);
         trans_proc_2[j] += trans_proc_1[2]*warp_matrix.at<double>(j,2);
