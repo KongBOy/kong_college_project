@@ -6,7 +6,7 @@ using namespace cv;
 using namespace std;
 
 
-void Cut_staff(Mat test_bin,Mat src_bin_erase_line,
+void Cut_staff(Mat src_bin, Mat src_bin_erase_line,
                int& staff_count,int*** left_point, int*** right_point,
                Mat final_rl_img_roi[],Mat final_img_roi[],
                double trans_start_point_x[],double trans_start_point_y[]);
