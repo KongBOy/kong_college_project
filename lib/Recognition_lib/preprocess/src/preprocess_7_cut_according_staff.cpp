@@ -201,7 +201,7 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         ///***************************************************************************************************
         ///***************************************************************************************************
         ///***************************************************************************************************
-        ///根據 最左、下、右、上 來切出proc_img
+        ///根據 最左、下、右、上 來切出proc_img, 然後 上、下 要預留出 各一組五線譜的位置給 超過五線譜的音喔
         ///        int staff_width  = src4P[0].x - src4P[2].x;
         ///        int staff_height = src4P[0].y - src4P[1].y;
         Mat src_bin_cropped            = src_bin           (Rect( left_most[staff_num] , up_most[staff_num]-extend_UD, right_most[staff_num] - left_most[staff_num] , down_most[staff_num] - up_most[staff_num] +extend_UD*2));
@@ -222,15 +222,18 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         imwrite(debug_path           , src_bin_cropped);
         // imwrite(debug_path_erase_line, src_img_erase_line_cropped);
 
+        // 做 warpPerspective 的時候,
+        // 因為 src_bin_cropped 周圍已經有把白色部分切好, 轉換後圖片周圍也會自動有白色邊框
+        // 然後不夠的部分會自動填入你指定的顏色(warpPerspective 的最後一個參數)
+        // 目前的這個方法 無法很準確地讓 五線譜 坐落在我想要的位置
+        // 因為 src_bin_cropped 切周圍的白色部分怎麼切才會讓 五線譜 精準做落在我指定的位置 要反推一下麻煩
+        // 所以下一個版本 就 乾脆不要 先 crop 再 warpPerspective, 直接對 src_bin 做轉換 就可以 精準指定 五線譜要做落在哪邊囉
         int final_img_w = 1156 + padding_lr * 2;
         int final_img_h = 43*4;
         Mat temp(final_img_h, final_img_w, CV_8UC1, Scalar(255));
         Mat final_img            = temp.clone();
         Mat final_img_erase_line = temp.clone();
-
-        
-        ///不用怕存的空間不夠大~~~但是轉完後要roi，因為原本的圖太大了！會剩很多空白~~~
-        
+    
         cout << "final_img.width=" << final_img.cols << ", final_img.height=" <<final_img.rows << endl;
         warpPerspective(src_bin_cropped           , final_img           , warp_matrix, final_img           .size(), 0, 0, 255);
         warpPerspective(src_img_erase_line_cropped, final_img_erase_line, warp_matrix, final_img_erase_line.size(), 0, 0, 255);
