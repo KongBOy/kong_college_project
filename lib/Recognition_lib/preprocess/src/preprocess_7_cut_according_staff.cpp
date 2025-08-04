@@ -186,7 +186,7 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
 
 
         // 不能切得剛剛好，上下再多切一些因為有些太高音或太低音這樣子囉
-        int extend =(down_most[staff_num] - up_most[staff_num])* EXTEND_RATE;  // 多幾組五線譜的寬度
+        int extend_UD =(down_most[staff_num] - up_most[staff_num])* EXTEND_RATE;  // 多幾組五線譜的寬度
 
 
 
@@ -204,8 +204,8 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         ///根據 最左、下、右、上 來切出proc_img
         ///        int staff_width  = src4P[0].x - src4P[2].x;
         ///        int staff_height = src4P[0].y - src4P[1].y;
-        Mat src_bin_cropped            = src_bin           (Rect( left_most[staff_num] , up_most[staff_num]-extend, right_most[staff_num] - left_most[staff_num] , down_most[staff_num] - up_most[staff_num] +extend*2));
-        Mat src_img_erase_line_cropped = src_bin_erase_line(Rect( left_most[staff_num] , up_most[staff_num]-extend, right_most[staff_num] - left_most[staff_num] , down_most[staff_num] - up_most[staff_num] +extend*2));
+        Mat src_bin_cropped            = src_bin           (Rect( left_most[staff_num] , up_most[staff_num]-extend_UD, right_most[staff_num] - left_most[staff_num] , down_most[staff_num] - up_most[staff_num] +extend_UD*2));
+        Mat src_img_erase_line_cropped = src_bin_erase_line(Rect( left_most[staff_num] , up_most[staff_num]-extend_UD, right_most[staff_num] - left_most[staff_num] , down_most[staff_num] - up_most[staff_num] +extend_UD*2));
         imshow("src_bin_cropped"           ,src_bin_cropped);
         imshow("src_img_erase_line_cropped",src_img_erase_line_cropped);
 
@@ -222,25 +222,12 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         imwrite(debug_path           , src_bin_cropped);
         // imwrite(debug_path_erase_line, src_img_erase_line_cropped);
 
-        Mat final_img;
-        Mat final_img_erase_line;
-        // 小 ~ 大
-        if(src_bin_cropped.cols < 1156 + padding_lr * 2 || src_bin_cropped.rows < 43*4){ 
-            cout << "case1" << endl;
-            int final_img_w;
-            int final_img_h;
-            if(src_bin_cropped.cols < 1156 + padding_lr * 2)  final_img_w = 1156 + padding_lr * 2;
-            if(src_bin_cropped.rows < 43*4)  final_img_h = 43*4;
-            Mat temp(final_img_h, final_img_w, CV_8UC1, Scalar(255));
-            final_img            = temp.clone();
-            final_img_erase_line = temp.clone();
-        }
-        // 大 ~ 小
-        else{
-            cout << "case2" << endl;
-            final_img            = src_bin_cropped           .clone();
-            final_img_erase_line = src_img_erase_line_cropped.clone();
-        }
+        int final_img_w = 1156 + padding_lr * 2;
+        int final_img_h = 43*4;
+        Mat temp(final_img_h, final_img_w, CV_8UC1, Scalar(255));
+        Mat final_img            = temp.clone();
+        Mat final_img_erase_line = temp.clone();
+
         
         ///不用怕存的空間不夠大~~~但是轉完後要roi，因為原本的圖太大了！會剩很多空白~~~
         
@@ -251,7 +238,9 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         cout << "final_img.width=" << final_img.cols << ", final_img.height=" <<final_img.rows << endl;
         string debug_path_warped = pre7_debug_dir + "/" + str_staff_num + "_warped.bmp";
         imwrite(debug_path_warped, final_img);
-        // waitKey(0);
+        imshow("final_img"           , final_img);
+        imshow("final_img_erase_line", final_img_erase_line);
+        waitKey(0);
         // warpPerspective(src_bin_cropped   , final_img   , warp_matrix, src_bin_cropped   .size(), 0, 0, 0);
         // warpPerspective(src_img_erase_line_cropped, final_img_erase_line, warp_matrix, src_img_erase_line_cropped.size(), 0, 0, 0);
         // warp to strength
@@ -264,12 +253,12 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         //  找轉換後的底在哪裡(trans_down_point) 就是左下角和右下角去手動轉，然後看哪一個比較"上"面囉！(測過覺得"下"面比較難看)
         //  右下角
         double trans_down_point_right_x = right_most[staff_num] - left_most[staff_num];           // right_most[staff_num];
-        double trans_down_point_right_y = down_most [staff_num] - up_most  [staff_num] + extend * 2; //  down_most[staff_num] + extend;
+        double trans_down_point_right_y = down_most [staff_num] - up_most  [staff_num] + extend_UD * 2; //  down_most[staff_num] + extend_UD;
         Perspective_trans(trans_down_point_right_x, trans_down_point_right_y, warp_matrix,
                           trans_down_point_right_x, trans_down_point_right_y);
         // 左下角
         double trans_down_point_left_x = left_most[staff_num];
-        double trans_down_point_left_y = down_most[staff_num] - up_most[staff_num] + extend * 2;/// down_most[staff_num] + extend;
+        double trans_down_point_left_y = down_most[staff_num] - up_most[staff_num] + extend_UD * 2;/// down_most[staff_num] + extend_UD;
         Perspective_trans(trans_down_point_left_x, trans_down_point_left_y, warp_matrix,
                           trans_down_point_left_x, trans_down_point_left_y);
         // 看哪個比較上面
@@ -295,7 +284,7 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
 
         if(  left_point[staff_num][0][1] < up_most[staff_num] )
              trans_start_point_y[staff_num] = left_point[staff_num][0][1];
-        else trans_start_point_y[staff_num] = left_point[staff_num][0][1] - up_most  [staff_num] + extend;
+        else trans_start_point_y[staff_num] = left_point[staff_num][0][1] - up_most  [staff_num] + extend_UD;
 
 
         // trans_start_point_x[staff_num] = (trans_proc_2[0]/trans_proc_2[2]);
