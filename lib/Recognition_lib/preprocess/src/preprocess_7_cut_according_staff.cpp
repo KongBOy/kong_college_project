@@ -58,7 +58,7 @@ void Perspective_trans(double x,double y,Mat warp_matrix,double & result_x,doubl
 //根據 每組staff 的 第一條和第五條的線頭 assign srdTri
 void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
                int& staff_count, int*** left_point, int*** right_point,
-               Mat final_img_roi_erase_line[],Mat final_img_roi[],
+               Mat staff_img_erase_line[],Mat staff_img[],
                double trans_start_point_x[],double trans_start_point_y[])
                // trans_start_point的意思是 五線譜最左上角的那一點
 {
@@ -149,8 +149,8 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         warpPerspective(src_bin_erase_line, final_img_erase_line, warp_matrix, final_img_erase_line.size(), 0, 0, 255);
 
         // 渲染出去給下個階段用
-        final_img_roi           [staff_num] = final_img           .clone();
-        final_img_roi_erase_line[staff_num] = final_img_erase_line.clone();
+        staff_img           [staff_num] = final_img           .clone();
+        staff_img_erase_line[staff_num] = final_img_erase_line.clone();
         // 轉換後的 五線譜 起始x, 起始y (五線譜的左上角)
         trans_start_point_x[staff_num] = padding_L;
         trans_start_point_y[staff_num] = padding_U;
@@ -161,8 +161,8 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         cout << "trans_start_point_x[staff_num] = " << trans_start_point_x[staff_num]
             <<", trans_start_point_y[staff_num] = " << trans_start_point_y[staff_num] << endl;
 
-        Mat debug_ref_line = final_img_roi[staff_num].clone();
-        cvtColor(final_img_roi[staff_num], debug_ref_line,CV_GRAY2BGR);
+        Mat debug_ref_line = staff_img[staff_num].clone();
+        cvtColor(staff_img[staff_num], debug_ref_line,CV_GRAY2BGR);
         Point LT_warped = Point(trans_start_point_x[staff_num]              , trans_start_point_y[staff_num]               );
         Point LD_warped = Point(trans_start_point_x[staff_num]              , trans_start_point_y[staff_num] + staff_height);
         Point RT_warped = Point(trans_start_point_x[staff_num] + staff_width, trans_start_point_y[staff_num]              );
@@ -184,8 +184,8 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         string debug_path                = pre7_debug_dir + "/" + str_staff_num + ".bmp";
         string debug_path_erase_line     = pre7_debug_dir + "/" + str_staff_num + "_erase_line.bmp";
         string debug_path_reference_line = pre7_debug_dir + "/" + str_staff_num + "_reference_line.bmp";
-        imwrite(debug_path                , final_img_roi           [staff_num]);
-        imwrite(debug_path_erase_line     , final_img_roi_erase_line[staff_num]);
+        imwrite(debug_path                , staff_img           [staff_num]);
+        imwrite(debug_path_erase_line     , staff_img_erase_line[staff_num]);
         imwrite(debug_path_reference_line , debug_ref_line);
         // waitKey(0);
 

@@ -73,7 +73,7 @@ double Abs (double a){
 
 
 
-int GenerateMidiFile(Note_infos* note_infos, Mat final_img_roi[]){
+int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
     static float freqTable[7][12]={ {32.7  ,34.6  ,36.7  ,38.9  ,41.2  ,43.7  ,46.2  ,49.0  ,51.9  ,55.0  ,58.3  ,61.7  },\
                                     {65.4  ,69.3  ,73.4  ,77.8  ,82.4  ,87.3  ,92.5  ,98.0  ,103.8 ,110.0 ,116.5 ,123.5 },\
                                     {130.8 ,138.6 ,146.8 ,155.6 ,164.8 ,174.6 ,185.0 ,196.0 ,207.7 ,220.0 ,233.1 ,246.9 },\
@@ -84,8 +84,8 @@ int GenerateMidiFile(Note_infos* note_infos, Mat final_img_roi[]){
 
 
     for(int i = 0 ; i < 40 ; i++){
-        row_proc_img[i] = final_img_roi[i].clone();
-        cvtColor(final_img_roi[i],row_proc_img[i],CV_GRAY2BGR);
+        row_proc_img[i] = staff_img[i].clone();
+        cvtColor(staff_img[i],row_proc_img[i],CV_GRAY2BGR);
         ///      note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
     }
 
@@ -102,7 +102,7 @@ int GenerateMidiFile(Note_infos* note_infos, Mat final_img_roi[]){
     cout<<"step1"<<endl;
     /*
     for(int i = 0 ; i < 40 ; i++){
-        row_src_img[i] = final_img_roi[i].clone();
+        row_src_img[i] = staff_img[i].clone();
         row_proc_img[i] = row_src_img[i].clone();
         cvtColor(row_src_img[i],row_proc_img[i],CV_GRAY2BGR);
         note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
@@ -431,7 +431,7 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
             Mat temp = UI4_3.clone();
             cvtColor(UI4_3,temp,CV_BGR2GRAY);
             temp.rowRange(0,row_proc_img[row_index].rows+1)
-                .colRange(0,row_proc_img[row_index].cols+1) = final_img_roi[row_index].clone();
+                .colRange(0,row_proc_img[row_index].cols+1) = staff_img[row_index].clone();
             imshow("debug4",temp);
             */
 

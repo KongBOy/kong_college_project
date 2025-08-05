@@ -86,8 +86,8 @@ int main(){
     Note_infos* note_infos = new Note_infos();
     // 五線譜部分
     int staff_count;
-    Mat final_rl_img_roi[40];
-    Mat final_img_roi[40];
+    Mat staff_img_erase_line[40];
+    Mat staff_img[40];
     double trans_start_point_x[40];
     double trans_start_point_y[40];
 
@@ -184,7 +184,7 @@ int main(){
                     note_infos -> row_note_count_array[i] = 0;
                 }
                 // 開始辨識
-                Recognition(SrcMusicSheet,staff_count,final_rl_img_roi,final_img_roi,trans_start_point_x,trans_start_point_y,
+                Recognition(SrcMusicSheet,staff_count,staff_img_erase_line,staff_img,trans_start_point_x,trans_start_point_y,
                             note_infos -> note_count,note_infos -> note,note_infos -> row_note_count_array,
                             UI2,Title,
                             Title,UI2_5, 
@@ -207,7 +207,7 @@ int main(){
             cout<<"Case 3"<<endl;
             imshow(Title,UI3);
             waitKey(0);
-            GenerateMidiFile(note_infos, final_img_roi);
+            GenerateMidiFile(note_infos, staff_img);
             speed = 100;
 
             ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music

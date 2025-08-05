@@ -91,7 +91,7 @@ static string IntToString(int num)
     ss>>temp_string;
     return temp_string;
 }
-int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_img_roi[],double trans_start_point_x[],double trans_start_point_y[],
+int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat staff_img[],double trans_start_point_x[],double trans_start_point_y[],
                 int& note_count , int note[][1000] , int row_note_count_array[],
                 Mat UI_bass,string UI_WINDOW_NAME,
                 string Title,Mat UI2_5,
@@ -251,14 +251,14 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
 
 
-    // Mat final_rl_img_roi[40]; 寫出去主程式用參數傳
-    // Mat final_img_roi[40]; 寫出去主程式用參數傳
+    // Mat staff_img_erase_line[40]; 寫出去主程式用參數傳
+    // Mat staff_img   [40]; 寫出去主程式用參數傳
     // double trans_start_point_x[40]; 寫出去主程式用參數傳
     // double trans_start_point_y[40]; 寫出去主程式用參數傳
     try{
-        Cut_staff(src_bin,src_bin_erase_line,staff_count,left_point,right_point,
-                final_rl_img_roi,final_img_roi,
-                trans_start_point_x,trans_start_point_y);
+        Cut_staff(src_bin, src_bin_erase_line, staff_count, left_point, right_point,
+                staff_img_erase_line, staff_img,
+                trans_start_point_x, trans_start_point_y);
     }
     catch (exception e){
         imshow(Title,UI2_5);
@@ -288,8 +288,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
 
     for(int go_staff = 0 ; go_staff < staff_count ; go_staff++){
-        Mat vertical_map(final_rl_img_roi[go_staff].rows,
-                         final_rl_img_roi[go_staff].cols,CV_8UC1,Scalar(255));
+        Mat vertical_map(staff_img_erase_line[go_staff].rows,
+                         staff_img_erase_line[go_staff].cols,CV_8UC1,Scalar(255));
 
         int l_edge[200];
         int r_edge[200];
@@ -297,7 +297,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
         int mountain_area[200];
         int e_count = 0;
         int* note_type;
-        recognition_0_vertical_map_to_speed_up(final_rl_img_roi[go_staff],
+        recognition_0_vertical_map_to_speed_up(staff_img_erase_line[go_staff],
                                                vertical_map,
                                                e_count,l_edge,r_edge,distance,mountain_area,note_type);
 
@@ -332,37 +332,37 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
 
         Mat template_img_9 = imread("Resource/note/9/9.bmp",0);
 
-        // recognition_0_all_head(2,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        // recognition_0_all_head(2,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
         // start_time = getTickCount();
         // end_time = getTickCount() - start_time;
         // cout<<"maybe_head cost Time = "<<end_time<<endl;
 
-        recognition_0_all_head(1,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(3,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(1,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(3,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
 
-        recognition_0_all_head(4,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(2,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(0,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(5,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(4,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(2,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(0,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(5,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
 
-        recognition_0_all_head(8,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(6,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(8,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(6,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
-        // recognition_0_all_head(7,template_img_8,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        // recognition_0_all_head(7,template_img_8,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
 
 
         bubbleSort_note(row_note_count,row_note,Y_INDEX);
         bubbleSort_note(row_note_count,row_note,X_INDEX);
 
-        recognition_5_find_pitch(final_img_roi[go_staff],Mat(15,15,CV_8UC1),row_note_count,row_note,trans_start_point_y[go_staff]);
+        recognition_5_find_pitch(staff_img[go_staff],Mat(15,15,CV_8UC1),row_note_count,row_note,trans_start_point_y[go_staff]);
 
 
 
-        recognition_0_all_head(9,final_rl_img_roi[go_staff],final_img_roi[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        recognition_0_all_head(9,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
         bubbleSort_note(row_note_count,row_note,Y_INDEX);
         bubbleSort_note(row_note_count,row_note,X_INDEX);
 
@@ -385,20 +385,20 @@ int Recognition(Mat ord_img,int& staff_count, Mat final_rl_img_roi[],Mat final_i
         // play();
 
 
-        Mat debug_img2 = final_img_roi[go_staff].clone();
-        cvtColor(final_img_roi[go_staff],debug_img2,CV_GRAY2BGR);
+        Mat debug_img2 = staff_img[go_staff].clone();
+        cvtColor(staff_img[go_staff],debug_img2,CV_GRAY2BGR);
 
         list_row_note_info(row_note_count,row_note);
         // **************************************************************
         // watch_row_note(debug_img2,row_note_count,row_note);
-        UI_loading_recognition_row(staff_count,final_img_roi[go_staff],row_note_count,row_note,UI_bass,UI_WINDOW_NAME);
+        UI_loading_recognition_row(staff_count,staff_img[go_staff],row_note_count,row_note,UI_bass,UI_WINDOW_NAME);
     }
 
-    //UI_loading_recognition(staff_count,final_img_roi,note_count,note,row_note_count_array);
+    //UI_loading_recognition(staff_count,staff_img,note_count,note,row_note_count_array);
 
 
     // ******************************************************************************
-    // midi(note_count,note,row_note_count_array,final_img_roi);
+    // midi(note_count,note,row_note_count_array,staff_img);
 
 
     // waitKey(0);

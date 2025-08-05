@@ -37,7 +37,7 @@ extern Mat bar             ;
 double  Round (double,int);
 double  Abs (double);
 
-int  GenerateMidiFile(Note_infos* note_infos, Mat final_img_roi[]);
+int  GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]);
 
 int     Sound (float,int=0,int=127,int=0,float=1);
 DWORD WINAPI PlaySnd (LPVOID lpParameter);

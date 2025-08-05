@@ -344,7 +344,7 @@ void UI_loading_preprocess(Mat ord_img,
 
 int width_frame_acc = 0;///mod_width;
 
-void UI_loading_recognition_row(int staff_count,Mat final_img_roi,int row_note_count,int row_note[][1000],
+void UI_loading_recognition_row(int staff_count,Mat staff_img,int row_note_count,int row_note[][1000],
                                 Mat UI_bass,string UI_WINDOW_NAME)
 {
     int div_width = 70 / staff_count;
@@ -355,8 +355,8 @@ void UI_loading_recognition_row(int staff_count,Mat final_img_roi,int row_note_c
     UI_bass = UI2_img.clone();
     imshow(UI_WINDOW_NAME,UI_bass);
 
-    Mat color_load_img = final_img_roi.clone();
-    cvtColor(final_img_roi.clone(),color_load_img,CV_GRAY2BGR);
+    Mat color_load_img = staff_img.clone();
+    cvtColor(staff_img.clone(),color_load_img,CV_GRAY2BGR);
 
     int color_load_img_top  = screen_center_y - color_load_img.rows/2;
     int color_load_img_left = screen_center_x - color_load_img.cols/2;
@@ -401,7 +401,7 @@ void UI_loading_recognition_row(int staff_count,Mat final_img_roi,int row_note_c
 
 
 /*
-void UI_loading_recognition(int staff_count,Mat final_img_roi[],int note_count,int note[][1000],int row_note_count_array[],
+void UI_loading_recognition(int staff_count,Mat staff_img[],int note_count,int note[][1000],int row_note_count_array[],
                             Mat UI_bass,string UI_WINDOW_NAME)
 {
     UI_bass = UI2_img.clone();
@@ -411,8 +411,8 @@ void UI_loading_recognition(int staff_count,Mat final_img_roi[],int note_count,i
     int go_note = 0;
     for(int go_staff = 0 ; go_staff < staff_count ; go_staff++)
     {
-        Mat color_load_img = final_img_roi[go_staff].clone();
-        cvtColor(final_img_roi[go_staff].clone(),color_load_img,CV_GRAY2BGR);
+        Mat color_load_img = staff_img[go_staff].clone();
+        cvtColor(staff_img[go_staff].clone(),color_load_img,CV_GRAY2BGR);
 
         int color_load_img_top  = screen_center_y - color_load_img.rows/2;
         int color_load_img_left = screen_center_x - color_load_img.cols/2;

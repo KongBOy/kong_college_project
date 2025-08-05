@@ -13,7 +13,7 @@
 
 /// input：reduceline以後的圖片
 /// 原本寫在cut_according_staff 的 function：
-///     Vertical_map_to_recognize(final_rl_img_roi,vertical_map,final_img_roi,trans[0].y);
+///     Vertical_map_to_recognize(staff_img_erase_line,vertical_map,staff_img,trans[0].y);
 
 using namespace cv;
 

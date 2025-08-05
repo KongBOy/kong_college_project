@@ -26,11 +26,11 @@
 using namespace cv;
 using namespace std;
 
-///template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head
+///template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head
 
 void recognition_0_all_head( int head_type,
-                             Mat final_rl_img_roi,    /// 消掉五線譜線的圖
-                             Mat final_img_roi,
+                             Mat staff_img_erase_line,    /// 消掉五線譜線的圖
+                             Mat staff_img,
                              int e_count, int* l_edge, int* distance, ///從 recognition_0 的資料來 加速
                              int pitch_base_y,
                              int& note_count,
@@ -90,9 +90,9 @@ switch(head_type)
     {
         ///0
         Mat template_img = imread("Resource/note/0/0.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_b_head_recheck(0,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(0,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -101,7 +101,7 @@ switch(head_type)
             note[2][note_count] = 0;
             note_count++;
         }
- ///       recognition_5_find_pitch(final_img_roi,template_img,note_count,note,pitch_base_y);
+ ///       recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
 
     }
     break;
@@ -109,25 +109,25 @@ switch(head_type)
     case 2:
     {
 ///2
-        Mat debug_img = final_rl_img_roi.clone();
-        cvtColor(final_rl_img_roi,debug_img,CV_GRAY2BGR);
+        Mat debug_img = staff_img_erase_line.clone();
+        cvtColor(staff_img_erase_line,debug_img,CV_GRAY2BGR);
 
         Mat template_img = imread("Resource/note/2/2.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
-///        recognition_1_find_all_maybe_head_method_2(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+///        recognition_1_find_all_maybe_head_method_2(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
 ///        list_head_info(maybe_head_count,maybe_head);
 ///        list_lines_info(lines_count,lines,lines_dir);
 ///        watch_head(debug_img,template_img,maybe_head_count,maybe_head);
 
 
-        recognition_2_a_head_charactristic(2,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
-        recognition_2_b_head_recheck(2,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_a_head_charactristic(2,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(2,staff_img_erase_line,maybe_head_count,maybe_head);
 
-        recognition_3_a_find_vertical_bar(template_img,final_rl_img_roi,maybe_head_count,maybe_head,lines_count,lines,lines_dir);
+        recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir);
 
-        recognition_4_merge_head_and_time(2,template_img,final_rl_img_roi,maybe_head_count,maybe_head,lines_count,lines,lines_dir,lines_time,note_count,note);
- ///       recognition_5_find_pitch(final_img_roi,template_img,note_count,note,pitch_base_y);
+        recognition_4_merge_head_and_time(2,template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir,lines_time,note_count,note);
+ ///       recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
 
 
     }
@@ -138,15 +138,15 @@ switch(head_type)
         ///4
 
         Mat template_img = imread("Resource/note/4/4.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
 
-        recognition_2_a_head_charactristic(4,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
-        recognition_2_b_head_recheck(4,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_a_head_charactristic(4,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(4,staff_img_erase_line,maybe_head_count,maybe_head);
 
 
-        recognition_3_a_find_vertical_bar(template_img,final_rl_img_roi,maybe_head_count,maybe_head,lines_count,lines,lines_dir);
-        recognition_3_b_find_time_bar(template_img,final_rl_img_roi,lines_count,lines,lines_dir,lines_time);
+        recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir);
+        recognition_3_b_find_time_bar(template_img,staff_img_erase_line,lines_count,lines,lines_dir,lines_time);
 
 ///        cout<<"end 3~~~~~~~~~~~~~~~~~~~~~~~~~~ "<<endl;
 ///        list_head_info(maybe_head_count,maybe_head);
@@ -154,8 +154,8 @@ switch(head_type)
 ///        watch_head(debug_img,template_img,maybe_head_count,maybe_head);
 
 
-        recognition_4_merge_head_and_time(4,template_img,final_rl_img_roi,maybe_head_count,maybe_head,lines_count,lines,lines_dir,lines_time,note_count,note);
-///        recognition_5_find_pitch(final_img_roi,template_img,note_count,note,pitch_base_y);
+        recognition_4_merge_head_and_time(4,template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir,lines_time,note_count,note);
+///        recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
 
 
     }
@@ -166,9 +166,9 @@ switch(head_type)
 ///4-rest
 
         Mat template_img = imread("Resource/note/4-rest/4-rest.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_b_head_recheck(5,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(5,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -183,10 +183,10 @@ switch(head_type)
     case 1:
     {
         Mat template_img = imread("Resource/note/0-rest/0-rest.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_a_head_charactristic(1,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
-        recognition_2_b_head_recheck(1,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_a_head_charactristic(1,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(1,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -201,10 +201,10 @@ switch(head_type)
     case 3:
     {
         Mat template_img = imread("Resource/note/2-rest/2-rest.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_a_head_charactristic(3,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
-        recognition_2_b_head_recheck(3,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_a_head_charactristic(3,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(3,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -219,10 +219,10 @@ switch(head_type)
     case 6:
     {
         Mat template_img = imread("Resource/note/6-rest/6-rest-2.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_a_head_charactristic(6,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
-        recognition_2_b_head_recheck(6,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_a_head_charactristic(6,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(6,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -237,10 +237,10 @@ switch(head_type)
     case 7:
     {
         Mat template_img = imread("Resource/note/32-rest/7-2.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_a_head_charactristic(7,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
-        recognition_2_b_head_recheck(7,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_a_head_charactristic(7,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(7,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -255,10 +255,10 @@ switch(head_type)
     case 8:
     {
         Mat template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
-        recognition_1_find_all_maybe_head(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_a_head_charactristic(8,template_img,final_rl_img_roi,final_img_roi,maybe_head_count,maybe_head);
-        recognition_2_b_head_recheck(8,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_a_head_charactristic(8,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(8,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -277,9 +277,9 @@ switch(head_type)
         Mat template_img = imread("Resource/note/9/9-bin.bmp",0);
         Mat template_img_4(13,17,CV_8UC1,Scalar(0)); ///隨便拉~~~只是設定range比較好用ˊ口ˋ
 
-        recognition_1_find_all_maybe_head_method_2(template_img,final_rl_img_roi,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+        recognition_1_find_all_maybe_head_method_2(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
 
-        recognition_2_b_head_recheck(9,final_rl_img_roi,maybe_head_count,maybe_head);
+        recognition_2_b_head_recheck(9,staff_img_erase_line,maybe_head_count,maybe_head);
         for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         {
             int go_note = note_count;
@@ -293,8 +293,8 @@ switch(head_type)
         bubbleSort_note(note_count,note,X_INDEX);
 
 
-        Mat debug_img = final_rl_img_roi.clone();
-        cvtColor(final_rl_img_roi,debug_img,CV_GRAY2BGR);
+        Mat debug_img = staff_img_erase_line.clone();
+        cvtColor(staff_img_erase_line,debug_img,CV_GRAY2BGR);
 
         for(int go_special_index = 0 ; go_special_index < note_count ; go_special_index++)
         {
@@ -342,7 +342,7 @@ switch(head_type)
 ///            waitKey(0);
         }
 
- ///       recognition_5_find_pitch(final_img_roi,template_img,note_count,note,pitch_base_y);
+ ///       recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
 
     }
     break;

@@ -16,11 +16,11 @@ void UI_loading_preprocess(Mat ord_img,
                            int staff_count, int*** left_point , int*** right_point,
                            Mat UI_bass,string UI_WINDOW_NAME);
 
-void UI_loading_recognition_row(int staff_count,Mat final_img_roi,int row_note_count,int row_note[][1000],
+void UI_loading_recognition_row(int staff_count,Mat staff_img,int row_note_count,int row_note[][1000],
                                 Mat UI_bass,string UI_WINDOW_NAME);
 
 
-void UI_loading_recognition(int staff_count,Mat final_img_roi[],
+void UI_loading_recognition(int staff_count,Mat staff_img[],
                             int note_count,int note[][1000],int row_note_count_array[],
                             Mat UI_bass,string UI_WINDOW_NAME);
 
@@ -29,6 +29,6 @@ void UI_loading_recognition(int staff_count,Mat final_img_roi[],
 void UI_loading(Mat ord_img,
                 Mat test_bin,
                 int staff_count, int*** left_point , int*** right_point,
-                Mat final_img_roi[],
+                Mat staff_img[],
                 int note_count,int note[][1000],int row_note_count_array[]);
 */

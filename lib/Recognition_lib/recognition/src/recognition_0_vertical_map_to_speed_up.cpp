@@ -32,16 +32,16 @@ void recognition_0_vertical_map_to_speed_up(Mat final_rl_img_roi , Mat & vertica
     // cout<<"mountain_area_max = "<<mountain_area_max<<endl;
     // bool right_side_ok = true;
 
-    int * b_count = new int[final_rl_img_roi.cols];//black count
-    for(int i = 0 ; i < final_rl_img_roi.cols ; i++) b_count[i] = 0;
+    int * b_count = new int[staff_img_erase_line.cols];//black count
+    for(int i = 0 ; i < staff_img_erase_line.cols ; i++) b_count[i] = 0;
 
 
     // ////////////////
     // 垂直投影
     // ////////////////
-    for(int go_row = 0 ; go_row < final_rl_img_roi.rows; go_row++){
-        for(int go_col = 0 ; go_col < final_rl_img_roi.cols ; go_col++){
-            if(final_rl_img_roi.at<uchar>(go_row,go_col) == BLACK) vertical_map.at<uchar>(b_count[go_col]++,go_col) = 0;
+    for(int go_row = 0 ; go_row < staff_img_erase_line.rows; go_row++){
+        for(int go_col = 0 ; go_col < staff_img_erase_line.cols ; go_col++){
+            if(staff_img_erase_line.at<uchar>(go_row,go_col) == BLACK) vertical_map.at<uchar>(b_count[go_col]++,go_col) = 0;
         }
     }
 
@@ -71,7 +71,7 @@ void recognition_0_vertical_map_to_speed_up(Mat final_rl_img_roi , Mat & vertica
     // 找出l_edge, r_edge
     // ////////////////////
 
-    for(int go_col = 1 ; go_col < final_rl_img_roi.cols ; go_col++){
+    for(int go_col = 1 ; go_col < staff_img_erase_line.cols ; go_col++){
         if(b_count[go_col] > THRESH_HOLD && b_count[go_col -1] <= THRESH_HOLD){ //&& right_side_ok == true)
             l_edge[e_count] = go_col -1;
         }
@@ -85,8 +85,8 @@ void recognition_0_vertical_map_to_speed_up(Mat final_rl_img_roi , Mat & vertica
             // for(int i = l_edge[e_count]+1 ; i < r_edge[e_count] ; i++) cout<<"ord_b_count["<<i<<"]= "<<b_count[i]<<endl;
             // cout<<endl;
 
-            // Mat threshold_final_rl_img_roi_cut = final_rl_img_roi(Rect(l_edge[e_count],THRESH_HOLD, distance[e_count], height ));
-            // Mat ord_vertical_map_cut = vertical_map(Rect(l_edge[e_count],0, distance[e_count], final_rl_img_roi.rows ));
+            // Mat threshold_final_rl_img_roi_cut = staff_img_erase_line(Rect(l_edge[e_count],THRESH_HOLD, distance[e_count], height ));
+            // Mat ord_vertical_map_cut = vertical_map(Rect(l_edge[e_count],0, distance[e_count], staff_img_erase_line.rows ));
             // imshow("threshold_final_rl_img_roi_cut",threshold_final_rl_img_roi_cut);
             // imshow("ord_vertical_img_cut",ord_vertical_map_cut);
             // waitKey(0);
@@ -150,8 +150,8 @@ void recognition_0_vertical_map_to_speed_up(Mat final_rl_img_roi , Mat & vertica
         cout<<endl;
 
 
-        Mat threshold_final_rl_img_roi_cut = final_rl_img_roi(Rect(l_edge[i],THRESH_HOLD, distance[i], height ));
-        Mat ord_vertical_map_cut = vertical_map(Rect(l_edge[i],0, distance[i], final_rl_img_roi.rows ));
+        Mat threshold_final_rl_img_roi_cut = staff_img_erase_line(Rect(l_edge[i],THRESH_HOLD, distance[i], height ));
+        Mat ord_vertical_map_cut = vertical_map(Rect(l_edge[i],0, distance[i], staff_img_erase_line.rows ));
         imshow("threshold_final_rl_img_roi_cut",threshold_final_rl_img_roi_cut);
         imshow("ord_vertical_img_cut",ord_vertical_map_cut);
         waitKey(0);
