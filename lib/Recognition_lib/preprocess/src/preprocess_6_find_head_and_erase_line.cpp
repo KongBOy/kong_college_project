@@ -59,21 +59,21 @@ void Find_Head_and_Erase_Line_Interface(Mat src_bin,vector<Vec2f>staff_lines, in
     cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
 
     // staff = new vector<Vec2f>[staff_count];
-    left_point  = new int**[staff_count];
-    right_point = new int**[staff_count];
+    left_point  = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
+    right_point = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
 
     for(int i = 0 ; i < staff_count ; i++){
-        left_point[i] = new int*[STAFF_LINE_COUNT];
+        left_point [i] = new int*[STAFF_LINE_COUNT];
         right_point[i] = new int*[STAFF_LINE_COUNT];
 
 
         for(int go_width = 0 ; go_width < STAFF_LINE_COUNT ; go_width++){
-            left_point[i][go_width] = new int[X_Y_COUNT];
+            left_point [i][go_width] = new int[X_Y_COUNT];
             right_point[i][go_width] = new int[X_Y_COUNT];
 
             for(int k = 0 ; k < X_Y_COUNT ; k++){
-                left_point[i][go_width][k] = 1000; /// 隨便很大的數
-                right_point[i][go_width][k] = -1000; /// 隨便很小的數
+                left_point [i][go_width][k] =  10000; /// 隨便很大的數
+                right_point[i][go_width][k] = -10000; /// 隨便很小的數
             }
         }
     }
