@@ -19,28 +19,24 @@ using namespace std;
 
 
 void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vertical_map, int& e_count, int l_edge[200], int r_edge[200], int distance[200], int mountain_area[200], int*& note_type){
-    const int height = staff_img_erase_line.rows - THRESH_HOLD;
-
+    // 初始化
     int * b_count = new int[staff_img_erase_line.cols];  //black count
     for(int i = 0 ; i < staff_img_erase_line.cols ; i++) b_count[i] = 0;
-
-
-    // ////////////////
-    // 垂直投影
-    // ////////////////
+    
+    // 垂直投影, 主要更新 b_count, vertical_map 是 debug用的, 視覺化來看 THRESH_HOLD 取多少比較好
     for(int go_row = 0 ; go_row < staff_img_erase_line.rows; go_row++){
         for(int go_col = 0 ; go_col < staff_img_erase_line.cols ; go_col++){
-            if(staff_img_erase_line.at<uchar>(go_row,go_col) == BLACK) vertical_map.at<uchar>(b_count[go_col]++,go_col) = 0;
+            if(staff_img_erase_line.at<uchar>(go_row,go_col) == BLACK) vertical_map.at<uchar>(b_count[go_col]++, go_col) = 0;
         }
     }
-
-
-    Mat threshold_vertical_map = vertical_map(Rect(0,THRESH_HOLD, vertical_map.cols, height ));
+    const int height_under_thresh = staff_img_erase_line.rows - THRESH_HOLD;
+    Mat threshold_vertical_map = vertical_map(Rect(0, THRESH_HOLD, vertical_map.cols, height_under_thresh ));
     // ******************************
-    imshow("threshold_vertical_map",threshold_vertical_map);
+    imshow("threshold_vertical_map", threshold_vertical_map);
     waitKey(0);
     destroyWindow("threshold_vertical_map");
 
+    // 初始化 找山的相關容器, l_edge: 山的左邊位置, r_edge: 山的右邊位置
     e_count = 0;
     for(int i = 0 ; i < 200 ; i++){
         l_edge       [i] = 0;
@@ -49,18 +45,21 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vert
         mountain_area[i] = 0;
     }
 
-    // ////////////////////
+    //////////////////////
     // 找出l_edge, r_edge
-    // ////////////////////
-
+    //////////////////////
     for(int go_col = 1 ; go_col < staff_img_erase_line.cols ; go_col++){
-        if(b_count[go_col] > THRESH_HOLD && b_count[go_col -1] <= THRESH_HOLD){ //&& right_side_ok == true)
+        // 如果 左低 右高, 代表找到 左邊界
+        if     (b_count[go_col -1] <= THRESH_HOLD && b_count[go_col] > THRESH_HOLD){ //&& right_side_ok == true)
             l_edge[e_count] = go_col -1;
         }
-        else if(b_count[go_col] <= THRESH_HOLD && b_count[go_col -1] > THRESH_HOLD){
+        // 如果 左高 右低, 代表找到 右邊界
+        else if(b_count[go_col -1] > THRESH_HOLD && b_count[go_col] <= THRESH_HOLD){
             r_edge[e_count] = go_col;
-            distance[e_count] = r_edge[e_count] - l_edge[e_count];
 
+            // 找到右邊界, 就可以更新 distance 和 area 了
+            distance[e_count] = r_edge[e_count] - l_edge[e_count];
+            // 從目前的左邊界 走道 目前的右邊界, 把 走訪的b_count都加起來 就是面積囉
             for(int i = l_edge[e_count] +1 ; i < r_edge[e_count] ; i++)
                 mountain_area[e_count] += b_count[i];
 
@@ -68,7 +67,7 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vert
             // for(int i = l_edge[e_count]+1 ; i < r_edge[e_count] ; i++) cout<<"ord_b_count["<<i<<"]= "<<b_count[i]<<endl;
             // cout<<endl;
 
-            // Mat threshold_final_rl_img_roi_cut = staff_img_erase_line(Rect(l_edge[e_count],THRESH_HOLD, distance[e_count], height ));
+            // Mat threshold_final_rl_img_roi_cut = staff_img_erase_line(Rect(l_edge[e_count],THRESH_HOLD, distance[e_count], height_under_thresh ));
             // Mat ord_vertical_map_cut = vertical_map(Rect(l_edge[e_count],0, distance[e_count], staff_img_erase_line.rows ));
             // imshow("threshold_final_rl_img_roi_cut",threshold_final_rl_img_roi_cut);
             // imshow("ord_vertical_img_cut",ord_vertical_map_cut);
@@ -81,14 +80,14 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vert
         }
     }
 
-    // //////////////////////
+    ////////////////////////
     // 距離小的合併
-    // //////////////////////
+    ////////////////////////
     for(int go_mountain = 0 ; go_mountain < e_count-1 ; go_mountain++){
         if( (l_edge[go_mountain+1]-r_edge[go_mountain]) < DISTANCE_THRESHOLD ){
             //cout<<"merge"<<endl;
-            r_edge[go_mountain] = r_edge[go_mountain+1];
-            distance[go_mountain] = r_edge[go_mountain] - l_edge[go_mountain];
+            r_edge       [go_mountain]  = r_edge[go_mountain + 1];
+            distance     [go_mountain]  = r_edge[go_mountain] - l_edge[go_mountain];
             mountain_area[go_mountain] += mountain_area[go_mountain+1];
             for(int go_erase = go_mountain+1 ; go_erase < e_count-1 ; go_erase++){
                 l_edge       [go_erase] = l_edge       [go_erase+1];
@@ -101,9 +100,9 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vert
         }
     }
 
-    // //////////////////////
+    ////////////////////////
     // 連附點都不是的山刪除
-    // //////////////////////
+    ////////////////////////
     for(int go_mountain = 0 ; go_mountain < e_count-1 ; go_mountain++){
         if( mountain_area[go_mountain] < AREA_THRESHOLD ){
             //cout<<"merge"<<endl;
@@ -130,7 +129,7 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vert
         cout<<endl;
 
 
-        Mat threshold_final_rl_img_roi_cut = staff_img_erase_line(Rect(l_edge[i],THRESH_HOLD, distance[i], height ));
+        Mat threshold_final_rl_img_roi_cut = staff_img_erase_line(Rect(l_edge[i],THRESH_HOLD, distance[i], height_under_thresh ));
         Mat ord_vertical_map_cut = vertical_map(Rect(l_edge[i],0, distance[i], staff_img_erase_line.rows ));
         imshow("threshold_final_rl_img_roi_cut",threshold_final_rl_img_roi_cut);
         imshow("ord_vertical_img_cut",ord_vertical_map_cut);
