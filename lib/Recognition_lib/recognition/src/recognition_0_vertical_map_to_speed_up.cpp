@@ -18,14 +18,14 @@ using namespace cv;
 using namespace std;
 
 
-void recognition_0_vertical_map_to_speed_up(Mat final_rl_img_roi , Mat & vertical_map ,int& e_count, int l_edge[200], int r_edge[200] , int distance[200] , int mountain_area[200] , int*& note_type){
-    const int height = final_rl_img_roi.rows - THRESH_HOLD;
-    // const int width = final_rl_img_roi.cols - THRESH_HOLD;
-    // const int distance_range_min = final_rl_img_roi.rows / (STAFF_COUNT_MAX*2);
-    // const int distance_range_max = final_rl_img_roi.rows / (STAFF_COUNT_MIN*2);
+void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line , Mat & vertical_map ,int& e_count, int l_edge[200], int r_edge[200] , int distance[200] , int mountain_area[200] , int*& note_type){
+    const int height = staff_img_erase_line.rows - THRESH_HOLD;
+    // const int width = staff_img_erase_line.cols - THRESH_HOLD;
+    // const int distance_range_min = staff_img_erase_line.rows / (STAFF_COUNT_MAX*2);
+    // const int distance_range_max = staff_img_erase_line.rows / (STAFF_COUNT_MIN*2);
     // const int mountain_area_min = STAFF_LINE_WIDTH_MIN * ERROR_RATE * width; //一條五線譜線 占的面積
     // const int mountain_area_max = STAFF_LINE_WIDTH_MAX * ERROR_RATE * width + (TAIL + NOTE + CIRCLE_LINE + WORD + ELSE) * width; //一組五線譜 + 16分的尾巴 + 一堆NOTE + 圓滑線 + 字 + 其他雜訊
-    // cout<<"final_rl_img_roi.cols = "<<final_rl_img_roi.cols<<endl;
+    // cout<<"staff_img_erase_line.cols = "<<staff_img_erase_line.cols<<endl;
     // cout<<"width = "<<width<<endl;
     // cout<<"distance_range_min = "<<distance_range_min<<endl;
     // cout<<"mountain_area_min = "<<mountain_area_min<<endl;
