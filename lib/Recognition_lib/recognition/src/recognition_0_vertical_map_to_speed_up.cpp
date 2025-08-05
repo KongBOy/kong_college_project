@@ -18,21 +18,10 @@ using namespace cv;
 using namespace std;
 
 
-void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line , Mat & vertical_map ,int& e_count, int l_edge[200], int r_edge[200] , int distance[200] , int mountain_area[200] , int*& note_type){
+void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vertical_map, int& e_count, int l_edge[200], int r_edge[200], int distance[200], int mountain_area[200], int*& note_type){
     const int height = staff_img_erase_line.rows - THRESH_HOLD;
-    // const int width = staff_img_erase_line.cols - THRESH_HOLD;
-    // const int distance_range_min = staff_img_erase_line.rows / (STAFF_COUNT_MAX*2);
-    // const int distance_range_max = staff_img_erase_line.rows / (STAFF_COUNT_MIN*2);
-    // const int mountain_area_min = STAFF_LINE_WIDTH_MIN * ERROR_RATE * width; //一條五線譜線 占的面積
-    // const int mountain_area_max = STAFF_LINE_WIDTH_MAX * ERROR_RATE * width + (TAIL + NOTE + CIRCLE_LINE + WORD + ELSE) * width; //一組五線譜 + 16分的尾巴 + 一堆NOTE + 圓滑線 + 字 + 其他雜訊
-    // cout<<"staff_img_erase_line.cols = "<<staff_img_erase_line.cols<<endl;
-    // cout<<"width = "<<width<<endl;
-    // cout<<"distance_range_min = "<<distance_range_min<<endl;
-    // cout<<"mountain_area_min = "<<mountain_area_min<<endl;
-    // cout<<"mountain_area_max = "<<mountain_area_max<<endl;
-    // bool right_side_ok = true;
 
-    int * b_count = new int[staff_img_erase_line.cols];//black count
+    int * b_count = new int[staff_img_erase_line.cols];  //black count
     for(int i = 0 ; i < staff_img_erase_line.cols ; i++) b_count[i] = 0;
 
 
@@ -48,24 +37,17 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line , Mat & ver
 
     Mat threshold_vertical_map = vertical_map(Rect(0,THRESH_HOLD, vertical_map.cols, height ));
     // ******************************
-    // imshow("threshold_vertical_map",threshold_vertical_map);
-    // waitKey(0);
-    // destroyWindow("threshold_vertical_map");
-
-
-    // int l_edge[200];
-    // int r_edge[200];
-    // int distance[200];
-    // int mountain_area[200];
-
-    for(int i = 0 ; i < 200 ; i++){
-        l_edge[i] = 0;
-        r_edge[i] = 0;
-        distance[i] = 0;
-        mountain_area[i] = 0;
-    }
+    imshow("threshold_vertical_map",threshold_vertical_map);
+    waitKey(0);
+    destroyWindow("threshold_vertical_map");
 
     e_count = 0;
+    for(int i = 0 ; i < 200 ; i++){
+        l_edge       [i] = 0;
+        r_edge       [i] = 0;
+        distance     [i] = 0;
+        mountain_area[i] = 0;
+    }
 
     // ////////////////////
     // 找出l_edge, r_edge
@@ -79,7 +61,8 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line , Mat & ver
             r_edge[e_count] = go_col;
             distance[e_count] = r_edge[e_count] - l_edge[e_count];
 
-            for(int i = l_edge[e_count] +1 ; i < r_edge[e_count] ; i++) mountain_area[e_count] += b_count[i];
+            for(int i = l_edge[e_count] +1 ; i < r_edge[e_count] ; i++)
+                mountain_area[e_count] += b_count[i];
 
             // //////////////////////// debug用~~ ///////////////////////////////
             // for(int i = l_edge[e_count]+1 ; i < r_edge[e_count] ; i++) cout<<"ord_b_count["<<i<<"]= "<<b_count[i]<<endl;
@@ -97,8 +80,6 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line , Mat & ver
             e_count++;
         }
     }
-
-
 
     // //////////////////////
     // 距離小的合併
@@ -136,7 +117,6 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line , Mat & ver
             go_mountain--;
         }
     }
-
 
     // //////////////////////// debug用~~ ///////////////////////////////
     /*
