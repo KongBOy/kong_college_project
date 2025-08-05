@@ -73,141 +73,116 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
                double trans_start_point_x[],double trans_start_point_y[])
                // trans_start_point的意思是 五線譜最左上角的那一點
 {
-    int* left_most  = new int[staff_count];
-    int* right_most = new int[staff_count];
-    int* up_most    = new int[staff_count];
-    int* down_most  = new int[staff_count];
+    // 初始化 每組五線譜的最左右端 的 max/min, 左端邊是 越左越max 偏右越min, 右端是 越右越max 偏左越min
+    int* left_max  = new int[staff_count];
+    int* left_min  = new int[staff_count];
+    int* right_max = new int[staff_count];
+    int* right_min = new int[staff_count];
     for(int i = 0 ; i < staff_count ; i++){
-         left_most[i] = 1000; // 隨便很 大 的數
-        right_most[i] = -100; // 隨便很 小 的數
-           up_most[i] = 1000; // 隨便很 大 的數
-         down_most[i] = -100; // 隨便很 小 的數
+         left_max[i] =  10000; // 隨便很 大 的數
+         left_min[i] = -10000; // 隨便很 小 的數
+        right_max[i] = -10000; // 隨便很 小 的數
+        right_min[i] =  10000; // 隨便很 大 的數
     }
 
 
 
-    // 更新最左右
+    // 更新每組五線譜的最左右端 的 max/min, 左端邊是 越左越max 偏右越min, 右端是 越右越max 偏左越min
     for(int staff_num = 0 ; staff_num < staff_count ; staff_num++){
         // 需要比較 第一 ~ 五條線的左 右喔！所以要for迴圈
         for(int line_num = 0 ; line_num < STAFF_LINE_COUNT ; line_num++){
-            if( left_point[staff_num][line_num][0] <=  left_most[staff_num])  left_most[staff_num] =   left_point[staff_num][line_num][0];
-            if(right_point[staff_num][line_num][0] >= right_most[staff_num]) right_most[staff_num] =  right_point[staff_num][line_num][0];
+            if( left_point[staff_num][line_num][0] <=  left_max[staff_num])  left_max[staff_num] =   left_point[staff_num][line_num][0];
+            if(right_point[staff_num][line_num][0] >= right_max[staff_num]) right_max[staff_num] =  right_point[staff_num][line_num][0];
+            if( left_point[staff_num][line_num][0] >=  left_min[staff_num])  left_min[staff_num] =   left_point[staff_num][line_num][0];
+            if(right_point[staff_num][line_num][0] <= right_min[staff_num]) right_min[staff_num] =  right_point[staff_num][line_num][0];
         }
     }
 
-    // 更新最上下
+
+    // 每組五線譜 先 看看頭有沒有明顯的錯誤, 沒有的話 就抓出五線譜上的 0左上  1左下  2右上  3右下 的頭, 做透射到 一個 固定大小的尺寸的五線譜囉
     for(int staff_num = 0 ; staff_num < staff_count ; staff_num++){
-        // 只需要比較 第一條線 的左右兩點 即可！不用for迴圈
-        if(left_point[staff_num][0][1] < right_point[staff_num][0][1]) up_most[staff_num] = left_point [staff_num][0][1];
-        else                                                           up_most[staff_num] = right_point[staff_num][0][1];
-        // 只需要比較 第五條線 的左右兩點 即可！不用for迴圈
-        if(left_point[staff_num][4][1] > right_point[staff_num][4][1]) down_most[staff_num] = left_point [staff_num][4][1];
-        else                                                           down_most[staff_num] = right_point[staff_num][4][1];
-    }
-
-
-    for(int staff_num = 0 ; staff_num < staff_count ; staff_num++){
-        cout << "left_most [" << left_most [staff_num] << "] = " << left_most [staff_num] << endl;
-        cout << "right_most[" << right_most[staff_num] << "] = " << right_most[staff_num] << endl;
-        cout << "up_most   [" << up_most   [staff_num] << "] = " << up_most   [staff_num] << endl;
-        cout << "down_most [" << down_most [staff_num] << "] = " << down_most [staff_num] << endl;
-        // waitKey(0);
-
-        // int tran_base_left = left_most[staff_num];
-        // int tran_base_up   = up_most  [staff_num];
-
-        // 0左上  1左下  2右上  3右下
-        Point2f dst4P[4];  // distination 4 point
-        Point2f src4P[4];  // sorce 4 point，有扣掉 五線譜 左邊、上面 的空白處
-        src4P[0] = Point2f(left_point [staff_num][0][0] - left_most[staff_num], left_point [staff_num][0][1] - up_most  [staff_num]);
-        src4P[1] = Point2f(left_point [staff_num][4][0] - left_most[staff_num], left_point [staff_num][4][1] - up_most  [staff_num]);
-        src4P[2] = Point2f(right_point[staff_num][0][0] - left_most[staff_num], right_point[staff_num][0][1] - up_most  [staff_num]);
-        src4P[3] = Point2f(right_point[staff_num][4][0] - left_most[staff_num], right_point[staff_num][4][1] - up_most  [staff_num]);
-        for(int i = 0 ; i < 4 ; i++) cout << "src4P[" << i << "].x = " << src4P[i].x << " src4P[" << i << "].y = " << src4P[i].y << endl;
-
-        // 找頭偵錯, 因為 left_point, right_point 的初始值 我是設定 隨便很大的值(1000) 和 隨便很小的值(-1000), 如果找頭失敗 src4P 減完 或者 本身負很大 結果會是負的
-        bool right_staff = true;
-        for(int i = 0 ; i < 4 ; i++){
-            if( src4P[i].x < 0 || (src4P[i].x > src_bin.cols -1) ||
-                src4P[i].y < 0 || (src4P[i].y > src_bin.rows -1) ){
-                right_staff = false;  // 代表這組有錯誤，跳過這組
-                cout << "wrong staff" << endl;
-                break;
-            }
-        }
-
-        ///代表這組有錯誤，跳過這組
-        if(right_staff == false){
+        cout << "left_max [" << left_max [staff_num] << "] = " << left_max [staff_num] << endl;
+        cout << "left_min [" << left_min [staff_num] << "] = " << left_min [staff_num] << endl;
+        cout << "right_max[" << right_max[staff_num] << "] = " << right_max[staff_num] << endl;
+        cout << "right_min[" << right_min[staff_num] << "] = " << right_min[staff_num] << endl;
+        
+        // 找頭偵錯, 如果兩端的 min/max 差距超過30 大概就是找頭出問題了
+        if( left_min [staff_num] - left_max[staff_num]  > 30 || 
+            right_max[staff_num] - right_min[staff_num] > 30 ||
+            left_max [staff_num] < 0 ||
+            right_max[staff_num] > src_bin.cols -1){
+            cout << "wrong staff" << endl;
             staff_count--;
             continue;
         }
 
+        // 標出來源的 0左上  1左下  2右上  3右下
+        Point2f dst4P[4];  // distination 4 point
+        Point2f src4P[4];  // sorce 4 point
+        src4P[0] = Point2f(left_point [staff_num][0][0] , left_point [staff_num][0][1] );
+        src4P[1] = Point2f(left_point [staff_num][4][0] , left_point [staff_num][4][1] );
+        src4P[2] = Point2f(right_point[staff_num][0][0] , right_point[staff_num][0][1] );
+        src4P[3] = Point2f(right_point[staff_num][4][0] , right_point[staff_num][4][1] );
+        for(int i = 0 ; i < 4 ; i++) cout << "src4P[" << i << "].x = " << src4P[i].x << " src4P[" << i << "].y = " << src4P[i].y << endl;
 
-        // 現在要找出 要拉到怎麼樣才算正規 的規格~~~
-        // 水平x方面：就五線譜長度 ~~ 但每條線好像都會差一咪咪所以取平均
-        // 垂直y方面：就staff五條線間隔的和
-        // int ave_staff_line_leng = 0;
-        // for(int staff_num = 0 ; staff_num < staff_count ; staff_num++){
-        //     for(int line_num = 0 ; line_num < STAFF_LINE_COUNT ; line_num++){
-        //         ave_staff_line_leng += right_point[staff_num][line_num][0] - left_point[staff_num][line_num][0];
-        //     }
-        // }
-        // ave_staff_line_leng /= (staff_count*STAFF_LINE_COUNT);
-        // int stander_col = 925;   //
-        // int stander_row = (stander_col*(src4P[3].y-src4P[0].y) / ave_staff_line_leng  );  //+1
-        // int stander_row_expend = stander_row*3;
+        // 標出轉換後的  0左上  1左下  2右上  3右下, 反正就一直換圖嘗試, 目前覺得 width=1156, height=43 還不錯
+        int staff_width  = 1156;
+        int staff_height =   43;
+        int padding_L   =    5;
+        int padding_R   =    5;
+        int padding_U   =    1.5 * staff_height;
+        int padding_D   =    1.5 * staff_height;
+        dst4P[0] = Point2f(       0     + padding_L, padding_U                );
+        dst4P[1] = Point2f(       0     + padding_L, padding_U + staff_height );
+        dst4P[2] = Point2f( staff_width + padding_L, padding_U                );
+        dst4P[3] = Point2f( staff_width + padding_L, padding_U + staff_height );
+        for(int i = 0 ; i < 4 ; i++) cout << "dst4P[" << i << "].x = " << dst4P[i].x << " dst4P[" << i << "].y = " << dst4P[i].y << endl;
 
-        // cout << "standard_col = " << stander_col << endl;
-        // cout << "standard_row = " << stander_row << endl;
-        // cout << "ave_staff_line_leng: " << ave_staff_line_leng << endl;
-        // cout << "rate = " << (src4P[3].y - src4P[0].y) / (src4P[3].x - src4P[0].x) << endl;
-        // cout << "停";
-        // Mat stander(stander_row_expend,stander_col,CV_8UC1);
-        
-        // 反正就一直嘗試, 覺得 width=1156, height=43 目前還不錯
-        int padding_lr = 5;
-        dst4P[0] = Point2f(    0 + padding_lr, 43*0);
-        dst4P[1] = Point2f(    0 + padding_lr, 43*1 );
-        dst4P[2] = Point2f( 1156 + padding_lr, 43*0);
-        dst4P[3] = Point2f( 1156 + padding_lr, 43*1);
-
-        for(int i = 0 ; i < 4 ; i++)
-            cout << "dst4P[" << i << "].x = " << dst4P[i].x << " dst4P[" << i << "].y = " << dst4P[i].y << endl;
-
+        // 取得轉換矩陣
         Mat warp_matrix = getPerspectiveTransform(src4P, dst4P);
         cout << warp_matrix << ' ' << endl;
-
         for(int i = 0 ; i < 3 ; i++){
             for(int j = 0 ; j < 3 ; j++){
                 cout << warp_matrix.at<double>(i,j) << ", ";
             }
             cout << endl;
         }
+        
+        // 建立放轉換後影像的畫布
+        int final_img_w = staff_width  + padding_L + padding_R;
+        int final_img_h = staff_height + padding_U + padding_D;
+        Mat temp(final_img_h, final_img_w, CV_8UC1, Scalar(255));
+        Mat final_img            = temp.clone();
+        Mat final_img_erase_line = temp.clone();
+
+        // 透射轉換
+        warpPerspective(src_bin           , final_img           , warp_matrix, final_img           .size(), 0, 0, 255);
+        warpPerspective(src_bin_erase_line, final_img_erase_line, warp_matrix, final_img_erase_line.size(), 0, 0, 255);
+
+        // 渲染出去給下個階段用
+        final_img_roi           [staff_num] = final_img           .clone();
+        final_img_roi_erase_line[staff_num] = final_img_erase_line.clone();
+        // 轉換後的 五線譜 起始x, 起始y (五線譜的左上角)
+        trans_start_point_x[staff_num] = padding_L;
+        trans_start_point_y[staff_num] = padding_U;
 
 
-        // 不能切得剛剛好，上下再多切一些因為有些太高音或太低音這樣子囉
-        int extend_UD =(down_most[staff_num] - up_most[staff_num])* EXTEND_RATE;  // 多幾組五線譜的寬度
 
+        // 以下都 debug 顯示用
+        cout << "trans_start_point_x[staff_num] = " << trans_start_point_x[staff_num]
+            <<", trans_start_point_y[staff_num] = " << trans_start_point_y[staff_num] << endl;
 
-
-        ///***************************************************************************************************
-        ///***************************************************************************************************
-        ///***************************************************************************************************
-
-
-
-
-
-        ///***************************************************************************************************
-        ///***************************************************************************************************
-        ///***************************************************************************************************
-        ///根據 最左、下、右、上 來切出proc_img, 然後 上、下 要預留出 各一組五線譜的位置給 超過五線譜的音喔
-        ///        int staff_width  = src4P[0].x - src4P[2].x;
-        ///        int staff_height = src4P[0].y - src4P[1].y;
-        Mat src_bin_cropped            = src_bin           (Rect( left_most[staff_num] , up_most[staff_num]-extend_UD, right_most[staff_num] - left_most[staff_num] , down_most[staff_num] - up_most[staff_num] +extend_UD*2));
-        Mat src_img_erase_line_cropped = src_bin_erase_line(Rect( left_most[staff_num] , up_most[staff_num]-extend_UD, right_most[staff_num] - left_most[staff_num] , down_most[staff_num] - up_most[staff_num] +extend_UD*2));
-        imshow("src_bin_cropped"           ,src_bin_cropped);
-        imshow("src_img_erase_line_cropped",src_img_erase_line_cropped);
+        Mat debug_ref_line = final_img_roi[staff_num].clone();
+        cvtColor(final_img_roi[staff_num], debug_ref_line,CV_GRAY2BGR);
+        Point LT_warped = Point(trans_start_point_x[staff_num]              , trans_start_point_y[staff_num]               );
+        Point LD_warped = Point(trans_start_point_x[staff_num]              , trans_start_point_y[staff_num] + staff_height);
+        Point RT_warped = Point(trans_start_point_x[staff_num] + staff_width, trans_start_point_y[staff_num]              );
+        Point RD_warped = Point(trans_start_point_x[staff_num] + staff_width, trans_start_point_y[staff_num] + staff_height);
+        line(debug_ref_line, LT_warped, LD_warped, Scalar(0,255,0), 2);  // L
+        line(debug_ref_line, RT_warped, RD_warped, Scalar(0,255,0), 2);  // R
+        line(debug_ref_line, LT_warped, RT_warped, Scalar(0,255,0), 2);  // T
+        line(debug_ref_line, LD_warped, RD_warped, Scalar(0,255,0), 2);  // D
+        // imshow("debug_ref_line",debug_ref_line);
 
         // 存debug圖
         string pre7_debug_dir = "debug_img/pre7_cut_staff";
@@ -217,98 +192,21 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         string str_staff_num = ss.str();
         ss.str("");
         ss.clear();
-        string debug_path            = pre7_debug_dir + "/" + str_staff_num + ".bmp";
-        // string debug_path_erase_line = pre7_debug_dir + "/" + str_staff_num + "_erase_line.bmp";
-        imwrite(debug_path           , src_bin_cropped);
-        // imwrite(debug_path_erase_line, src_img_erase_line_cropped);
+        string debug_path                = pre7_debug_dir + "/" + str_staff_num + ".bmp";
+        string debug_path_erase_line     = pre7_debug_dir + "/" + str_staff_num + "_erase_line.bmp";
+        string debug_path_reference_line = pre7_debug_dir + "/" + str_staff_num + "_reference_line.bmp";
+        imwrite(debug_path                , final_img_roi           [staff_num]);
+        imwrite(debug_path_erase_line     , final_img_roi_erase_line[staff_num]);
+        imwrite(debug_path_reference_line , debug_ref_line);
 
-        // 做 warpPerspective 的時候,
-        // 因為 src_bin_cropped 周圍已經有把白色部分切好, 轉換後圖片周圍也會自動有白色邊框
-        // 然後不夠的部分會自動填入你指定的顏色(warpPerspective 的最後一個參數)
-        // 目前的這個方法 無法很準確地讓 五線譜 坐落在我想要的位置
-        // 因為 src_bin_cropped 切周圍的白色部分怎麼切才會讓 五線譜 精準做落在我指定的位置 要反推一下麻煩
-        // 所以下一個版本 就 乾脆不要 先 crop 再 warpPerspective, 直接對 src_bin 做轉換 就可以 精準指定 五線譜要做落在哪邊囉
-        int final_img_w = 1156 + padding_lr * 2;
-        int final_img_h = 43*4;
-        Mat temp(final_img_h, final_img_w, CV_8UC1, Scalar(255));
-        Mat final_img            = temp.clone();
-        Mat final_img_erase_line = temp.clone();
-    
-        cout << "final_img.width=" << final_img.cols << ", final_img.height=" <<final_img.rows << endl;
-        warpPerspective(src_bin_cropped           , final_img           , warp_matrix, final_img           .size(), 0, 0, 255);
-        warpPerspective(src_img_erase_line_cropped, final_img_erase_line, warp_matrix, final_img_erase_line.size(), 0, 0, 255);
-        cout << "src_bin_cropped.width=" << src_bin_cropped.cols << ", src_bin_cropped.height=" <<src_bin_cropped.rows << endl;
-        cout << "final_img.width=" << final_img.cols << ", final_img.height=" <<final_img.rows << endl;
-        string debug_path_warped = pre7_debug_dir + "/" + str_staff_num + "_warped.bmp";
-        imwrite(debug_path_warped, final_img);
-        imshow("final_img"           , final_img);
-        imshow("final_img_erase_line", final_img_erase_line);
-        waitKey(0);
-        // warpPerspective(src_bin_cropped   , final_img   , warp_matrix, src_bin_cropped   .size(), 0, 0, 0);
-        // warpPerspective(src_img_erase_line_cropped, final_img_erase_line, warp_matrix, src_img_erase_line_cropped.size(), 0, 0, 0);
-        // warp to strength
-        //imshow("warp_perspective",final_img);
-
-
-        // ****************************************************************************************************
-        // ****************************************************************************************************
-        // ****************************************************************************************************
-        //  找轉換後的底在哪裡(trans_down_point) 就是左下角和右下角去手動轉，然後看哪一個比較"上"面囉！(測過覺得"下"面比較難看)
-        //  右下角
-        double trans_down_point_right_x = right_most[staff_num] - left_most[staff_num];           // right_most[staff_num];
-        double trans_down_point_right_y = down_most [staff_num] - up_most  [staff_num] + extend_UD * 2; //  down_most[staff_num] + extend_UD;
-        Perspective_trans(trans_down_point_right_x, trans_down_point_right_y, warp_matrix,
-                          trans_down_point_right_x, trans_down_point_right_y);
-        // 左下角
-        double trans_down_point_left_x = left_most[staff_num];
-        double trans_down_point_left_y = down_most[staff_num] - up_most[staff_num] + extend_UD * 2;/// down_most[staff_num] + extend_UD;
-        Perspective_trans(trans_down_point_left_x, trans_down_point_left_y, warp_matrix,
-                          trans_down_point_left_x, trans_down_point_left_y);
-        // 看哪個比較上面
-        double trans_down_point = 0;
-        if(trans_down_point_left_y < trans_down_point_right_y)
-             trans_down_point = trans_down_point_left_y;
-        else trans_down_point = trans_down_point_right_y;
-
-        // 用比較下面的點去切roi
-        final_img_roi           [staff_num] = final_img           (Rect(0, 0, 1156 + padding_lr * 2, trans_down_point));
-        final_img_roi_erase_line[staff_num] = final_img_erase_line(Rect(0, 0, 1156 + padding_lr * 2, trans_down_point));
-        ///****************************************************************************************************
-        // imwrite((string)HORIZONTAL_DIR + IntToString(staff_num) +"-WARP_PERSPECTIVE_0-srcimg.jpg",src_bin_cropped);
-        // imwrite((string)HORIZONTAL_DIR + IntToString(staff_num) +"-WARP_PERSPECTIVE_1-result.bmp",final_img_roi);
-        // imwrite((string)HORIZONTAL_DIR + IntToString(staff_num) +"-WARP_PERSPECTIVE_2-rl-result.bmp",final_img_roi_erase_line);
-        // ***************************************************************************************************
-        // ***************************************************************************************************
-        // ***************************************************************************************************
-        // 看 "五線譜範圍最左上角的點" 轉換後會在哪裡~~~ 不能直接用 最左邊和最上的點喔!!!! 因為他們並不一定等於五線譜的最左上角的點~~
-        if(  left_point[staff_num][0][0] < left_most[staff_num] )
-             trans_start_point_x[staff_num] = left_point[staff_num][0][0];
-        else trans_start_point_x[staff_num] = left_point[staff_num][0][0] - left_most[staff_num];
-
-        if(  left_point[staff_num][0][1] < up_most[staff_num] )
-             trans_start_point_y[staff_num] = left_point[staff_num][0][1];
-        else trans_start_point_y[staff_num] = left_point[staff_num][0][1] - up_most  [staff_num] + extend_UD;
-
-
-        // trans_start_point_x[staff_num] = (trans_proc_2[0]/trans_proc_2[2]);
-        // trans_start_point_y[staff_num] = (trans_proc_2[1]/trans_proc_2[2]);
-        Perspective_trans( trans_start_point_x[staff_num] , trans_start_point_y[staff_num], warp_matrix,
-                           trans_start_point_x[staff_num] , trans_start_point_y[staff_num] );
-
-        cout << "trans_start_point_x = " << trans_start_point_x
-            <<", trans_start_point_y = " << trans_start_point_y << endl;
-
-        Mat debug = final_img_roi[staff_num].clone();
-        cvtColor(final_img_roi[staff_num],debug,CV_GRAY2BGR);
-        line(debug,Point(trans_start_point_x[staff_num],trans_start_point_y[staff_num]),Point(trans_start_point_x[staff_num],trans_start_point_y[staff_num]+43),Scalar(0,255,0),5);
-        // imshow("debug2",debug);
         // waitKey(0);
         // imshow("warp_perspective_roi",final_img_roi[staff_num]);
         // imshow("warp_perspective_rl_roi",final_img_roi_erase_line[staff_num]);
         // waitKey(0);
 
-        Mat vertical_map(final_img_roi_erase_line[staff_num].rows,
-                         final_img_roi_erase_line[staff_num].cols, CV_8UC1, Scalar(255));
+        // Mat vertical_map(final_img_roi_erase_line[staff_num].rows,
+        //                  final_img_roi_erase_line[staff_num].cols, CV_8UC1, Scalar(255));
+
         // Vertical_map_to_recognize(final_img_roi_erase_line,vertical_map,final_img_roi,trans[0].y);
 
         // ***************************************************************************************************
