@@ -44,7 +44,7 @@ void Center_ROI(int, void * data){
 		float roi_width = dst_img.cols * roi_c_slider / 100;
 		float roi_heigh = dst_img.rows * roi_r_slider / 100;
 
-		proc_img = dst_img(Rect(center.x - roi_width / 2, center.y - roi_heigh / 2, roi_width, roi_heigh));
+		proc_img = dst_img(Rect(center.x - roi_width / 2., center.y - roi_heigh / 2., roi_width, roi_heigh));
 	}
 	
 	if(debuging_roi){
