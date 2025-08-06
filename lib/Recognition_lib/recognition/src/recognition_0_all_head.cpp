@@ -82,12 +82,12 @@ void recognition_0_all_head( int head_type,
     /// recognition_2_c_merge_head_and_time 存 二分音符 和 四分音符，因為兩個重複所以寫進去recognition_2_c裡面~~
 
     switch(head_type){
-        // 0
+        // 0 全音
         case 0:{
             Mat template_img = imread("Resource/note/0/0.bmp",0);
-            recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+            recognition_1_find_all_maybe_head(template_img, staff_img_erase_line, e_count, l_edge, distance, maybe_head_count, maybe_head, pitch_base_y);
 
-            recognition_2_b_head_recheck(0,staff_img_erase_line,maybe_head_count,maybe_head);
+            recognition_2_b_head_recheck(0, staff_img_erase_line, maybe_head_count, maybe_head);
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -99,7 +99,7 @@ void recognition_0_all_head( int head_type,
         }
         break;
 
-        // 2
+        // 2 二分
         case 2:{
             Mat debug_img = staff_img_erase_line.clone();
             cvtColor(staff_img_erase_line,debug_img,CV_GRAY2BGR);
@@ -123,7 +123,7 @@ void recognition_0_all_head( int head_type,
         }
         break;
 
-        // 4
+        // 4 四分
         case 4:{
             Mat template_img = imread("Resource/note/4/4.bmp",0);
             recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
@@ -163,9 +163,10 @@ void recognition_0_all_head( int head_type,
         }
         break;
 
+        // 全休止
         case 1:{
             Mat template_img = imread("Resource/note/0-rest/0-rest.bmp",0);
-            recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
+            recognition_1_find_all_maybe_head(template_img, staff_img_erase_line, e_count, l_edge, distance, maybe_head_count, maybe_head, pitch_base_y);
 
             recognition_2_a_head_charactristic(1,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
             recognition_2_b_head_recheck(1,staff_img_erase_line,maybe_head_count,maybe_head);
@@ -179,6 +180,7 @@ void recognition_0_all_head( int head_type,
         }
         break;
 
+        // 二分休止
         case 3:{
             Mat template_img = imread("Resource/note/2-rest/2-rest.bmp",0);
             recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
@@ -196,6 +198,7 @@ void recognition_0_all_head( int head_type,
         }
         break;
 
+        // 十六分休止
         case 6:{
             Mat template_img = imread("Resource/note/6-rest/6-rest-2.bmp",0);
             recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
@@ -212,6 +215,7 @@ void recognition_0_all_head( int head_type,
         }
         break;
 
+        // 三十二分休止
         case 7:{
             Mat template_img = imread("Resource/note/32-rest/7-2.bmp",0);
             recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
@@ -228,6 +232,7 @@ void recognition_0_all_head( int head_type,
         }
         break;
 
+        // 八分休止
         case 8:{
             Mat template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
             recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y);
@@ -246,7 +251,7 @@ void recognition_0_all_head( int head_type,
         break;
 
 
-        // 0
+        // 高音譜記號
         case 9:{
             Mat template_img = imread("Resource/note/9/9-bin.bmp",0);
             Mat template_img_4(13,17,CV_8UC1,Scalar(0)); ///隨便拉~~~只是設定range比較好用ˊ口ˋ
