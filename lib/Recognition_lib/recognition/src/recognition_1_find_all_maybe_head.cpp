@@ -37,39 +37,39 @@ void minMaxLoc2(Mat img,double& maxVal ,Point& maxLoc){
 }
 
 /// 用來 de~~ range設錯的bug~~~~
-void debug(Mat result_src,Mat reduce_line,Mat template_img,int x,int y ,int width, int height){
-    int debug_width = width;
-    int debug_height = height;
-    int debug_l = x;
-    int debug_r = debug_l + debug_width;
-    int debug_t = y;
-    int debug_d = debug_t + debug_height;
+void debug(Mat result_src, Mat src_bin_erase_line, Mat template_img, int x, int y, int width, int height){
+    int note_w = width;
+    int note_h = height;
+    int note_l = x;
+    int note_r = note_l + note_w;
+    int note_t = y;
+    int note_d = note_t + note_h;
     ///************ 防呆 ***************
-    if( debug_l < 0) debug_l = 0;
-    if( debug_t < 0) debug_t = 0;
-    if( debug_r > result_src.cols-1) debug_r = result_src.cols -1;
-    if( debug_d > result_src.rows-1) debug_d = result_src.rows -1;
-    debug_width =  debug_r - debug_l;
-    debug_height = debug_d - debug_t;
+    if( note_l < 0) note_l = 0;
+    if( note_t < 0) note_t = 0;
+    if( note_r > result_src.cols-1) note_r = result_src.cols -1;
+    if( note_d > result_src.rows-1) note_d = result_src.rows -1;
+    note_w = note_r - note_l;
+    note_h = note_d - note_t;
     ///************ 防呆 ***************
 
-    Mat show_result2 = result_src.clone();
-    cvtColor(result_src,show_result2,CV_GRAY2BGR);
-    rectangle(show_result2,Point(debug_l,debug_t),Point(debug_r,debug_d),Scalar(0,0,255),1,8,0);
-    imshow("where_debug",show_result2);
-    cout<<result_src( Rect(debug_l,debug_t,debug_width,debug_height) )<<" "<<endl;
+    Mat result_src_color;
+    cvtColor(result_src, result_src_color, CV_GRAY2BGR);
+    rectangle(result_src_color, Point(note_l,note_t), Point(note_r,note_d), Scalar(0, 0, 255), 1, 8, 0);
+    imshow("where_debuging", result_src_color);
+    cout << result_src( Rect(note_l, note_t, note_w, note_h) )<<" "<<endl;
 
 
     double debug_minVal; double debug_maxVal; Point debug_minLoc; Point debug_maxLoc;
     Point debug_matchLoc;
+    minMaxLoc( result_src( Rect(note_l, note_t, note_w, note_h) ) , &debug_minVal, &debug_maxVal, &debug_minLoc, &debug_maxLoc, Mat() );
+    debug_maxLoc.x += note_l   ; // 因為上面是用ROI，所以要位移到正確的位置
+    debug_maxLoc.y += note_t;
 
-    Mat debug_show = reduce_line.clone();
-    cvtColor(reduce_line,debug_show,CV_GRAY2BGR);
-    minMaxLoc( result_src( Rect(debug_l,debug_t,debug_width,debug_height) ) , &debug_minVal, &debug_maxVal, &debug_minLoc, &debug_maxLoc, Mat() );
-    debug_maxLoc.x += debug_l   ; ///因為上面是用ROI，所以要位移到正確的位置
-    debug_maxLoc.y += debug_t;
-    rectangle(debug_show,debug_maxLoc,Point(debug_maxLoc.x+template_img.cols,debug_maxLoc.y + template_img.rows),Scalar(0,255,0),1,8,0);
-    imshow("where_is_the_max",debug_show);
+    Mat src_bin_erase_line_color;
+    cvtColor(src_bin_erase_line, src_bin_erase_line_color, CV_GRAY2BGR);
+    rectangle(src_bin_erase_line_color, debug_maxLoc, Point(debug_maxLoc.x + template_img.cols, debug_maxLoc.y + template_img.rows), Scalar(0, 255, 0), 1, 8, 0);
+    imshow("where_is_the_max",src_bin_erase_line_color);
     cout<<"2.x = "<<debug_maxLoc.x<<" , y = "<<debug_maxLoc.y<<" , value = "<<debug_maxVal<<endl;
     waitKey(0);
 }
