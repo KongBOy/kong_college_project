@@ -32,9 +32,9 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, Mat & vert
     const int height_under_thresh = staff_img_erase_line.rows - THRESH_HOLD;
     Mat threshold_vertical_map = vertical_map(Rect(0, THRESH_HOLD, vertical_map.cols, height_under_thresh ));
     // ******************************
-    imshow("threshold_vertical_map", threshold_vertical_map);
-    waitKey(0);
-    destroyWindow("threshold_vertical_map");
+    // imshow("threshold_vertical_map", threshold_vertical_map);
+    // waitKey(0);
+    // destroyWindow("threshold_vertical_map");
 
     // 初始化 找山的相關容器, l_edge: 山的左邊位置, r_edge: 山的右邊位置
     e_count = 0;
