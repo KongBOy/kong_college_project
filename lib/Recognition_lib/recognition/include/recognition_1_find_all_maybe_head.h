@@ -22,4 +22,4 @@ void recognition_1_find_all_maybe_head(Mat template_img,   /// 要比對的樣�
                                        Mat reduce_line,    /// 消掉五線譜線的圖
                                        int e_count, int* l_edge, int* distance, ///從 recognition_0 的資料來 加速
                                        int& maybe_head_count,float maybe_head[][200],
-                                       int pitch_base_y);
+                                       int pitch_base_y, string method);
