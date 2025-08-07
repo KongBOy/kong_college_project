@@ -33,3 +33,13 @@ string utf8_to_cp950(const string& utf8_str) {
 
     return cp950_str;
 }
+
+vector<string> String_Split(const string & str, char delimiter){
+    vector<string> result;
+    stringstream ss(str);
+    string item;
+    while(getline(ss, item, delimiter)){
+        result.push_back(item);
+    }
+    return result;
+}
