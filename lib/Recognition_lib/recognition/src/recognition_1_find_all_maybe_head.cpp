@@ -40,6 +40,28 @@ void minMaxLoc2(Mat img,double& maxVal ,Point& maxLoc){
     }
 }
 
+void matchTemplate2(Mat src_img,Mat template_test,Mat& result){
+    float total_pix = template_test.rows * template_test.cols;
+    for(int go_s_row = 0 ; go_s_row < src_img.rows - template_test.rows +1 ; go_s_row++){
+        for(int go_s_col = 0 ; go_s_col < src_img.cols - template_test.cols +1 ; go_s_col++){
+            float similar = 0;
+            for(int go_t_row = 0 ; go_t_row < template_test.rows ; go_t_row++){
+                for(int go_t_col = 0 ; go_t_col < template_test.cols ; go_t_col++){
+                    /// 另一種寫法：if( !(template_test.at<uchar>(go_t_row,go_t_col) - src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col)) )
+                    if(template_test.at<uchar>(go_t_row,go_t_col) == src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col)){
+                        similar++;
+                    }
+                }
+            }
+            // float similar_rate = similar / total_pix;
+            result.at<float>(go_s_row,go_s_col) = similar / total_pix;// similar_rate;
+            // cout<<"similar_rate = "<<similar_rate<<endl;
+        }
+    }
+    // imshow("template_test",result);
+    // waitKey(0);
+}
+
 void debug_draw_result_src_on_staff_bin_erase_line(Mat result_src, Mat staff_bin_erase_line, Mat template_img, int l, int r, int t, int d, Scalar color, string window_name){
     Mat staff_bin_erase_line_color;
     cvtColor(staff_bin_erase_line, staff_bin_erase_line_color, CV_GRAY2BGR);
@@ -131,7 +153,7 @@ void MaybeHead_MergeCloseHead(Mat& result_src, Mat staff_bin_erase_line, Mat tem
 void recognition_1_find_all_maybe_head(Mat template_img, Mat staff_bin_erase_line,
                                        int e_count, int* l_edge, int* distance,
                                        int& maybe_head_count,float maybe_head[][200],
-                                       int pitch_base_y){
+                                       int pitch_base_y, string method){
 
     /// 一、整個大圖片的 result_src 容器
     /// 二、加速，看想看的小地方地方即可：根據垂直投影找出來的mountain切
@@ -169,7 +191,8 @@ void recognition_1_find_all_maybe_head(Mat template_img, Mat staff_bin_erase_lin
         // cout << "result_col = " << result_col << endl;
 
         // 三、 每座山圖 做樣本比對
-        matchTemplate(proc_img, template_img, result, CV_TM_CCOEFF_NORMED);
+        if(method == "method1") matchTemplate (proc_img, template_img, result, CV_TM_CCOEFF_NORMED);
+        else                    matchTemplate2(proc_img, template_img, result);
         // threshold(result, result, 0.5, 1., CV_THRESH_TOZERO);
 
         // 四、 山圖樣本比對的結果圖 根據 左邊界 加回 原始影像比對的結果圖 相應的位置
