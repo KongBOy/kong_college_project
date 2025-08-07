@@ -44,7 +44,6 @@ add_library(Recognition_lib lib/Recognition_lib/Recognition.cpp
                             lib/Recognition_lib/recognition/src/recognition_0_array_tools.cpp
                             lib/Recognition_lib/recognition/src/recognition_0_debug_tools.cpp
                             lib/Recognition_lib/recognition/src/recognition_0_vertical_map_to_speed_up.cpp
-                            lib/Recognition_lib/recognition/src/recognition_1_find_all_maybe_head_method_2.cpp
                             lib/Recognition_lib/recognition/src/recognition_1_find_all_maybe_head.cpp
                             lib/Recognition_lib/recognition/src/recognition_2_a_head_charactaristic.cpp
                             lib/Recognition_lib/recognition/src/recognition_2_b_head_recheck.cpp
