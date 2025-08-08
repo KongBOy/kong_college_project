@@ -6,8 +6,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
-//  void recognition_1_find_all_maybe_head
-//  (Mat reduce_line, int e_count, int* l_edge, int* distance,int& maybe_head_count,float maybe_head[][200])
 
 #include "recognition_0_array_tools.h"
 #include "recognition_0_debug_tools.h"
@@ -24,50 +22,50 @@ float black_count_function(Mat image,int top,int down, int left , int right , Ma
             if(!image.at<uchar>(go_row,go_col)){
                 black_count++;
 
-                line(temp_show2,Point(go_col,go_row),Point(go_col,go_row),Scalar(0,0,255),1); // 標出位置
+                line(temp_show2, Point(go_col,go_row), Point(go_col,go_row), Scalar(0,0,255), 1);  // 標出位置
             }
-            // if(not_solid) break; //  兩層都要加！
         }
-        // if(not_solid) break; //  兩層都要加！
     }
 
-
-    //  小心如果要show的話需要 if(not_solid == false) 要不然頭剛被刪掉的話 go_head會 == -1，讀資料會gg
-    float test_area = (down-top+1)*(right-left+1);
-    float black_rate = black_count/test_area;
-    // cout註解 看全休止符和二分休止符 左右的狀況~~
-    // cout<<"test_area = "<<test_area
-    //     <<" , black_count = "<<black_count
-    //     <<" , black_rate = "<<black_rate<<endl;
+    float test_area = (down - top + 1) * (right - left + 1);
+    float black_rate = black_count / test_area;
+    // cout << "test_area = "      << test_area
+    //      << " , black_count = " << black_count
+    //      << " , black_rate = "  << black_rate << endl;
     return black_rate;
 }
 
 
-void recognition_2_a_head_charactristic(int head_type,Mat template_img,Mat reduce_line,Mat cut_ord_img,int& maybe_head_count,float maybe_head[][200]){
-    // 要記得分case喔！！
+void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat staff_bin_erase_line, Mat cut_ord_img, int& maybe_head_count, float maybe_head[][200]){
+    // debug用
+    Mat temp_show2;
+    cvtColor(staff_bin_erase_line, temp_show2, CV_GRAY2BGR);
 
-
-    // CHECK SOLID using my data_structure
-    Mat temp_show2 = reduce_line.clone();
-    cvtColor(reduce_line,temp_show2,CV_GRAY2BGR);
-
-    switch(head_type){
-        case 2:
-        case 4:{
-            int check_size = 6;
-            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
-                // cout<<"x = "<<maybe_head[0][i]<<", y = "<<maybe_head[1][i]<<", value = "<<maybe_head[2][i]<<endl;
+    for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+        // cout << "x = " << maybe_head[0][i] << ", y = " << maybe_head[1][i] << ", value = " << maybe_head[2][i] << endl;
+        switch(head_type){
+            // 二分音符, 四分音符, 偵測頭的中心是否為實心的, 實心就代表為四分音符->排除二分音符, 空心就代表為二分音符->排除四分音符
+            case 2:
+            case 4:{
+                // 檢查 以頭為中心往周圍算 check_size 格, 此區域內為實心還是空心
+                int check_size = 6;
+            
+                // 實心位置 的左上角: 取 頭的正中心 往左 check_size / 2 
                 Point check_left_top(maybe_head[0][go_head] + 0.5*template_img.cols - check_size/2 ,
-                                     maybe_head[1][go_head] + 0.5*template_img.rows - check_size/2 );
+                                    maybe_head[1][go_head] + 0.5*template_img.rows - check_size/2 );
+                // debug用, 看一下目前框待檢查的實心框框在哪邊
                 rectangle( temp_show2, Point(check_left_top.x,check_left_top.y), Point(check_left_top.x + check_size,check_left_top.y + check_size), Scalar(255,200,100), 1, 8, 0 );
+                // imshow("temp_show2", temp_show2);
+                
+                // 走遍框框的所有pixel, 如果遇到白色就代表空心, 如果沒遇到白色就代表實心
+                bool empty_inside = false;
+                for(int i = check_left_top.y ; i < check_left_top.y + check_size ; i++){
+                    for(int j = check_left_top.x ; j < check_left_top.x + check_size ; j++){
+                        if(staff_bin_erase_line.at<uchar>(i,j)){
+                            empty_inside = true;
 
-                bool not_solid = false;
-                for(int i = check_left_top.y ; i < check_left_top.y+check_size ; i++){
-                    for(int j = check_left_top.x ; j < check_left_top.x+check_size ; j++){
-                        if(reduce_line.at<uchar>(i,j)){
-                            not_solid = true;
-
-                            line(temp_show2,Point(j,i),Point(j,i),Scalar(0,0,255),3); // 標出位置
+                            line(temp_show2, Point(j,i), Point(j,i), Scalar(0,0,255),3); // 標出位置
+                            // 如果偵測到非實心, 代表是二分音符頭, 所以如果現在是在偵測四分音符的話就可以刪除此頭了
                             if(head_type == 4){
                                 position_erase(maybe_head_count,maybe_head,go_head);
                                 go_head--;
@@ -75,36 +73,37 @@ void recognition_2_a_head_charactristic(int head_type,Mat template_img,Mat reduc
                             }
                             else if(head_type == 2);  //  do_nothing
                         }
-                        if(not_solid) break;  //  兩層都要加！
+                        // 如果目前row的某個col 已經偵測到非實心, 不用再繼續檢查是否為實心囉
+                        if(empty_inside) break;  //  兩層都要加！
                     }
-                    if(not_solid) break;  //  兩層都要加！
+                    // 如果目前row 已經偵測到非實心, 不用再繼續檢查是否為實心囉
+                    if(empty_inside) break;  //  兩層都要加！
                 }
-                // 小心如果要show的話需要 if(not_solid == false) 要不然頭剛被刪掉的話 go_head會 == -1，讀資料會gg
+                // 小心如果要show的話需要 if(empty_inside == false) 要不然頭剛被刪掉的話 go_head會 == -1，讀資料會gg
 
                 if(head_type == 2){
-                    if(not_solid == true);  // do_nothing
+                    // 如果是空心的, 代表是二分音符頭
+                    if(empty_inside == true);  // do_nothing
+                    // 如果是實心的, 代表是四分音符頭, 所以如果現在是在偵測二分音符的話就可以刪除此頭了
                     else{
                         position_erase(maybe_head_count,maybe_head,go_head);
                         go_head--;
                     }
                 }
-
             }
-        }
-        break;
+            break;
 
-        case 1:
-        case 3:{
-            int check_width = 6;
-            int shift = 2;
-            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
-                // cout<<"x = "<<maybe_head[0][i]<<", y = "<<maybe_head[1][i]<<", value = "<<maybe_head[2][i]<<endl;
-                int l_right = maybe_head[0][go_head] -1 +shift;
+            // 全休止, 二分休止
+            case 1:   // 全休止   在未消線的圖中 以自身往外延伸 的左上 且 右上 都有黑色線, 如果此特徵不夠多納就排除 是 全休止
+            case 3:{  // 二分休止 在未消線的圖中 以自身往外延伸 的左下 且 右下 都有黑色線, 如果此特徵不夠多納就排除 是 二分休止
+                int shift = 2;        // 靠近自身偏移多少
+                int check_width = 6;  // 往外搜尋多少
+                int l_right = maybe_head[0][go_head] -1 + shift;
                 int l_left  = l_right - check_width;
                 // int l_left  = maybe_head[0][go_head] - template_img.cols +shift;
                 // int l_right = l_left + template_img.cols -1;
 
-                int r_left  = maybe_head[0][go_head] + template_img.cols +1 -shift;
+                int r_left  = maybe_head[0][go_head] + template_img.cols + 1 -shift;
                 int r_right = r_left + check_width;
                 // int r_right = maybe_head[0][go_head]+template_img.cols*2 -shift;
                 // int r_left  = r_right - template_img.cols +1;
@@ -125,78 +124,51 @@ void recognition_2_a_head_charactristic(int head_type,Mat template_img,Mat reduc
                 int r_down = l_down;
 
 
-                rectangle( temp_show2, Point(l_left,l_top), Point(l_right,l_down), Scalar(255,200,100), 1, 8, 0 );
-                rectangle( temp_show2, Point(r_left,r_top), Point(r_right,r_down), Scalar(255,200,100), 1, 8, 0 );
+                rectangle( temp_show2, Point(l_left, l_top), Point(l_right, l_down), Scalar(0,255,0), 1, 8, 0 );
+                rectangle( temp_show2, Point(r_left, r_top), Point(r_right, r_down), Scalar(255,0,0), 1, 8, 0 );
+                rectangle( temp_show2, Point(maybe_head[0][go_head], maybe_head[1][go_head]), Point(maybe_head[0][go_head] + template_img.cols, maybe_head[1][go_head] + template_img.rows), Scalar(0, 0,255), 1, 8, 0 );
+                // imshow("temp_show2", temp_show2);
 
-                float l_black_rate = black_count_function(cut_ord_img,l_top,l_down,l_left,l_right,temp_show2);
-                float r_black_rate = black_count_function(cut_ord_img,r_top,r_down,r_left,r_right,temp_show2);
+                float l_black_rate = black_count_function(cut_ord_img, l_top, l_down, l_left, l_right, temp_show2);
+                float r_black_rate = black_count_function(cut_ord_img, r_top, r_down, r_left, r_right, temp_show2);
 
-                // cout註解 看全休止符和二分休止符 左右的狀況~~
-                // cout<<"l_black_rate = "<<l_black_rate<<" , r_black_rate = "<<r_black_rate<<endl;
-
+                // cout << "l_black_rate = " << l_black_rate << " , r_black_rate = " << r_black_rate << endl;
+                // 如果自身往外的黑色線不夠多, 那就代表不是 全休止 或 二分休止, 就把它排除掉囉
                 if(l_black_rate < 0.1 || r_black_rate < 0.1){
                     position_erase(maybe_head_count,maybe_head,go_head);
                     go_head--;
                 }
-                /*
-                if(black_rate > 0.25) // 24~32格~~裡面有5~9格以上都是黑色的~~太多囉!!!!{
-                    position_erase(maybe_head_count,maybe_head,go_head);
-                    go_head--;
-                }
-                */
             }
-        }
-        break;
+            break;
 
 
-        // head_type = 6,7,8
-        case 6:
-        case 7:
-        case 8:{
-            int check_width = 3;
-            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
-                // cout<<"x = "<<maybe_head[0][i]<<", y = "<<maybe_head[1][i]<<", value = "<<maybe_head[2][i]<<endl;
-                int right = maybe_head[0][go_head]+template_img.cols ;
-                int left = right - template_img.cols/2;
-                int down = maybe_head[1][go_head]-4;
-                int top = down - check_width;
+            // 十六分休止, 三十二分休止, 八分休止 的 右邊偏上 會是空白沒東西的, 有東西的話就排除
+            case 6:
+            case 7:
+            case 8:{
+                int check_width = 3;
+                int right = maybe_head[0][go_head] + template_img.cols ;
+                int left  = right - template_img.cols / 2;
+                int down  = maybe_head[1][go_head] - 4;
+                int top   = down - check_width;
 
                 rectangle( temp_show2, Point(left,top), Point(right,down), Scalar(255,200,100), 1, 8, 0 );
+                rectangle( temp_show2, Point(maybe_head[0][go_head], maybe_head[1][go_head]), Point(maybe_head[0][go_head] + template_img.cols, maybe_head[1][go_head] + template_img.rows), Scalar(0, 0,255), 1, 8, 0 );
+                // imshow("temp_show2", temp_show2);
 
-                int black_count = 0;
-                for(int go_row = top ; go_row <= down  ; go_row++){
-                    for(int go_col = left ; go_col <= right ; go_col++){
-                        if(!reduce_line.at<uchar>(go_row,go_col)){
-                            black_count++;
+                float black_rate = black_count_function(cut_ord_img, top, down, left, right, temp_show2);
 
-                            line(temp_show2,Point(go_col,go_row),Point(go_col,go_row),Scalar(0,0,255),1);  // 標出位置
-                        }
-                        // if(not_solid) break;  //  兩層都要加！
-                    }
-                    // if(not_solid) break;  //  兩層都要加！
-                }
-                // 小心如果要show的話需要 if(not_solid == false) 要不然頭剛被刪掉的話 go_head會 == -1，讀資料會gg
-                float test_area = (down-top+1)*(right-left+1);
-                float black_rate = black_count/test_area;
-                // cout註解 看八分、十六分、三十二分休止的右上角黑色有幾格
-                // cout<<"test_area = "<<test_area
-                //     <<" , black_count = "<<black_count
-                //     <<" , black_rate = "<<black_rate<<endl;
-                if(black_rate > 0.25){ // 24~32格~~裡面有5~9格以上都是黑色的~~太多囉!!!!
+                if(black_rate > 0.25){ // 24~32格, 裡面有5~9格以上都是黑色的就太多囉
                     position_erase(maybe_head_count,maybe_head,go_head);
                     go_head--;
                 }
             }
+            break;
         }
-        break;
     }
-
     // 秀出 做完CHECK_SOLID的頭
-    draw_head(temp_show2,template_img,maybe_head_count,maybe_head);
-    // imshow("Check_solid",temp_show2);
-
-    // debug整合
-    // imshow("debug",temp_show2);
+    draw_head(temp_show2, template_img, maybe_head_count, maybe_head);
+    // imshow("debug", temp_show2);
     // waitKey(0);
-    // destroyWindow("Check_solid");
+    // destroyWindow("debug");
 }
