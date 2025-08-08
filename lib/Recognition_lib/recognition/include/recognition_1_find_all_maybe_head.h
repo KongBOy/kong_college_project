@@ -18,8 +18,10 @@
 
 using namespace cv;
 
-void recognition_1_find_all_maybe_head(Mat template_img,   /// 要比對的樣板
+void recognition_1_find_all_MaybeHead(Mat& result_map,
+                                       Mat template_img,   /// 要比對的樣板
                                        Mat reduce_line,    /// 消掉五線譜線的圖
                                        int e_count, int* l_edge, int* distance, ///從 recognition_0 的資料來 加速
-                                       int& maybe_head_count,float maybe_head[][200],
-                                       int pitch_base_y, string method);
+                                       string method);
+
+void Grab_MaybeHead_from_ResultMap(Mat result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img);
