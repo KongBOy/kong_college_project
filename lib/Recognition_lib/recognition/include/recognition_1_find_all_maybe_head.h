@@ -25,3 +25,5 @@ void recognition_1_find_all_MaybeHead(Mat& result_map,
                                        string method);
 
 void Grab_MaybeHead_from_ResultMap(Mat result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img);
+
+void debug_draw_result_map_on_staff_bin_erase_line(Mat result_map, Mat staff_bin_erase_line, Mat template_img, int l, int r, int t, int d, Scalar color=Scalar(0, 0, 255), string window_name="debug");
