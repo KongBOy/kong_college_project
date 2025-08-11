@@ -237,8 +237,8 @@ void recognition_1_find_all_MaybeHead(Mat& result_map, Mat template_img, Mat sta
         Mat proc_img = staff_bin_erase_line(Rect(l_edge[go_mountain],0, distance[go_mountain], staff_bin_erase_line.rows ));
 
         // 三前置、 建立 放 根據垂直投影切出來的影像做樣本比對結果的容器，根據垂直投影找出來的mountain切, 所以容器大小是: 山圖的大小 - template大小 + 1
-        int result_row = staff_bin_erase_line.rows - template_img.rows +10;
-        int result_col = distance[go_mountain]     - template_img.cols +10;
+        int result_row = staff_bin_erase_line.rows - template_img.rows +1;
+        int result_col = distance[go_mountain]     - template_img.cols +1;
         Mat result(result_row,result_col,CV_32FC1);
         // cout << "result_row = " << result_row << endl;
         // cout << "result_col = " << result_col << endl;
