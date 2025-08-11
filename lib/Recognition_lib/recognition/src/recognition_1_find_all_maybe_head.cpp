@@ -152,6 +152,23 @@ void MaybeHead_MergeCloseHead(Mat& result_map, Mat staff_bin_erase_line, Mat tem
 }
 
 void Grab_MaybeHead_from_ResultMap(Mat result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img){
+    // 五、簡單篩一下，取大量喔！就是找出可能是要找的頭的概念！之後再用特徵篩一次~~
+    float thresh_hold = 0.40;
+    // normalize( result_map, result_map, 0, 1, NORM_MINMAX, -1, Mat() ); ///如果用這個的話就連其他版本的譜好像也可以，thr設0.75
+    threshold(result_map, result_map, thresh_hold , 1.0 , CV_THRESH_TOZERO);
+    // debug用  把所有找到的地方都框出來，還沒有合併附近很像的地方
+    // debug_draw_result_map_on_staff_bin_erase_line(result_map, staff_bin_erase_line, template_img, 0, result_map.cols - 1, 0, result_map.rows - 1, Scalar(0, 0, 255), "before merge");
+    // *******************************************************************************************************
+    // 把附近找出來一堆很像的的東西合併成一個：
+    // 一、先框好範圍，
+    // 二、找出框框內最好的點，
+    // 三、只留下那個點其他點去掉，
+    MaybeHead_MergeCloseHead(result_map, staff_bin_erase_line,template_img);
+    // debug用 合併完也看看
+    // debug_draw_result_map_on_staff_bin_erase_line(result_map, staff_bin_erase_line, template_img, 0, result_map.cols - 1, 0, result_map.rows - 1, Scalar(0, 0, 255), "after merge");
+    // waitKey(0);
+    
+    // *******************************************************************************************************
     // 自己設資料結構 移到外面去囉
     //    int maybe_head_count = 0;
     //    float maybe_head[3][200];
@@ -256,26 +273,6 @@ void recognition_1_find_all_MaybeHead(Mat& result_map, Mat template_img, Mat sta
         // waitKey(0);
     }
 
-    // 五、簡單篩一下，取大量喔！就是找出可能是要找的頭的概念！之後再用特徵篩一次~~
-    float thresh_hold = 0.40;
-    // normalize( result_map, result_map, 0, 1, NORM_MINMAX, -1, Mat() ); ///如果用這個的話就連其他版本的譜好像也可以，thr設0.75
-    threshold(result_map, result_map, thresh_hold , 1.0 , CV_THRESH_TOZERO);
 
-    // ~~~~~ debug用 ~~~~~ 把所有找到的地方都框出來，還沒有合併附近很像的地方
-    Mat temp_show;
-    cvtColor(staff_bin_erase_line, temp_show, CV_GRAY2BGR);
-    for(int go_row = 0; go_row < result_map.rows ; go_row++)
-        for(int go_col = 0 ; go_col < result_map.cols ; go_col++)
-            if(result_map.at<float>(go_row,go_col) )
-                rectangle( temp_show, Point(go_col, go_row), Point( go_col + template_img.cols ,go_row + template_img.rows ), Scalar(0,0,255), 1, 8, 0 );
-    // imshow("template_find_all", temp_show);
-    // waitKey(0);
-
-    // *******************************************************************************************************
-    // 把附近找出來一堆很像的的東西合併成一個：
-    // 一、先框好範圍，
-    // 二、找出框框內最好的點，
-    // 三、只留下那個點其他點去掉，
-    MaybeHead_MergeCloseHead(result_map, staff_bin_erase_line,template_img);
 
 }
