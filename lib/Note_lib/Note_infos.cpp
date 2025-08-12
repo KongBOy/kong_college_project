@@ -32,87 +32,73 @@ void set_formate(int head_type,int time_bar,Scalar & color , Mat & template_img)
 
     Mat template_img_9 = imread("Resource/note/9/9-bin.bmp",0);
 
-    switch(head_type)
-    {
-        case 0:
-        {
+    switch(head_type){
+        case 0:{
             color = Scalar(140,100,100);
             template_img = template_img_0.clone();
         }
         break;
 
-        case 1:
-        {
+        case 1:{
             color = Scalar(180,100,100);
             template_img = template_img_1.clone();
         }
         break;
 
-        case 2:
-        {
+        case 2:{
             color = Scalar(220,100,100);
             template_img = template_img_2.clone();
         }
         break;
 
-        case 3:
-        {
+        case 3:{
             color = Scalar(255,120,100);
             template_img = template_img_3.clone();
         }
         break;
 
-        case 4:
-        {
+        case 4:{
             color = Scalar(100 , 100 , 100+time_bar*70);
             template_img = template_img_4.clone();
         }
         break;
 
-        case 5:
-        {
+        case 5:{
             color = Scalar(255,200,100);
             template_img = template_img_5.clone();
         }
         break;
 
-        case 6:
-        {
+        case 6:{
             color = Scalar(255,255,100);
             template_img = template_img_6.clone();
         }
         break;
 
-        case 7:
-        {
+        case 7:{
             color = Scalar(140,100,180);
             template_img = template_img_7.clone();
         }
         break;
 
-        case 8:
-        {
+        case 8:{
             color = Scalar(140,180,180);
             template_img = template_img_8.clone();
         }
         break;
 
-        case 9:
-        {
+        case 9:{
             color = Scalar(140,255,180);
             template_img = template_img_9.clone();
         }
         break;
     }
-
 }
 
-void list_row_note_info(int row_note_count,int row_note[][1000])
-{
+void list_row_note_info(int row_note_count,int row_note[][1000]){
     cout<<endl<<endl;
         cout<<"print row_note~~~"<<endl;
-        for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++)
-        {
+        for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){
             cout<<"go_row_note = "<<go_row_note
                 <<" , type = "<<row_note[2][go_row_note]
                 <<" , x = "<<row_note[0][go_row_note]
@@ -124,10 +110,8 @@ void list_row_note_info(int row_note_count,int row_note[][1000])
         cout<<"row_note_count = "<<row_note_count<<endl;
 
 }
-void watch_row_note(Mat debug_img , int row_note_count, int row_note[][1000])
-{
-    for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++)
-    {
+void watch_row_note(Mat debug_img , int row_note_count, int row_note[][1000]){
+    for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){
         Scalar color;
         Mat template_img;
         set_formate(row_note[2][go_row_note],row_note[3][go_row_note],color,template_img);
@@ -138,45 +122,38 @@ void watch_row_note(Mat debug_img , int row_note_count, int row_note[][1000])
         waitKey(0);
     }
 }
-void draw_row_note(Mat debug_img , int row_note_count, int row_note[][1000])
-{
-    for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++)
-    {
+void draw_row_note(Mat debug_img , int row_note_count, int row_note[][1000]){
+    for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){
         Scalar color;
         Mat template_img;
         set_formate(row_note[2][go_row_note],row_note[3][go_row_note],color,template_img);
         rectangle(debug_img,Point(row_note[0][go_row_note],row_note[1][go_row_note]),
                             Point(row_note[0][go_row_note]+template_img.cols,row_note[1][go_row_note]+template_img.rows),color,2);
-     ///   imshow("debug",debug_img);
-     ///   waitKey(0);
+        // imshow("debug",debug_img);
+        // waitKey(0);
     }
-
 }
 
 
 
 
-void list_note_info(int note_count,int note[][1000])
-{
+void list_note_info(int note_count,int note[][1000]){
     cout<<endl<<endl;
-        cout<<"print note~~~"<<endl;
-        for(int go_note = 0 ; go_note < note_count ; go_note++)
-        {
-            cout<<"go_note = "<<go_note
-                <<" , type = "<<note[2][go_note]
-                <<" , x = "<<note[0][go_note]
-                <<" , y = "<<note[1][go_note]
-                <<" , time = "<<note[3][go_note]
-                <<" , pitch = "<<note[4][go_note]
-                <<endl;
-        }
-        cout<<"note_count = "<<note_count<<endl;
-
+    cout<<"print note~~~"<<endl;
+    for(int go_note = 0 ; go_note < note_count ; go_note++){
+        cout<<"go_note = "<<go_note
+            <<" , type = "<<note[2][go_note]
+            <<" , x = "<<note[0][go_note]
+            <<" , y = "<<note[1][go_note]
+            <<" , time = "<<note[3][go_note]
+            <<" , pitch = "<<note[4][go_note]
+            <<endl;
+    }
+    cout<<"note_count = "<<note_count<<endl;
 }
-void watch_note(Mat debug_img , int note_count, int note[][1000])
-{
-    for(int go_note = 0 ; go_note < note_count ; go_note++)
-    {
+
+void watch_note(Mat debug_img , int note_count, int note[][1000]){
+    for(int go_note = 0 ; go_note < note_count ; go_note++){
         Scalar color;
         Mat template_img;
         set_formate(note[2][go_note],note[3][go_note],color,template_img);
@@ -187,25 +164,24 @@ void watch_note(Mat debug_img , int note_count, int note[][1000])
         waitKey(0);
     }
 }
-void draw_note(Mat debug_img , int note_count, int note[][1000])
-{
-    for(int go_note = 0 ; go_note < note_count ; go_note++)
-    {
+
+void draw_note(Mat debug_img , int note_count, int note[][1000]){
+    for(int go_note = 0 ; go_note < note_count ; go_note++){
         Scalar color;
         Mat template_img;
         set_formate(note[2][go_note],note[3][go_note],color,template_img);
 
         rectangle(debug_img,Point(note[0][go_note],note[1][go_note]),
                             Point(note[0][go_note]+template_img.cols,note[1][go_note]+template_img.rows),color,2);
-     ///   imshow("debug",debug_img);
-     ///   waitKey(0);
+        // imshow("debug",debug_img);
+        // waitKey(0);
     }
 
 }
 
 
-void list_head_info(int maybe_head_count,float maybe_head[][200])
-{
+
+void list_head_info(int maybe_head_count,float maybe_head[][200]){
     cout<<"maybe_head_count = "<<maybe_head_count<<endl;
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
         cout<<"go_head = "<<go_head
@@ -216,14 +192,12 @@ void list_head_info(int maybe_head_count,float maybe_head[][200])
     cout<<endl;
 }
 
-void draw_head(Mat& debug_img , Mat template_img,int maybe_head_count, float maybe_head[][200])
-{
-    for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
-    {
-/// 一、else ~ thresh_hold_1
-/// 二、thresh_hold_1 ~ thresh_hold_2
-/// 三、thresh_hold_2 ~ thresh_hold_3
-/// 四、thresh_hold_3 ~ else
+void draw_head(Mat& debug_img , Mat template_img,int maybe_head_count, float maybe_head[][200]){
+    for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+        /// 一、else ~ thresh_hold_1
+        /// 二、thresh_hold_1 ~ thresh_hold_2
+        /// 三、thresh_hold_2 ~ thresh_hold_3
+        /// 四、thresh_hold_3 ~ else
         float thresh_hold_1 = 0.70;
         float thresh_hold_2 = 0.49;
         float thresh_hold_3 = 0.43;
@@ -234,14 +208,12 @@ void draw_head(Mat& debug_img , Mat template_img,int maybe_head_count, float may
     }
 }
 
-void watch_head(Mat debug_img , Mat template_img , int maybe_head_count , float maybe_head[][200])
-{
-    for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
-    {
-/// 一、else ~ thresh_hold_1
-/// 二、thresh_hold_1 ~ thresh_hold_2
-/// 三、thresh_hold_2 ~ thresh_hold_3
-/// 四、thresh_hold_3 ~ else
+void watch_head(Mat debug_img , Mat template_img , int maybe_head_count , float maybe_head[][200]){
+    for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+        /// 一、else ~ thresh_hold_1
+        /// 二、thresh_hold_1 ~ thresh_hold_2
+        /// 三、thresh_hold_2 ~ thresh_hold_3
+        /// 四、thresh_hold_3 ~ else
         float thresh_hold_1 = 0.70;
         float thresh_hold_2 = 0.49;
         float thresh_hold_3 = 0.43;
@@ -249,7 +221,6 @@ void watch_head(Mat debug_img , Mat template_img , int maybe_head_count , float 
         else if(maybe_head[2][go_head] <thresh_hold_1 && maybe_head[2][go_head] >= thresh_hold_2) rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(0,255,0), 1, 8, 0 );
         else if(maybe_head[2][go_head] <thresh_hold_2 && maybe_head[2][go_head] >= thresh_hold_3) rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(0,0,255), 1, 8, 0 );
         else rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(50,150,255), 2, 8, 0 );
-
     }
     imshow("watch_head()",debug_img);
     waitKey(0);
