@@ -52,52 +52,52 @@ static void Perspective_trans(double x,double y,Mat warp_matrix,double & result_
 
 int shift_x = -80;
 Point loading_item_position[17] ={
-    Point(shift_x+200,527),///00 treble_clef
-    Point(shift_x+270,539),///01 8
-    Point(shift_x+344,533),///02 16
-    Point(shift_x+442,564),///03 rest_8
-    Point(shift_x+484,531),///04 4
-    Point(shift_x+564,543),///05 flat
-    Point(shift_x+613,543),///06 sharp
-    Point(shift_x+654,544),///07 8
-    Point(shift_x+733,543),///08 flat
-    Point(shift_x+784,543),///09 sharp
-    Point(shift_x+839,570),///10 rest_8
-    Point(shift_x+875,538),///11 4
-    Point(shift_x+940,538),///12 16
-    Point(shift_x+1011,543),///13 sharp
-    Point(shift_x+1057,533),///14 16
-    Point(shift_x+1120,535), ///15 4
-    Point(shift_x+1209,539)  ///16  finish
+    Point(shift_x +  200, 527), // 00 treble_clef
+    Point(shift_x +  270, 539), // 01 8
+    Point(shift_x +  344, 533), // 02 16
+    Point(shift_x +  442, 564), // 03 rest_8
+    Point(shift_x +  484, 531), // 04 4
+    Point(shift_x +  564, 543), // 05 flat
+    Point(shift_x +  613, 543), // 06 sharp
+    Point(shift_x +  654, 544), // 07 8
+    Point(shift_x +  733, 543), // 08 flat
+    Point(shift_x +  784, 543), // 09 sharp
+    Point(shift_x +  839, 570), // 10 rest_8
+    Point(shift_x +  875, 538), // 11 4
+    Point(shift_x +  940, 538), // 12 16
+    Point(shift_x + 1011, 543), // 13 sharp
+    Point(shift_x + 1057, 533), // 14 16
+    Point(shift_x + 1120, 535), // 15 4
+    Point(shift_x + 1209, 539)  // 16  finish
 };
 
 ///讀彩色~~背景綠色，現在用下面的喔~~
 /*
-Mat loading_bar_item_4 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4_green.bmp",1); ///04,11,15
-Mat loading_bar_item_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8_green.bmp",1); ///01,07
-Mat loading_bar_item_16 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_16_green.bmp",1); ///02,12,14
-Mat loading_bar_item_rest_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8_green.bmp",1); ///03,10
-Mat loading_bar_item_flat = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_flat_green.bmp",1); ///05,08
-Mat loading_bar_item_sharp = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp_green.bmp",1); ///06,09,13
-Mat loading_bar_item_finish = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp",1); ///16
-Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp",1); ///16
+Mat loading_bar_item_4          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4_green.bmp"      , 1);  // 04,11,15
+Mat loading_bar_item_8          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8_green.bmp"      , 1);  // 01,07
+Mat loading_bar_item_16         = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_16_green.bmp"     , 1);  // 02,12,14
+Mat loading_bar_item_rest_8     = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8_green.bmp" , 1);  // 03,10
+Mat loading_bar_item_flat       = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_flat_green.bmp"   , 1);  // 05,08
+Mat loading_bar_item_sharp      = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp_green.bmp"  , 1);  // 06,09,13
+Mat loading_bar_item_finish     = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp" , 1);  // 16
+Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp" , 1);  // 16
 */
 
 ///讀灰階~~
-Mat loading_bar_item_4 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4.bmp",0); ///04,11,15
-Mat loading_bar_item_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8.bmp",0); ///01,07
-Mat loading_bar_item_16 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_16.bmp",0); ///02,12,14
-Mat loading_bar_item_rest_8 = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8.bmp",0); ///03,10
-Mat loading_bar_item_flat = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_flat.bmp",0); ///05,08
-Mat loading_bar_item_sharp = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp.bmp",0); ///06,09,13
-Mat loading_bar_item_finish = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp",0); ///16
-Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp",0); ///16
+Mat loading_bar_item_4          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4.bmp"      , 0);  // 04,11,15
+Mat loading_bar_item_8          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8.bmp"      , 0);  // 01,07
+Mat loading_bar_item_16         = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_16.bmp"     , 0);  // 02,12,14
+Mat loading_bar_item_rest_8     = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_rest_8.bmp" , 0);  // 03,10
+Mat loading_bar_item_flat       = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_flat.bmp"   , 0);  // 05,08
+Mat loading_bar_item_sharp      = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_sharp.bmp"  , 0);  // 06,09,13
+Mat loading_bar_item_finish     = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp" , 0);  // 16
+Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp" , 0);  // 16
 
 
-///252 577 staff_line
-///1224 593 loading
+// 252 577 staff_line
+// 1224 593 loading
 
-///b153 g225 r113
+// b153 g225 r113
 void set_item_img(int position,Mat& setted_img){
     switch(position){
         case 4:
