@@ -157,9 +157,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                 // if(head_type == 1 && (size == 14)) maxVal += (float)14/(float)(template_recheck.rows*template_recheck.cols);
 
                 // cout註解 看recheck後的相似度 和原來的相似度
-                cout << "old_value = " << maybe_head[2][go_head]
-                     << "recheck_size" << size << " , max_value = " << maxVal << endl;
-
+                cout << "old_value = " << maybe_head[2][go_head] << ", recheck_size" << size << " , max_value_kong = " << maxVal;
                 if(maxVal >= 0.800){
                     /*
                     Mat debug_img2 = reduce_line.clone();
@@ -208,7 +206,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
             if(recheck_sucess == false){
                 // cout註解 recheck失敗也標記一下
                 // cout << "this head might not be head" << endl;
-                rectangle(debug_img,Point(recheck_l,recheck_t),Point(recheck_r,recheck_d),Scalar(0,0,255),2);
+                rectangle(debug_img,Point(recheck_l,recheck_t),Point(recheck_r,recheck_d),Scalar(0, 255, 0), 1);
                 // **************************
                 // imshow("recheck",debug_img);
                 // waitKey(0);
