@@ -258,11 +258,13 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                     one_step = -1;
                     break;
             }
-            cout << "cos_go         : " << cos_go << endl;
-            cout << "sin_go         : " << sin_go << endl;
-            cout << "one_step       : " << one_step << endl;
-            cout << "one_step_height_go: " << one_step_height_go << endl;
-            cout << endl;
+            if(debuging){
+                cout << "cos_go         : " << cos_go << endl;
+                cout << "sin_go         : " << sin_go << endl;
+                cout << "one_step       : " << one_step << endl;
+                cout << "one_step_height_go: " << one_step_height_go << endl;
+                cout << endl;
+            }
 
             Erase_line(src_bin_erase_line, x0, y0, one_step, one_step_height, 5);
 
@@ -435,7 +437,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             // 畫一下現在位置
                             pt2.x = next_x, pt2.y = next_y;
                             Debug_draw_line(pt1, pt2, Scalar(  0,  22, 165), 5);  // 深灰色
-                            cout << "bend detected up" << endl;
+                            if(debuging) cout << "bend detected up" << endl;
 
                             Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
@@ -450,7 +452,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             // 畫一下現在位置
                             pt2.x = next_x, pt2.y = next_y;
                             Debug_draw_line(pt1, pt2, Scalar(127,  0, 255), 5);  // 淺灰色
-                            cout << "bend detected down" << endl;
+                            if(debuging) cout << "bend detected down" << endl;
 
                             Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
@@ -477,7 +479,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                 left_point[go_line][0] = next_x;
                 left_point[go_line][1] = next_y;
             }
-            cout << "line_ " << go_line << " find head, " << "next_x=" << next_x << " , next_y=" << next_y << endl;
+            if(debuging) cout << "line_ " << go_line << " find head, " << "next_x=" << next_x << " , next_y=" << next_y << endl;
         }
 	}
 
