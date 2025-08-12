@@ -86,7 +86,7 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
                     if(empty_inside == true);  // do_nothing
                     // 如果是實心的, 代表是四分音符頭, 所以如果現在是在偵測二分音符的話就可以刪除此頭了
                     else{
-                        position_erase(maybe_head_count,maybe_head,go_head);
+                        position_erase(maybe_head_count, maybe_head, go_head);
                         go_head--;
                     }
                 }
