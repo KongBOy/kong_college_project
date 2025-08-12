@@ -10,26 +10,19 @@
 
 using namespace std;
 
-void position_erase(int& maybe_head_count,float maybe_head[][200],int position)
-{
-    if(maybe_head_count > 0)
-    {
-        if(maybe_head_count == 1)
-        {
+void position_erase(int& maybe_head_count,float maybe_head[][200],int position){
+    if(maybe_head_count > 0){
+        if(maybe_head_count == 1){
             maybe_head_count--;
             return;
         }
-        else
-        {
-            if(position == maybe_head_count -1) //刪最後一個
-            {
+        else{
+            if(position == maybe_head_count -1){ //刪最後一個
                 maybe_head_count--;
                 return;
             }
-            else
-            {
-                for(int i = position ; i < maybe_head_count-1 ; i++)
-                {
+            else{
+                for(int i = position ; i < maybe_head_count-1 ; i++){
                     maybe_head[0][i] = maybe_head[0][i+1];
                     maybe_head[1][i] = maybe_head[1][i+1];
                     maybe_head[2][i] = maybe_head[2][i+1];
@@ -39,34 +32,26 @@ void position_erase(int& maybe_head_count,float maybe_head[][200],int position)
             }
         }
     }
-    else
-    {
-        cout<<"沒有線可以刪，沒有做動作"<<endl;
+    else{
+        cout<<"沒有頭可以刪，沒有做動作"<<endl;
         return;
     }
 }
 
 
-void position_erase_line(int& lines_count,short lines[][200],bool lines_dir[][200] ,int position)
-{
-    if(lines_count > 0)
-    {
-        if(lines_count == 1)
-        {
+void position_erase_line(int& lines_count,short lines[][200],bool lines_dir[][200] ,int position){
+    if(lines_count > 0){
+        if(lines_count == 1){
             lines_count--;
             return;
         }
-        else
-        {
-            if(position == lines_count -1) //刪最後一個
-            {
+        else{
+            if(position == lines_count -1){ //刪最後一個
                 lines_count--;
                 return;
             }
-            else
-            {
-                for(int i = position ; i < lines_count-1 ; i++)
-                {
+            else{
+                for(int i = position ; i < lines_count-1 ; i++){
                     lines[0][i] = lines[0][i+1];
                     lines[1][i] = lines[1][i+1];
                     lines[2][i] = lines[2][i+1];
@@ -78,33 +63,25 @@ void position_erase_line(int& lines_count,short lines[][200],bool lines_dir[][20
             }
         }
     }
-    else
-    {
+    else{
         cout<<"沒有線可以刪，沒有做動作"<<endl;
         return;
     }
 }
 
-void position_erase_note(int& note_count,int note[][1000],int position)
-{
-    if(note_count > 0)
-    {
-        if(note_count == 1)
-        {
+void position_erase_note(int& note_count,int note[][1000],int position){
+    if(note_count > 0){
+        if(note_count == 1){
             note_count--;
             return;
         }
-        else
-        {
-            if(position == note_count -1) //刪最後一個
-            {
+        else{
+            if(position == note_count -1){ //刪最後一個
                 note_count--;
                 return;
             }
-            else
-            {
-                for(int i = position ; i < note_count-1 ; i++)
-                {
+            else{
+                for(int i = position ; i < note_count-1 ; i++){
                     note[0][i] = note[0][i+1];
                     note[1][i] = note[1][i+1];
                     note[2][i] = note[2][i+1];
@@ -116,23 +93,18 @@ void position_erase_note(int& note_count,int note[][1000],int position)
             }
         }
     }
-    else
-    {
-        cout<<"沒有線可以刪，沒有做動作"<<endl;
+    else{
+        cout<<"沒有 note 可以刪，沒有做動作"<<endl;
         return;
     }
 }
 
 
 
-void bubbleSort_maybe_head(int amount , float entry[][200],int index)
-{
-	for(int i = 0 ; i < amount-1 ; i++)
-	{
-		for(int j = i+1 ; j < amount ; j++)
-		{
-			if(entry[index][i] > entry[index][j])
-			{
+void bubbleSort_maybe_head(int amount , float entry[][200],int index){
+	for(int i = 0 ; i < amount-1 ; i++){
+		for(int j = i+1 ; j < amount ; j++){
+			if(entry[index][i] > entry[index][j]){
 				////////////// swap ///////////////
 				float temp[3];
 				temp [0]    = entry[0][i]; temp[1]     = entry[1][i]; temp[2]     = entry[2][i];
@@ -144,14 +116,10 @@ void bubbleSort_maybe_head(int amount , float entry[][200],int index)
 }
 
 
-void bubbleSort_note(int amount ,int entry[][1000] , int index)
-{
-	for(int i = 0 ; i < amount-1 ; i++)
-	{
-		for(int j = i+1 ; j < amount ; j++)
-		{
-			if(entry[index][i] > entry[index][j])
-			{
+void bubbleSort_note(int amount ,int entry[][1000] , int index){
+	for(int i = 0 ; i < amount-1 ; i++){
+		for(int j = i+1 ; j < amount ; j++){
+			if(entry[index][i] > entry[index][j]){
 				////////////// swap ///////////////
 				float temp[5];
 				temp [0]    = entry[0][i]; temp[1]     = entry[1][i]; temp[2]     = entry[2][i]; temp[3]     = entry[3][i]; temp[4]     = entry[4][i];
@@ -162,14 +130,10 @@ void bubbleSort_note(int amount ,int entry[][1000] , int index)
 	}
 }
 
-void bubbleSort_line(int amount ,short entry[][200] , bool entry2[][200] , int index)
-{
-	for(int i = 0 ; i < amount-1 ; i++)
-	{
-		for(int j = i+1 ; j < amount ; j++)
-		{
-			if(entry[index][i] > entry[index][j])
-			{
+void bubbleSort_line(int amount ,short entry[][200] , bool entry2[][200] , int index){
+	for(int i = 0 ; i < amount-1 ; i++){
+		for(int j = i+1 ; j < amount ; j++){
+			if(entry[index][i] > entry[index][j]){
 				////////////// swap ///////////////
 				short temp[3];
 				temp [0]    = entry[0][i]; temp[1]     = entry[1][i]; temp[2]     = entry[2][i];
@@ -184,4 +148,3 @@ void bubbleSort_line(int amount ,short entry[][200] , bool entry2[][200] , int i
 		}
 	}
 }
-
