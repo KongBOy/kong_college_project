@@ -52,7 +52,7 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
             
                 // 實心位置 的左上角: 取 頭的正中心 往左 check_size / 2 
                 Point check_left_top(maybe_head[0][go_head] + 0.5*template_img.cols - check_size/2 ,
-                                    maybe_head[1][go_head] + 0.5*template_img.rows - check_size/2 );
+                                     maybe_head[1][go_head] + 0.5*template_img.rows - check_size/2 );
                 // debug用, 看一下目前框待檢查的實心框框在哪邊
                 rectangle( temp_show2, Point(check_left_top.x,check_left_top.y), Point(check_left_top.x + check_size,check_left_top.y + check_size), Scalar(255,200,100), 1, 8, 0 );
                 // imshow("temp_show2", temp_show2);
