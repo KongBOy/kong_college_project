@@ -20,7 +20,7 @@ using namespace cv;
 using namespace std;
 
 
-void find_vertical_bar( Mat reduce_line , int left , int right , int& top , int& down , int test_depth , bool direction ,Mat & debug){
+void find_vertical_bar(Mat reduce_line, int left, int right, int& top, int& down, int test_depth, bool direction, Mat& debug){
     int white_coda = 0;
     int white_ok_coda = 3;
     bool have_black = false;
@@ -45,7 +45,7 @@ void find_vertical_bar( Mat reduce_line , int left , int right , int& top , int&
             if( have_black == false ){
                 // cout<<"now top_white_coda = "<<top_white_coda<<endl;
                 // line( debug , Point(top_l,top_t - go_depth), Point(top_l,top_t - go_depth), Scalar(0,0,255), 2, CV_AA);
-                // imshow("white_coda++",debug);
+                // imshow("white_coda++", debug);
                 white_coda++;
                 // waitKey(0);
             }
@@ -85,9 +85,9 @@ void find_vertical_bar( Mat reduce_line , int left , int right , int& top , int&
 }
 
 
-void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
-                                       int& maybe_head_count,float maybe_head[][200],
-                                       int& lines_count,short lines[][200],bool lines_dir[][200]){
+void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
+                                       int& maybe_head_count, float maybe_head[][200],
+                                       int& lines_count, short lines[][200], bool lines_dir[][200]){
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line,debug_img,CV_GRAY2BGR);
 
@@ -133,13 +133,10 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
         rectangle( debug_img, Point(down_r_l,down_r_t), Point( down_r_r ,down_r_d+test_depth ), Scalar(200,155,255), 1, 8, 0 );
 
         // 定出要找的範圍 END
-
-
-        find_vertical_bar(reduce_line,top_r_l,top_r_r,top_r_t,top_r_d,test_depth,DOWNTOTOP,debug_img);
-        find_vertical_bar(reduce_line,top_l_l,top_l_r,top_l_t,top_l_d,test_depth,DOWNTOTOP,debug_img);
-        find_vertical_bar(reduce_line, down_r_l, down_r_r, down_r_t, down_r_d,test_depth,TOPTODOWN,debug_img);
-        find_vertical_bar(reduce_line, down_l_l, down_l_r, down_l_t, down_l_d,test_depth,TOPTODOWN,debug_img);
-
+        find_vertical_bar(reduce_line, top_r_l , top_r_r , top_r_t , top_r_d , test_depth,DOWNTOTOP, debug_img);
+        find_vertical_bar(reduce_line, top_l_l , top_l_r , top_l_t , top_l_d , test_depth,DOWNTOTOP, debug_img);
+        find_vertical_bar(reduce_line, down_r_l, down_r_r, down_r_t, down_r_d, test_depth,TOPTODOWN, debug_img);
+        find_vertical_bar(reduce_line, down_l_l, down_l_r, down_l_t, down_l_d, test_depth,TOPTODOWN, debug_img);
 
         int top_r_length = top_r_d - top_r_t;
         int top_l_length = top_l_d - top_l_t;
@@ -173,20 +170,19 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
 
         // 如果這顆頭"四邊"都找不到線的話(多測左上+右下只是不想讓一些特殊的頭被刪掉而已！！)
         if( ( top_r_length  < test_ok_depth ) && ( top_l_length < test_ok_depth ) &&
-            ( down_r_length < test_ok_depth ) && ( down_l_length < test_ok_depth ) )
-        {
-            position_erase(maybe_head_count,maybe_head,go_head);
+            ( down_r_length < test_ok_depth ) && ( down_l_length < test_ok_depth ) ){
+            position_erase(maybe_head_count, maybe_head, go_head);
             go_head--;
         }
         // imshow("debug",debug_img);
         // waitKey(0);
     }
 
-    bubbleSort_line(lines_count,lines,lines_dir,Y_INDEX);
-    bubbleSort_line(lines_count,lines,lines_dir,X_INDEX);
+    bubbleSort_line(lines_count, lines, lines_dir, Y_INDEX);
+    bubbleSort_line(lines_count, lines, lines_dir, X_INDEX);
 
     // list_head_info(maybe_head_count,maybe_head);
-    // watch_lines(debug_img,lines_count,lines,lines_dir);
+    watch_lines(debug_img, lines_count, lines, lines_dir);
 
 
 
@@ -212,28 +208,27 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
         int distance_x = abs( lines[0][next] - lines[0][go_line] );
         int distance_y = abs( lines[1][next] - lines[1][go_line] );
         // cout<<"distance_x = "<<distance_x<<endl;
-        if( distance_x  <= template_img.cols/2 && distance_y <= template_img.rows*5) ///沒辦法 distance_y 還是要加進來，要不然會被雜線影響
-        {
+        if( distance_x  <= template_img.cols/2 && distance_y <= template_img.rows*5){  //沒辦法 distance_y 還是要加進來，要不然會被雜線影響
             // cout<<"case merge_line , lines_count = "<<lines_count<<endl;
             if(lines_dir[0][go_line] == lines_dir[0][next]){
                 // cout<<"now  , x = "<<lines[0][go_line]<<" , y = "<<lines[1][go_line]<<" , length = "<<lines[2][go_line]<<" , tail = "<<lines[1][go_line]+lines[2][go_line]<<endl;
-                // cout<<"next , x = "<<lines[0][next]<<" , y = "<<lines[1][next]<<" , length = "<<lines[2][next]<<" , tail = "<<lines[1][next]+lines[2][next]<<endl;
+                // cout<<"next , x = "<<lines[0][next]   <<" , y = "<<lines[1][next]   <<" , length = "<<lines[2][next]   <<" , tail = "<<lines[1][next]   +lines[2][next]   <<endl;
 
-                int tail_y_now = lines[1][go_line] + lines[2][go_line];///線尾的y
-                int tail_y_next = lines[1][next] + lines[2][next];
+                int tail_y_now  = lines[1][go_line] + lines[2][go_line]; // 線尾的y
+                int tail_y_next = lines[1][next]    + lines[2][next]   ;
                 // cout<<"tail_y_now = "<<tail_y_now<<" , tail_y_next = "<<tail_y_next<<endl;
 
                 if( lines[0][next] < lines[0][go_line] ) lines[0][go_line] = (lines[0][next] + lines[0][go_line])/2 ; ///x存中間
-                if( lines[1][next] < lines[1][go_line] ) lines[1][go_line] = lines[1][next]; ///y 存偏上的
-                if( tail_y_next > tail_y_now ) tail_y_now = tail_y_next;/// 長度存~~ 最下面的那一點的y~~就線尾的y
+                if( lines[1][next] < lines[1][go_line] ) lines[1][go_line] =  lines[1][next]; ///y 存偏上的
+                if( tail_y_next > tail_y_now ) tail_y_now = tail_y_next;  // 長度存~~ 最下面的那一點的y~~就線尾的y
 
-                lines[2][go_line] = tail_y_now - lines[1][go_line]; ///長度 存能跑到叫下面的
+                lines[2][go_line] = tail_y_now - lines[1][go_line];  //長度 存能跑到叫下面的
 
                 // if( lines_dir[0][next] ) lines_dir[0][go_line] = true;
                 // if( lines_dir[1][next] ) lines_dir[1][go_line] = true;
                 // if( lines[2][next] > lines[2][go_line] && lines_dir[0][next] ) lines_dir[0][go_line] = true; ///方向 存較長的線的方向 不可行，因為反方向的線用我的方法偵測時，會連頭一起算進去，長度會比正確的線還長
                 // if( lines[2][next] > lines[2][go_line] && lines_dir[1][next] ) lines_dir[1][go_line] = true; ///方向 存較長的線的方向
-                position_erase_line(lines_count,lines,lines_dir,next);
+                position_erase_line(lines_count,lines,lines_dir, next);
                 go_line--;
             }
         }
@@ -289,8 +284,8 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
 
                 if( lines_dir[0][next] ) lines_dir[0][go_line] = true;
                 if( lines_dir[1][next] ) lines_dir[1][go_line] = true;
-                //if( lines[2][next] > lines[2][go_line] && lines_dir[0][next] ) lines_dir[0][go_line] = true; ///方向 存較長的線的方向 不可行，因為反方向的線用我的方法偵測時，會連頭一起算進去，長度會比正確的線還長
-                //if( lines[2][next] > lines[2][go_line] && lines_dir[1][next] ) lines_dir[1][go_line] = true; ///方向 存較長的線的方向
+                // if( lines[2][next] > lines[2][go_line] && lines_dir[0][next] ) lines_dir[0][go_line] = true; ///方向 存較長的線的方向 不可行，因為反方向的線用我的方法偵測時，會連頭一起算進去，長度會比正確的線還長
+                // if( lines[2][next] > lines[2][go_line] && lines_dir[1][next] ) lines_dir[1][go_line] = true; ///方向 存較長的線的方向
                 position_erase_line(lines_count,lines,lines_dir,next);
                 go_line--;
             // }
@@ -299,8 +294,8 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
 
 
 
-    /// 把多方向的direction的修正
-    /// + 把錯的頭消掉(用GROUP的概念後就可以加快找頭的速度)
+    // 把多方向的direction的修正
+    // + 把錯的頭消掉(用GROUP的概念後就可以加快找頭的速度)
     Mat debug_img4 = reduce_line.clone();
     cvtColor(reduce_line,debug_img4,CV_GRAY2BGR);
 
@@ -330,26 +325,26 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
                         // cout<<"get_up_head"<<endl;
                         up_head_index = go_head;
                 }
-                else if(distance_up_x > (0 + template_img.cols + dist_error)) break; ///如果頭離線太遠了就break囉！不用全部的頭都跑完拉！
+                else if(distance_up_x > (0 + template_img.cols + dist_error)) break; // 如果頭離線太遠了就break囉！不用全部的頭都跑完拉！
 
                 int distance_down_x = maybe_head[0][go_head] - lines[0][go_line];
                 int distance_down_y = maybe_head[1][go_head] - (lines[1][go_line]+lines[2][go_line]);
                 if( distance_down_x >= -1*(template_img.cols+dist_error) && distance_down_x <= (0 + dist_error) &&
                     distance_down_y >= -1*(template_img.rows+dist_error) && distance_down_y < template_img.rows+dist_error)
                     down_head_index = go_head;
-                else if(distance_down_x > (0 + template_img.cols + dist_error)) break; ///如果頭離線太遠了就break囉！不用全部的頭都跑完拉！
+                else if(distance_down_x > (0 + template_img.cols + dist_error)) break; // 如果頭離線太遠了就break囉！不用全部的頭都跑完拉！
 
-                //  ~~~~~~~~~ debug ~~~~~~~~~用來看有兩個方向的線 & 他的頭
-                // imshow("lines",debug_img4);
+                // ~~~~~~~~~ debug ~~~~~~~~~用來看有兩個方向的線 & 他的頭
+                // imshow("lines", debug_img4);
                 // waitKey(0);
 
             }
 
-            rectangle(debug_img4,Point(maybe_head[0][up_head_index],maybe_head[1][up_head_index]),
-                                 Point(maybe_head[0][up_head_index]+template_img.cols,maybe_head[1][up_head_index]+template_img.rows),Scalar(123,251,20),3);
+            rectangle(debug_img4, Point(maybe_head[0][up_head_index], maybe_head[1][up_head_index]),
+                                  Point(maybe_head[0][up_head_index]+template_img.cols, maybe_head[1][up_head_index]+template_img.rows), Scalar(123, 251, 20), 3);
 
-            rectangle(debug_img4,Point(maybe_head[0][down_head_index],maybe_head[1][down_head_index]),
-                                 Point(maybe_head[0][down_head_index]+template_img.cols,maybe_head[1][down_head_index]+template_img.rows),Scalar(251,123,20),3);
+            rectangle(debug_img4, Point(maybe_head[0][down_head_index], maybe_head[1][down_head_index]),
+                                  Point(maybe_head[0][down_head_index]+template_img.cols, maybe_head[1][down_head_index]+template_img.rows), Scalar(251, 123, 20), 3);
             // cout註解 看一下造成多方向的上下頭的相似度
             // cout<<"  up_head_similar_value = "<<maybe_head[2][up_head_index]<<endl;
             // cout<<"down_head_similar_value = "<<maybe_head[2][down_head_index]<<endl;
@@ -358,15 +353,15 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
             if(maybe_head[2][up_head_index] > maybe_head[2][down_head_index]){
                 lines_dir[0][go_line] = true;
                 lines_dir[1][go_line] = false;
-                position_erase(maybe_head_count,maybe_head,down_head_index);
+                position_erase(maybe_head_count, maybe_head, down_head_index);
             }
             else if(maybe_head[2][up_head_index] < maybe_head[2][down_head_index]){
                 lines_dir[0][go_line] = false;
                 lines_dir[1][go_line] = true;
-                position_erase(maybe_head_count,maybe_head,up_head_index);
+                position_erase(maybe_head_count, maybe_head, up_head_index);
             }
             else if(maybe_head[2][up_head_index] = maybe_head[2][down_head_index]) cout<<"something wrong~~"<<endl;
-            imshow("lines",debug_img4);
+            imshow("lines", debug_img4);
             waitKey(0);
 
         }
@@ -376,29 +371,29 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
     // 把錯的頭消掉
     // (用GROUP的概念後就可以加快找頭的速度)
     for(int go_line = 0 ; go_line < lines_count -1 ; go_line++){
-        /// 右邊
+        // 右邊
         if(lines_dir[0][go_line] == false && lines_dir[1][go_line] == true){
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
-                /// 如果距離 線頭 夠進 的頭 就消掉 (x方向線當 中間 線左一個template，線右一個template 不能有head；
-                                                ///  y方向 以線頭當底 下面個template 不能有head )
-                                                /// 用絕對值是距離的概念，就不用擔心小減大正負號的問題
+                // 如果距離 線頭 夠進 的頭 就消掉 (x方向線當 中間 線左一個template，線右一個template 不能有head；
+                                                //  y方向 以線頭當底 下面個template 不能有head )
+                                                // 用絕對值是距離的概念，就不用擔心小減大正負號的問題
                 int dist_error = 2;
                 int distance_x = maybe_head[0][go_head] - lines[0][go_line];
                 int distance_y = maybe_head[1][go_head] - lines[1][go_line];
 
-                ///乾乾乾range要寫好呀!!!!別亂寫ˊ_>ˋ
+                // 乾乾乾range要寫好呀!!!!別亂寫ˊ_>ˋ
                 if( distance_x >= -1*(template_img.cols+dist_error) && distance_x <= 0 + dist_error &&
                     distance_y >= -1*(template_img.rows+dist_error) && distance_y <= 0 + template_img.rows + dist_error)
-                ///if( abs(maybe_head[0][go_head] - lines[0][go_line]) <= template_img.cols/2  &&
-                ///    abs(maybe_head[1][go_head] - lines[1][go_line]) <= template_img.rows*1.0)
+                // if( abs(maybe_head[0][go_head] - lines[0][go_line]) <= template_img.cols/2  &&
+                //     abs(maybe_head[1][go_head] - lines[1][go_line]) <= template_img.rows*1.0)
                 {
-                    ///cout註解 看消掉的頭的資訊 top case
-                    ///cout<<"head_x = "<<maybe_head[0][go_head]
-                    ///    <<" , head_y = "<<maybe_head[1][go_head]
-                    ///   <<" ,top_r_remove~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
-                    rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]),
-                                        Point(maybe_head[0][go_head]+template_img.cols,maybe_head[1][go_head]+template_img.rows),Scalar(0,0,255),3);
-                    position_erase(maybe_head_count,maybe_head,go_head);
+                    // cout註解 看消掉的頭的資訊 top case
+                    // cout<<"head_x = "<<maybe_head[0][go_head]
+                    //     <<" , head_y = "<<maybe_head[1][go_head]
+                    //     <<" ,top_r_remove~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+                    rectangle(debug_img,Point(maybe_head[0][go_head], maybe_head[1][go_head]),
+                                        Point(maybe_head[0][go_head]+template_img.cols, maybe_head[1][go_head]+template_img.rows), Scalar(0, 0, 255), 3);
+                    position_erase(maybe_head_count, maybe_head, go_head);
                     go_head--;
                 }
                 else if(distance_y > 0 + template_img.rows + dist_error)break; ///如果頭離線太遠了就break囉！不用全部的頭都跑完拉！
@@ -418,16 +413,16 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
                 if( distance_x >= -1*(template_img.cols+dist_error) && distance_x <= 0 + dist_error &&
                     distance_y >= -1*(template_img.rows+dist_error) && distance_y <= 0 + template_img.rows + dist_error)
 
-///                if( abs(maybe_head[0][go_head] - (lines[0][go_line] - template_img.cols/2) )<= template_img.cols/2  &&
-///                    abs(maybe_head[1][go_head] - (lines[1][go_line] - template_img.rows +lines[2][go_line]) ) <= template_img.rows * 1.0)
+                // if( abs(maybe_head[0][go_head] - (lines[0][go_line] - template_img.cols/2) )<= template_img.cols/2  &&
+                //     abs(maybe_head[1][go_head] - (lines[1][go_line] - template_img.rows +lines[2][go_line]) ) <= template_img.rows * 1.0)
                 {
                     ///cout註解 看消掉的頭的資訊 down case
                     ///cout<<"head_x = "<<maybe_head[0][go_head]
                     ///    <<" , head_y = "<<maybe_head[1][go_head]
                     ///    <<" ,down_l_remove~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
-                    rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]),
-                                        Point(maybe_head[0][go_head]+template_img.cols,maybe_head[1][go_head]+template_img.rows),Scalar(0,0,255),3);
-                    position_erase(maybe_head_count,maybe_head,go_head);
+                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]),
+                                         Point(maybe_head[0][go_head]+template_img.cols,maybe_head[1][go_head]+template_img.rows), Scalar(0, 0, 255), 3);
+                    position_erase(maybe_head_count, maybe_head, go_head);
                     go_head--;
                 }
                 else if(distance_y > 0 + template_img.rows + dist_error)break; ///如果頭離線太遠了就break囉！不用全部的頭都跑完拉！
@@ -443,10 +438,10 @@ void recognition_3_a_find_vertical_bar(Mat template_img ,Mat reduce_line,
     // void draw_lines(Mat& debug_img,int lines_count,short lines[][200],bool lines_dir[][200])
 
     draw_lines(debug_img,lines_count,lines,lines_dir);
-    // imshow("lines",debug_img);
+    // imshow("lines", debug_img);
 
     // debug整合
-    // imshow("debug",debug_img);
+    // imshow("debug", debug_img);
     // waitKey(0);
 
 }
