@@ -34,7 +34,7 @@ void recognition_0_all_head( int head_type,
                              int pitch_base_y,
                              int& note_count,
                              int note[][1000]){
-    // 自己設資料結構 head
+    // 自己設資料結構 head, 0是左上角x, 1是左上角y, 2是similarity
     int maybe_head_count = 0;
     float maybe_head[3][200];
     for(int i = 0 ; i < 3 ; i++)
@@ -43,21 +43,21 @@ void recognition_0_all_head( int head_type,
 
 
     // 自己設資料結構 line
-    short lines    [3][200];  //[0]頂點x [1]頂點y [2]長度
-    bool  lines_dir[2][200];  //[0]左(下) [1]右(上)
+    short bars    [3][200];  //[0]頂點x [1]頂點y [2]長度
+    bool  bars_dir[2][200];  //[0]左(下, TOPTODOWN) [1]右(上, DOWNTOTOP), 需要方向的原因是需要找 8, 16, 32, 64, ... 分音符的橫線, 所以 標記往哪個方向走 來找 會輕鬆很多
 
     for(int i = 0 ; i < 3 ; i++)
         for(int j = 0 ; j < 200 ; j++)
-            lines[i][j] = 0;
+            bars[i][j] = 0;
 
     for(int i = 0 ; i < 2 ; i++)
         for(int j = 0 ; j < 200 ; j++)
-            lines_dir[i][j] = false;
+            bars_dir[i][j] = false;
 
-    int lines_count = 0;
+    int bars_count = 0;
 
-    int lines_time[200];
-    for(int i = 0 ; i < 200 ; i++) lines_time[i] = 0;
+    int bars_time[200];
+    for(int i = 0 ; i < 200 ; i++) bars_time[i] = 0;
 
     /*
     // 自己設資料結構 note
@@ -112,12 +112,9 @@ void recognition_0_all_head( int head_type,
             // watch_head(debug_img,template_img,maybe_head_count,maybe_head);
 
 
-            recognition_2_a_head_charactristic(2,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
-            recognition_2_b_head_recheck(2,staff_img_erase_line,maybe_head_count,maybe_head);
+            recognition_3_a_find_vertical_bar (   template_img, staff_img_erase_line,            maybe_head_count, maybe_head, bars_count, bars, bars_dir);
 
-            recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir);
-
-            recognition_4_merge_head_and_time(2,template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir,lines_time,note_count,note);
+            recognition_4_merge_head_and_time (2,template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir,bars_time,note_count,note);
             // recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
         }
         break;
@@ -132,16 +129,16 @@ void recognition_0_all_head( int head_type,
             recognition_2_b_head_recheck(4,staff_img_erase_line,maybe_head_count,maybe_head);
 
 
-            recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir);
-            recognition_3_b_find_time_bar(template_img,staff_img_erase_line,lines_count,lines,lines_dir,lines_time);
+            recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir);
+            recognition_3_b_find_time_bar(template_img,staff_img_erase_line,bars_count,bars,bars_dir,bars_time);
 
             // cout<<"end 3~~~~~~~~~~~~~~~~~~~~~~~~~~ "<<endl;
             // list_head_info(maybe_head_count,maybe_head);
-            // list_lines_info(lines_count,lines,lines_dir);
+            // list_bars_info(bars_count,bars,bars_dir);
             // watch_head(debug_img,template_img,maybe_head_count,maybe_head);
 
 
-            recognition_4_merge_head_and_time(4,template_img,staff_img_erase_line,maybe_head_count,maybe_head,lines_count,lines,lines_dir,lines_time,note_count,note);
+            recognition_4_merge_head_and_time(4,template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir,bars_time,note_count,note);
             // recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
         }
         break;

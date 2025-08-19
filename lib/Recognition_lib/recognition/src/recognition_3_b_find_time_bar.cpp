@@ -16,43 +16,47 @@
 using namespace cv;
 using namespace std;
 
-int find_lines_time( Mat reduce_line , int line_x, int line_y, int left , int right , int test_depth , bool direction , Mat & debug){
-    const int time_bar_type_count = 5;  // 0 1 2 3  ， 4 是垃圾桶，所以共五種
-    int white_coda = 0;
-    int white_ok_coda = 5;
-    bool have_black = false;
-    int error_shift = 13;
+int find_bars_time( Mat reduce_line , int line_x, int line_y, int left , int right , int test_depth , bool direction , Mat & debug){
+    const int time_bar_type_count = 5;  // 0 1 2 3, 4 是垃圾桶，所以共五種
+    int  white_coda    = 0;
+    int  white_ok_coda = 5;
+    bool have_black    = false;
+    int  error_shift   = 13;
 
-    int stand_x = left;    //  不會動、固定的x
+    int stand_x = left;    // 不會動、固定的x
     int stand_y = line_y;  // 不會動、固定的y
     // cout << "stand_x = " << stand_x << ", stand_y = " << stand_y << endl;
 
     int time_bar[time_bar_type_count];
     for(int i = 0 ; i < time_bar_type_count ; i++) time_bar[i] = 0;
+
+    
+    
     if(direction == DOWNTOTOP){
         for(int go_x = stand_x ; go_x <= right ; go_x++){
-            //  怕 time_bar 是斜的~~所以往右看的時候一開始就是白連續的一堆白色~~所以鮮位移到正確的位置
-            white_coda = 0;  // 因為我現在是要做很多次，所以white_coda要設回initial值！要不然上個的結果會被繼續用!!!
+            // 因為我現在是要做很多次, 所以white_coda要設回initial值！要不然上個的結果會被繼續用!!!
+            // 怕 time_bar 是斜的, 所以往右看的時候一開始就是白連續的一堆白色, 所以先位移到正確的位置
+            white_coda = 0;
             stand_y = line_y;
-            for(int i = 0 ; i < error_shift ; i++){
+            for(int go_error = 0 ; go_error < error_shift ; go_error++){
                 //  *********** 防呆 ***********
-                if( (stand_y +i +1 > reduce_line.rows -1) ||
-                    (stand_y +i    > reduce_line.rows -1) ||
-                    (stand_y -i +1 < 0) ||
-                    (stand_y -i    < 0)   )break;
+                if( (stand_y +go_error +1 > reduce_line.rows -1) ||
+                    (stand_y +go_error    > reduce_line.rows -1) ||
+                    (stand_y -go_error +1 < 0) ||
+                    (stand_y -go_error    < 0)   )break;
                 //  *********** 防呆 ***********
 
-                if( (reduce_line.at<uchar>(stand_y +i +1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y +i , go_x) == 0) ){
-                    stand_y += i;
+                if( (reduce_line.at<uchar>(stand_y + go_error + 1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y + go_error, go_x) == 0) ){
+                    stand_y += go_error;
                     break;
                 }
-                if( (reduce_line.at<uchar>(stand_y -i +1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y -i , go_x) == 0) ){
-                    stand_y -= i;
+                if( (reduce_line.at<uchar>(stand_y - go_error + 1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y - go_error, go_x) == 0) ){
+                    stand_y -= go_error;
                     break;
                 }
             }
 
-            //  開始移動 go_y
+            // 開始移動 go_y
             int go_y = stand_y;
             // **************************
             // line(debug, Point(go_x, stand_y), Point(go_x, stand_y - test_depth), Scalar(123, 245, 210), 1);
@@ -64,8 +68,8 @@ int find_lines_time( Mat reduce_line , int line_x, int line_y, int left , int ri
                     go_y--;
                     white_coda = 0;
 
-                    line(debug, Point(go_x, stand_y - go_depth), Point(go_x, stand_y - go_depth), Scalar(255, 0, 0), 2);
-                    line(debug, Point(go_x, go_y), Point(go_x, go_y), Scalar(230, 100, 150), 2);
+                    line(debug, Point(go_x, stand_y - go_depth), Point(go_x, stand_y - go_depth), Scalar(255,   0,   0), 2);  // 藍色
+                    line(debug, Point(go_x, go_y              ), Point(go_x, go_y              ), Scalar(230, 100, 150), 2);  // 淺紫色
                     // imshow("time", debug);
                     // waitKey(0);
                 }
@@ -81,7 +85,7 @@ int find_lines_time( Mat reduce_line , int line_x, int line_y, int left , int ri
             if(time_bar_length < 4 ) time_bar[time_bar_length]++;
             else time_bar[4]++;
 
-            // cout註解 看找玩time_bar的狀況
+            // cout註解 看找完time_bar的狀況
             // cout << "left = " << left << ", right = " << right << ", go_x = " << go_x << ", bar = " << abs(go_y - stand_y) << endl;
             line( debug , Point(go_x, go_y), Point(go_x, go_y), Scalar(0, 0, 255), 3, CV_AA);
             // imshow("debug", debug);
@@ -93,24 +97,24 @@ int find_lines_time( Mat reduce_line , int line_x, int line_y, int left , int ri
     else if(direction == TOPTODOWN){
         for(int go_x = stand_x ; go_x <= right ; go_x++){
             // cout << "go_x = " << go_x << endl;
-            //  怕 time_bar 是斜的~~所以往右看的時候一開始就是白連續的一堆白色~~所以鮮位移到正確的位置
+            // 怕 time_bar 是斜的, 所以往右看的時候一開始就是白連續的一堆白色, 所以先位移到正確的位置
             white_coda = 0;  // 因為我現在是要做很多次，所以white_coda要設回initial值！要不然上個的結果會被繼續用!!!
             stand_y = line_y;
-            for(int i = 0 ; i < error_shift ; i++){
+            for(int go_error = 0 ; go_error < error_shift ; go_error++){
 
-                // cout << "i = " << i << endl;
+                // cout << "go_error = " << go_error << endl;
                 // *********** 防呆 ***********
-               if(  (stand_y -i +1 > reduce_line.rows -1) ||
-                    (stand_y +i    > reduce_line.rows -1) ||
-                    (stand_y -i -1 < 0) ||
-                    (stand_y -i    < 0)   ) break;
+               if(  (stand_y -go_error +1 > reduce_line.rows -1) ||
+                    (stand_y +go_error    > reduce_line.rows -1) ||
+                    (stand_y -go_error -1 < 0) ||
+                    (stand_y -go_error    < 0)   ) break;
                 // *********** 防呆 ***********
-                if( (reduce_line.at<uchar>(stand_y +i -1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y +i , go_x) == 0) ){
-                    stand_y += i;
+                if( (reduce_line.at<uchar>(stand_y +go_error -1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y +go_error , go_x) == 0) ){
+                    stand_y += go_error;
                     break;
                 }
-                if( (reduce_line.at<uchar>(stand_y -i -1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y -i , go_x) == 0) ){
-                    stand_y -= i;
+                if( (reduce_line.at<uchar>(stand_y -go_error -1 , go_x) == 255) && (reduce_line.at<uchar>(stand_y -go_error , go_x) == 0) ){
+                    stand_y -= go_error;
                     break;
                 }
             }
@@ -165,22 +169,22 @@ int find_lines_time( Mat reduce_line , int line_x, int line_y, int left , int ri
 
 
 void recognition_3_b_find_time_bar(Mat template_img, Mat reduce_line, 
-                                   int lines_count, short lines[][200], bool lines_dir[][200], 
-                                   int lines_time[200]){
+                                   int bars_count, short bars[][200], bool bars_dir[][200], 
+                                   int bars_time[200]){
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
 
     // 開始判斷時間長度囉
     // tr = top-right, tl = top-left , dr = down-right , dl = down_left
-    for(int go_line = 0 ; go_line < lines_count ; go_line++){
+    for(int go_bar = 0 ; go_bar < bars_count ; go_bar++){
         // cout註解 看現在在處理哪條vertical bar
-        // cout << "go_line = " << go_line;
+        // cout << "go_bar = " << go_bar;
         int test_width = 7;
         //  check方格的x方向都相同所以寫出來~~~
         //  ******** 上右 *********
         int shift = 2;
-        int time_tr_l = lines[0][go_line] + shift;
-        int time_tr_r = time_tr_l +test_width;
+        int time_tr_l = bars[0][go_bar] + shift;
+        int time_tr_r = time_tr_l + test_width;
         //  防呆 start
         if(time_tr_l < 0 ) time_tr_l = 0;
         if(time_tr_r > reduce_line.cols-1) time_tr_r = reduce_line.cols -1;
@@ -189,8 +193,8 @@ void recognition_3_b_find_time_bar(Mat template_img, Mat reduce_line,
 
 
         // ******** 上左 ********
-        int time_tl_r = lines[0][go_line] - shift;
-        int time_tl_l = time_tl_r -test_width;
+        int time_tl_r = bars[0][go_bar] - shift;
+        int time_tl_l = time_tl_r - test_width;
         //  防呆 start
         if(time_tl_l < 0 ) time_tl_l = 0;
         if(time_tl_r > reduce_line.cols-1) time_tl_r = reduce_line.cols -1;
@@ -210,34 +214,34 @@ void recognition_3_b_find_time_bar(Mat template_img, Mat reduce_line,
         int test_depth = template_img.rows*4.0;
 
         //  上
-        if(lines_dir[0][go_line] == false && lines_dir[1][go_line] == true){
-            int length_r = find_lines_time(reduce_line, lines[0][go_line], lines[1][go_line], time_tr_l, time_tr_r, test_depth, TOPTODOWN, debug_img);
+        if(bars_dir[0][go_bar] == false && bars_dir[1][go_bar] == true){
+            int length_r = find_bars_time(reduce_line, bars[0][go_bar], bars[1][go_bar], time_tr_l, time_tr_r, test_depth, TOPTODOWN, debug_img);
             // cout << "time_tl_l = " << time_tl_l << ", time_tl_r = " << time_tl_r << endl;
-            int length_l = find_lines_time(reduce_line, lines[0][go_line], lines[1][go_line], time_tl_l, time_tl_r, test_depth, TOPTODOWN, debug_img);
-            if(length_l > length_r) lines_time[go_line] = length_l;
-            else lines_time[go_line] = length_r;
+            int length_l = find_bars_time(reduce_line, bars[0][go_bar], bars[1][go_bar], time_tl_l, time_tl_r, test_depth, TOPTODOWN, debug_img);
+            if(length_l > length_r) bars_time[go_bar] = length_l;
+            else                    bars_time[go_bar] = length_r;
 
             // cout註解 看找到的time bar有多長
-            // cout << ", length = " << lines_time[go_line] << endl;
+            // cout << ", length = " << bars_time[go_bar] << endl;
 
-            // lines_time[1][go_line] = time_tl_d - time_tl_t;
-            // if(lines_time[1][go_line] > 0) lines_time[1][go_line] = lines_time[1][go_line]/11 +1;
-            // cout << "length_r = " << lines_time[0][go_line] << ", length_l = " << lines_time[1][go_line] << endl;
+            // bars_time[1][go_bar] = time_tl_d - time_tl_t;
+            // if(bars_time[1][go_bar] > 0) bars_time[1][go_bar] = bars_time[1][go_bar]/11 +1;
+            // cout << "length_r = " << bars_time[0][go_bar] << ", length_l = " << bars_time[1][go_bar] << endl;
 
             // imshow("time", debug_img);
             // waitKey(0);
         }
 
         //  下
-        if(lines_dir[0][go_line] == true && lines_dir[1][go_line] == false){
+        if(bars_dir[0][go_bar] == true && bars_dir[1][go_bar] == false){
             // cout << "time_td_l = " << time_tl_l << ", time_td_r = " << time_tl_r << endl;
-            int length_r = find_lines_time(reduce_line, lines[0][go_line], lines[1][go_line]+lines[2][go_line], time_dr_l, time_dr_r, test_depth, DOWNTOTOP, debug_img);
-            int length_l = find_lines_time(reduce_line, lines[0][go_line], lines[1][go_line]+lines[2][go_line], time_dl_l, time_dl_r, test_depth, DOWNTOTOP, debug_img);
-            if(length_l > length_r) lines_time[go_line] = length_l;
-            else lines_time[go_line] = length_r;
+            int length_r = find_bars_time(reduce_line, bars[0][go_bar], bars[1][go_bar]+bars[2][go_bar], time_dr_l, time_dr_r, test_depth, DOWNTOTOP, debug_img);
+            int length_l = find_bars_time(reduce_line, bars[0][go_bar], bars[1][go_bar]+bars[2][go_bar], time_dl_l, time_dl_r, test_depth, DOWNTOTOP, debug_img);
+            if(length_l > length_r) bars_time[go_bar] = length_l;
+            else                    bars_time[go_bar] = length_r;
 
             // cout註解 看找到的time bar 有多長
-            // cout << ", length = " << lines_time[go_line] << endl;
+            // cout << ", length = " << bars_time[go_bar] << endl;
             // imshow("time", debug_img);
             // waitKey(0);
         }

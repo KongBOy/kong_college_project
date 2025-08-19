@@ -13,5 +13,5 @@ using namespace cv;
 void recognition_4_merge_head_and_time(int head_type,
                                        Mat template_img , Mat reduce_line,
                                        int maybe_head_count , float maybe_head[][200],
-                                       int lines_count , short lines[][200],bool lines_dir[][200],int lines_time[200],
+                                       int bars_count , short bars[][200],bool bars_dir[][200],int bars_time[200],
                                        int& note_count , int note[][1000]);

@@ -39,7 +39,7 @@ void position_erase(int& maybe_head_count,float maybe_head[][200],int position){
 }
 
 
-void position_erase_line(int& lines_count,short lines[][200],bool lines_dir[][200] ,int position){
+void position_erase_bar(int& lines_count,short lines[][200],bool lines_dir[][200] ,int position){
     if(lines_count > 0){
         if(lines_count == 1){
             lines_count--;

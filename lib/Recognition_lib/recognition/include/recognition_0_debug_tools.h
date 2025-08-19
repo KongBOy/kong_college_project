@@ -9,6 +9,6 @@
 using namespace cv;
 
 
-void list_lines_info(int lines_count,short lines[][200],bool lines_dir[][200]);
-void draw_lines(Mat& debug_img,int lines_count,short lines[][200],bool lines_dir[][200]);
-void watch_lines(Mat debug_img,int lines_count,short lines[][200],bool lines_dir[][200]);
+void list_bars_info(int bars_count,short bars[][200],bool bars_dir[][200]);
+void draw_bars(Mat& debug_img,int bars_count,short bars[][200],bool bars_dir[][200]);
+void watch_bars(Mat debug_img,int bars_count,short bars[][200],bool bars_dir[][200]);
