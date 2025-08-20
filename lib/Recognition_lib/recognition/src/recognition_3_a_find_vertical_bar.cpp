@@ -218,7 +218,7 @@ void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
     // *   右上 三條線是同一條線
     // 特性是 x 離很近
     for(int go_bar = 0 ; go_bar < bars_count -1 ; go_bar++){
-        int next = go_bar+1;
+        int next = go_bar + 1;
         /*
         Mat debug_img2 = reduce_line.clone();
         cvtColor(reduce_line, debug_img2, CV_GRAY2BGR);
@@ -241,15 +241,15 @@ void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
         if( distance_x  <= template_img.cols / 2 && distance_y <= template_img.rows * 5){  //沒辦法 distance_y 還是要加進來，要不然會被雜線影響
             // cout<<"case merge_line, bars_count = "<<bars_count<<endl;
             if(bars_dir[0][go_bar] == bars_dir[0][next]){
-                // cout<<"now , x = "<<bars[0][go_bar]<<", y = "<<bars[1][go_bar]<<", length = "<<bars[2][go_bar]<<", tail = "<<bars[1][go_bar]+bars[2][go_bar]<<endl;
-                // cout<<"next, x = "<<bars[0][next]   <<", y = "<<bars[1][next]   <<", length = "<<bars[2][next]   <<", tail = "<<bars[1][next]   +bars[2][next]   <<endl;
+                // cout << "now , x = " << bars[0][go_bar] << ", y = "<< bars[1][go_bar] << ", length = "<<bars[2][go_bar] << ", tail = "<<bars[1][go_bar]+bars[2][go_bar] << endl;
+                // cout << "next, x = " << bars[0][next]   << ", y = "<< bars[1][next]   << ", length = "<<bars[2][next]   << ", tail = "<<bars[1][next]  +bars[2][next]   << endl;
 
                 int tail_y_now  = bars[1][go_bar] + bars[2][go_bar]; // 線尾的y
                 int tail_y_next = bars[1][next]    + bars[2][next]   ;
                 // cout<<"tail_y_now = "<<tail_y_now<<", tail_y_next = "<<tail_y_next<<endl;
 
-                if( bars[0][next] < bars[0][go_bar] ) bars[0][go_bar] = (bars[0][next] + bars[0][go_bar])/2 ; ///x存中間
-                if( bars[1][next] < bars[1][go_bar] ) bars[1][go_bar] =  bars[1][next]; ///y 存偏上的
+                if( bars[0][next] < bars[0][go_bar] ) bars[0][go_bar] = (bars[0][next] + bars[0][go_bar])/2 ;  //x存中間
+                if( bars[1][next] < bars[1][go_bar] ) bars[1][go_bar] =  bars[1][next];  //y 存偏上的
                 if( tail_y_next > tail_y_now ) tail_y_now = tail_y_next;  // 長度存~~ 最下面的那一點的y~~就線尾的y
 
                 bars[2][go_bar] = tail_y_now - bars[1][go_bar];  //長度 存能跑到叫下面的
