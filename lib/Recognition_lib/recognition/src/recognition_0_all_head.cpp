@@ -44,15 +44,14 @@ void recognition_0_all_head( int head_type,
 
     // 自己設資料結構 line
     short bars    [3][200];  //[0]頂點x [1]頂點y [2]長度
-    bool  bars_dir[2][200];  //[0]左(下, TOPTODOWN) [1]右(上, DOWNTOTOP), 需要方向的原因是需要找 8, 16, 32, 64, ... 分音符的橫線, 所以 標記往哪個方向走 來找 會輕鬆很多
+    bool  bars_dir   [200];  //[0]左(下, TOPTODOWN) [1]右(上, DOWNTOTOP), 需要方向的原因是需要找 8, 16, 32, 64, ... 分音符的橫線, 所以 標記往哪個方向走 來找 會輕鬆很多
 
     for(int i = 0 ; i < 3 ; i++)
         for(int j = 0 ; j < 200 ; j++)
             bars[i][j] = 0;
 
-    for(int i = 0 ; i < 2 ; i++)
-        for(int j = 0 ; j < 200 ; j++)
-            bars_dir[i][j] = false;
+    for(int i = 0 ; i < 200 ; i++)
+        bars_dir[i] = false;
 
     int bars_count = 0;
 
@@ -130,7 +129,7 @@ void recognition_0_all_head( int head_type,
 
 
             recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir);
-            recognition_3_b_find_time_bar(template_img,staff_img_erase_line,bars_count,bars,bars_dir,bars_time);
+            recognition_3_b_find_time_bar(template_img,bars_count,bars,bars_dir,bars_time,staff_img_erase_line);
 
             // cout<<"end 3~~~~~~~~~~~~~~~~~~~~~~~~~~ "<<endl;
             // list_head_info(maybe_head_count,maybe_head);

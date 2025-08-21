@@ -39,26 +39,26 @@ void position_erase(int& maybe_head_count,float maybe_head[][200],int position){
 }
 
 
-void position_erase_bar(int& lines_count,short lines[][200],bool lines_dir[][200] ,int position){
-    if(lines_count > 0){
-        if(lines_count == 1){
-            lines_count--;
+void position_erase_bar(int& bars_count,short bars[][200],bool bars_dir[200] ,int position){
+    if(bars_count > 0){
+        if(bars_count == 1){
+            bars_count--;
             return;
         }
         else{
-            if(position == lines_count -1){ //刪最後一個
-                lines_count--;
+            if(position == bars_count -1){ //刪最後一個
+                bars_count--;
                 return;
             }
             else{
-                for(int i = position ; i < lines_count-1 ; i++){
-                    lines[0][i] = lines[0][i+1];
-                    lines[1][i] = lines[1][i+1];
-                    lines[2][i] = lines[2][i+1];
-                    lines_dir[0][i] = lines_dir[0][i+1];
-                    lines_dir[1][i] = lines_dir[1][i+1];
+                for(int i = position ; i < bars_count-1 ; i++){
+                    bars[0][i] = bars[0][i+1];
+                    bars[1][i] = bars[1][i+1];
+                    bars[2][i] = bars[2][i+1];
+                    bars_dir[i] = bars_dir[i+1];
+                    bars_dir[i] = bars_dir[i+1];
                 }
-                lines_count--;
+                bars_count--;
                 return;
             }
         }
@@ -130,7 +130,7 @@ void bubbleSort_note(int amount ,int entry[][1000] , int index){
 	}
 }
 
-void bubbleSort_line(int amount ,short entry[][200] , bool entry2[][200] , int index){
+void bubbleSort_bars(int amount ,short entry[][200] , bool entry2[200] , int index){
 	for(int i = 0 ; i < amount-1 ; i++){
 		for(int j = i+1 ; j < amount ; j++){
 			if(entry[index][i] > entry[index][j]){
@@ -140,10 +140,10 @@ void bubbleSort_line(int amount ,short entry[][200] , bool entry2[][200] , int i
 				entry[0][i] = entry[0][j]; entry[1][i] = entry[1][j]; entry[2][i] = entry[2][j];
 				entry[0][j] = temp[0]    ; entry[1][j] = temp[1]    ; entry[2][j] = temp[2]    ;
 
-				bool temp2[2];
-				temp2 [0]    = entry2[0][i]; temp2[1]     = entry2[1][i];
-				entry2[0][i] = entry2[0][j]; entry2[1][i] = entry2[1][j];
-				entry2[0][j] = temp2[0]    ; entry2[1][j] = temp2[1]    ;
+				bool temp2;
+				temp2     = entry2[i];
+				entry2[i] = entry2[j];
+				entry2[j] = temp2    ;
 			}
 		}
 	}

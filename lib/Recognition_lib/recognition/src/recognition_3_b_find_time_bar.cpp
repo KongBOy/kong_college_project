@@ -168,9 +168,10 @@ int find_bars_time( Mat reduce_line , int line_x, int line_y, int left , int rig
 }
 
 
-void recognition_3_b_find_time_bar(Mat template_img, Mat reduce_line, 
-                                   int bars_count, short bars[][200], bool bars_dir[][200], 
-                                   int bars_time[200]){
+void recognition_3_b_find_time_bar(Mat template_img, 
+                                   int bars_count, short bars[][200], bool bars_dir[200], 
+                                   int bars_time[200],
+                                   Mat reduce_line){
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
 

@@ -16,7 +16,7 @@ using namespace cv;
 void recognition_4_merge_head_and_time(int head_type, 
                                        Mat template_img, Mat reduce_line, 
                                        int maybe_head_count, float maybe_head[][200], 
-                                       int bars_count, short bars[][200], bool bars_dir[][200], int bars_time[200], 
+                                       int bars_count, short bars[][200], bool bars_dir[200], int bars_time[200], 
                                        int& note_count, int note[][1000]){
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
@@ -64,8 +64,7 @@ void recognition_4_merge_head_and_time(int head_type,
 
             // 如果是很擠的狀況~~就非常尷尬拉~~要看他是和 此條線比較靠近() 還是和 下一條線比較接近
             if( distance >= 0 && distance <= (0 + dist_error) &&
-                bars_dir[0][go_bar] == false &&
-                bars_dir[1][go_bar] == true   ){
+                bars_dir[go_bar] == false ){
                 if(go_bar >= bars_count-1);  // 如果是在最後一條線出現此case的話，就一定是併排的那種拉，防呆 ~~~do nothing~~~
                 else{
                     // cout註解 標記現在在哪個case
