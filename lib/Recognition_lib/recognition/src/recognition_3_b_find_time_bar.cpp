@@ -10,8 +10,8 @@
 #include "recognition_0_debug_tools.h"
 #include "recognition_3_b_find_time_bar.h"
 
-#define DOWNTOTOP 1
-#define TOPTODOWN 0
+#define DOWNTOTOP 0
+#define TOPTODOWN 1
 
 using namespace cv;
 using namespace std;
@@ -33,7 +33,7 @@ int find_bars_time( Mat reduce_line, int line_y, int left , int right , int test
 
     
     
-    if(direction == DOWNTOTOP){
+    if(direction == TOPTODOWN){
         for(int go_x = stand_x ; go_x <= right ; go_x++){
             // 先位移到黑色的位置
             stand_y = line_y;
@@ -96,7 +96,7 @@ int find_bars_time( Mat reduce_line, int line_y, int left , int right , int test
         }
 
     }
-    else if(direction == TOPTODOWN){
+    else if(direction == DOWNTOTOP){
         for(int go_x = stand_x ; go_x <= right ; go_x++){
             // cout << "go_x = " << go_x << endl;
             
