@@ -9,9 +9,13 @@
 #include <iostream>
 #include "recognition_0_debug_tools.h"
 #include "recognition_3_c_merge_head_and_time.h"
+#include "recognition_0_array_tools.h"
 
 using namespace std;
 using namespace cv;
+
+#define DOWNTOTOP 0
+#define TOPTODOWN 1
 
 void recognition_4_merge_head_and_time(int head_type, 
                                        Mat template_img, Mat reduce_line, 
@@ -32,65 +36,64 @@ void recognition_4_merge_head_and_time(int head_type,
     int bar_x;
     int bar_y;
     int bar_len;
-    int distance_x;
+    bool bar_dir;
+    int vector_x;
+    bubbleSort_bars(bars_count, bars, bars_dir, X_INDEX);
+    bubbleSort_maybe_head(maybe_head_count, maybe_head, X_INDEX);
+
+    // 走訪每顆頭來找線 來和 bars 從頭開始 比較, 夠近的就抓線 並 換下一顆頭, 此時不一定要換下一條bar喔, 因為可能一條bar有多顆頭, 直到換頭換到 線離 頭的左邊夠遠, 才會換下一條bar
     for(int go_head = 0; go_head < maybe_head_count; go_head++){
         maybe_head_x = maybe_head[0][go_head];
         maybe_head_y = maybe_head[1][go_head];
-        bar_x = bars[0][go_bar];
-        bar_y = bars[1][go_bar];
+        bar_x   = bars[0][go_bar];
+        bar_y   = bars[1][go_bar];
         bar_len = bars[2][go_bar];
-        // cout註解 看一下頭的資訊
-        // cout << "maybe_head[0][" << go_head << "] = " << maybe_head_x
-        //      << ", bars[0]["     << go_bar  << "] = " << bar_x
-        //      << ", value = "     << maybe_head_x - bar_x;
+        bar_dir = bars_dir[go_bar];
+        // cout << "maybe_head_x[" << go_head << "] = " << maybe_head_x << ", bar_x[" << go_bar << "] = " << bar_x << ", value = " << vector_x - bar_x;
 
         rectangle(debug_img, Point(maybe_head_x, maybe_head_y), Point(maybe_head_x + template_img.cols, maybe_head_y +template_img.rows), Scalar(0, 255, 0), 2);
         line( debug_img, Point(bar_x, bar_y), Point(bar_x, bar_y + bar_len), Scalar(100, 200, 0), 2 );
 
         // ******************************************
-        // ~~~~~~ debug 用來看合併的過程~~~~~~~~~~
-        //        imshow("debug", debug_img);
-        //        waitKey(0);
-
-        // check有沒有 線(time_bar)
+        // debug 用來看合併的過程
+        // imshow("debug", debug_img);
+        // waitKey(0);
 
         // bar到head 的x向量, 值代表大小，+-代表方向，-往左，+往右
-        distance_x = maybe_head_x - bar_x;
-        // 左邊的離線太遠 不抓線，直接存
-        if((distance_x) < ((template_img.cols + dist_error) * -1) ){
-            cout << ", case 1";
-            note[0][note_count] =  maybe_head_x;
-            note[1][note_count] =  maybe_head_y;
-            note[2][note_count] =  head_type;
-            note[3][note_count] =  0; // 不抓線
-            note_count++;
-        }
-        // 和線夠近 抓 同一條 線
-        else if( ((distance_x) >= ((template_img.cols + dist_error) * -1)) &&
-                 ((distance_x) <= (0 + dist_error) ) ){
-            cout << ", case 2";
+        vector_x = maybe_head_x - bar_x;
 
-            // 如果是很擠的狀況~~就非常尷尬拉~~要看他是和 此條線比較靠近() 還是和 下一條線比較接近
+        // bar離 頭的左邊 太右, 不抓線 且 這顆頭忽略不儲存 直接continue到下顆頭
+        if((vector_x) < ((template_img.cols + dist_error) * -1) ){
+            cout << ", case 1 bar too right" << endl;
+            // 在 maybe_head 和 bar 都已經對x排序了以後,
+            // 目前的機制是 走訪所有的頭 來找線, 換下顆頭時 對下顆頭來說 目前的bar通常會變左或右一點點而已, 左太多就會換下條bar, 所以不會有變bar右太多的機會
+            // 所以如果太右了 唯一可能就是發生在 最一開始 第一顆頭 遇到 第一條bar 太右
+            // 如果 第一條bar 還在 頭 的 太右邊, 代表這顆頭怪怪的, 所以直接 continue 掉 不存這顆頭 覺得比較合理
+            continue;
+        }
+        // bar離 頭的左邊夠近 抓 同一條 線(go_bar沒有要++喔, 除非符合一些特例 比如 擁擠case)
+        else if( ((vector_x) >= ((template_img.cols + dist_error) * -1)) &&
+                 ((vector_x) <= (0 + dist_error) ) ){
+            cout << ", case 2 bar OK" << endl;
+            
+            // 擁擠case
+            // 符桿通常是出現在頭的右上或左下, 如果是很擠的狀況, 就要看他是和 現在條線比較靠近 還是和 下一條線比較接近
             //  |
             //  | 目前在這條bar
             // *  
             //    * 目前在這顆頭, 
-            //   | 這條目前是 next_bar
+            //   | 這條目前是 next_bar, 以此圖例的話是離next_bar較近所以希望抓這條
             //   |
-            if( distance_x >= 0 && distance_x <= (0 + dist_error) &&
-                bars_dir[go_bar] == false ){
-                if(go_bar >= bars_count-1);  // 如果是在最後一條線出現此case的話，就一定是併排的那種拉，防呆 ~~~do nothing~~~
-                else{
-                    // cout << endl << "embarass~~case " << endl;
+            if( vector_x >= 0 && vector_x <= 0 + dist_error && bar_dir == DOWNTOTOP ){
+                if(go_bar < bars_count-1){  // 防呆, 因為要看下一條線, 所以只能做到倒數第二條
+                    cout << "crowded case " << endl;
 
                     int distance_next = maybe_head_x - bars[0][go_bar+1];
                     distance_next += template_img.cols;
-                    // cout << "distance_x = " << distance_x  << ", distance_next = " << distance_next;
+                    // cout << "vector_x = " << vector_x  << ", distance_next = " << distance_next;
 
-                    if(abs( distance_x) < abs(distance_next));// 現在的頭 和 現在這條線比較近，就繼續做case2~~
-                    else{ // (abs( distance_x) >= abs(distance_next)) 現在的頭 和 下一條線比較接近，做case3換下一條線拉！
-                    
-                        cout << ", case 3";
+                    if(abs( vector_x) >= abs(distance_next)){  // 現在的頭 和 下一條線比較接近，做case4 next bar colser so choose next 換下一條線拉！
+                        cout << ", case 4 next bar colser so choose next" << endl;
                         go_bar++;
                         go_head--;
                         cout << endl;
@@ -105,12 +108,11 @@ void recognition_4_merge_head_and_time(int head_type,
             note[3][note_count] =  bars_time[go_bar]; // 抓同條線
             note_count++;
         }
-        // 右邊的離線太遠  換 下一條線 ， 這顆頭 換了下一條線 後 需要再跟 這條新的線 比一次，所以head--
-        else{ // 即if((distance_x > (0 + dist_error))
-            cout << ", case 3";
+        // bar離 頭的左邊 太左 該換下一條線了, 這顆頭 換了下一條線 後 需要再跟 這條新的線 比一次，所以go_head--
+        else{ // 即if((vector_x > (0 + dist_error))
+            cout << ", case 3 bar too left, change bar" << endl;
             go_bar++;
             go_head--;
         }
-        // cout << endl;
     }
 }
