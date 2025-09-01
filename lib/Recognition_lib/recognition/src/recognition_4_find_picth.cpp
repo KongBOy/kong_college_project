@@ -30,8 +30,8 @@ int find_staff_shift(const Mat cut_ord_img, int first_line_y_ord, int go_staff_x
             line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y), Scalar(165, 0, 151), 3);  // 紫色
 
             // 線的特性： 本格是黑色(x, y) 而 上面一格格是白色(x, y-1)
-            // 往上下跑 測試七格, 不能測太多格喔！！因為怕會定位定到別條五線譜就gg了！(五線譜間距11, 所以測7個就好)
-            for(int go_shift = 0; go_shift <= 7; go_shift++ ){
+            // 往上下跑 測試 5格, 不能測太多格喔！！因為怕會定位定到別條五線譜就gg了！(五線譜間距11, 所以測5格就好)
+            for(int go_shift = 0; go_shift <= 5; go_shift++ ){
                 // **** 往上 ****// 
                 line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y -1 -go_shift), Scalar(14, 105 + 30 * go_staff_line, 60 * go_staff_line), 1);  // 深綠色, 換線時顏色會越來越亮
                 line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y -1 +go_shift), Scalar(14, 105 + 30 * go_staff_line, 60 * go_staff_line), 1);  // 深綠色, 換線時顏色會越來越亮
