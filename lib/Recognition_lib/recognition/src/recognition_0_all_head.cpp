@@ -25,7 +25,75 @@
 using namespace cv;
 using namespace std;
 
-///template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head
+void Remove_Overlap(const int head_type, const Mat head_template, int note[][1000], int& note_count, Mat staff_img_erase_line){
+    Mat debug_img;
+    cvtColor(staff_img_erase_line, debug_img, CV_GRAY2BGR);
+
+    Mat template_img_casual(13,17,CV_8UC1,Scalar(0));  // 常見的頭的大小
+    int dist_error = 2;
+    int special_note_index;
+    int special_note_x;
+    int special_note_y;
+
+    // 二、第二層走訪所有note 如果不是高低音譜記號的note距離 高低音譜記號 夠近 的頭 就消掉
+    int sp_to_note_vec_x;
+    int sp_to_note_vec_y;
+    int l_limit = -dist_error;
+    int t_limit = -dist_error;
+    int r_limit =  dist_error;
+    int d_limit =  dist_error;
+
+    // 以高音譜記號為例, 如果遇到高音譜記號, 只要距離 高低音譜記號 夠近 的頭 就消掉
+    for(int go_special_index = 0 ; go_special_index < note_count ; go_special_index++){
+        // 第一層走訪所有的note, 如果遇到 高音譜記號的話, 就走第二層走訪所有note 如果不是高音譜記號 距離高音譜記號夠近就刪除
+        if(note[2][go_special_index] == head_type)
+        {
+            // 一、先訂出高低音譜記號的位置
+            special_note_index = go_special_index;
+            special_note_x = note[0][special_note_index];
+            special_note_y = note[1][special_note_index];
+            cout << "special_go_note = " << go_special_index << endl;
+
+            // 二、第二層走訪所有note 如果不是高低音譜記號的note距離 高低音譜記號 夠近 的頭 就消掉
+            for(int go_note = 0 ; go_note < note_count ; go_note++){
+                // 如果不是高音譜記號 距離高音譜記號夠近就刪除
+                if(note[2][go_note] != head_type){
+                    sp_to_note_vec_x = note[0][go_note] - special_note_x;
+                    sp_to_note_vec_y = note[1][go_note] - special_note_y;
+                    
+                    // 上下左右都還有留 dist_error, 以左右為例, 往高音譜記號 左邊邊緣再往左一點點(-dist_error) ~ 高音譜記號 右邊緣再往右一點點(+dist_error), 在這範圍內有重疊就要刪除
+                    // 換句話說 就是 超過這個範圍 太遠就不刪, 反過來看 是 因為不想 if 裡面包太多東西, 而且 r_limit, d_limit 又有需要特別注意的東西 全包 if 很難寫
+                    //   -
+                    //  |𝄞|
+                    //   -
+                    // 左邊緣(上邊緣) 如果超出範圍 代表離太遠就 continue 不做刪除 
+                    if( sp_to_note_vec_x < l_limit ) continue;
+                    if( sp_to_note_vec_y < t_limit ) continue;
+
+                    // 右邊緣(下邊緣) 如果超出範圍 代表離太遠就 continue 不做刪除,
+                    // 計算右邊緣(下邊緣同理)時注意1:
+                    // note 在x軸佔的位置是 note_x + note.cols, 所以右邊緣 記得 把 note_cols 減回來, 要不然會變成 高音譜記號右邊緣 在往外凸出 note.cols 喔
+                    r_limit =  head_template.cols - template_img_casual.cols + dist_error;
+                    d_limit =  head_template.rows - template_img_casual.cols + dist_error;
+                    // 注意2: note.cols 也有可能 > special_note.cols(比如 二分音符.cols > 八分音符符桿.cols), 這樣減完會變負的 右邊緣會跑到左邊緣不對了, 這種情況 就直接指定 dist_error, 代表還是要往右找 dist_error個px重疊的話要刪除
+                    if( r_limit < dist_error ) r_limit = dist_error;
+                    if( d_limit < dist_error ) d_limit = dist_error;
+                    if( sp_to_note_vec_x > r_limit ) continue;
+                    if( sp_to_note_vec_y > d_limit ) continue;
+                    
+                    cout << "head_x = "<<note[0][go_note] << ", head_y = "<<note[1][go_note] << ", special_remove~ " << endl;
+                    rectangle(debug_img,Point(note[0][go_note]                           , note[1][go_note]),
+                                        Point(note[0][go_note] + template_img_casual.cols, note[1][go_note] + template_img_casual.rows), Scalar(0, 0, 255), 3);
+                    position_erase_note(note_count, note,go_note);
+                    go_note--;
+                }
+            }
+        }
+        /// debug整合
+        // imshow("debug",debug_img);
+        // waitKey(0);
+    }    
+}
 
 void recognition_0_all_head( int head_type,
                              Mat staff_img_erase_line,    /// 消掉五線譜線的圖
@@ -246,7 +314,7 @@ void recognition_0_all_head( int head_type,
         break;
 
 
-        // 高音譜記號
+        // 高音譜記號, 最後記得 要用 Remove_Overlap 把 高音譜記號範圍裡面找錯的 note 刪除喔
         case 9:{
             Mat template_img = imread("Resource/note/9/9-bin.bmp",0);
             Mat template_img_4(13,17,CV_8UC1,Scalar(0)); ///隨便拉~~~只是設定range比較好用ˊ口ˋ
@@ -262,53 +330,8 @@ void recognition_0_all_head( int head_type,
                 note_count++;
             }
 
-            bubbleSort_note(note_count,note,Y_INDEX);
-            bubbleSort_note(note_count,note,X_INDEX);
 
-
-            Mat debug_img = staff_img_erase_line.clone();
-            cvtColor(staff_img_erase_line,debug_img,CV_GRAY2BGR);
-
-            for(int go_special_index = 0 ; go_special_index < note_count ; go_special_index++){
-                // 如果距離 高低音譜記號 夠進 的頭 就消掉
-                if(note[2][go_special_index] == 9)
-                {
-                    /// 一、先訂出高低音譜記號是哪一顆
-                    int dist_error = 2;
-                    int special_note_index = go_special_index;
-                    int special_note_x = note[0][special_note_index];
-                    int special_note_y = note[1][special_note_index];
-
-                    /// 二、如果不是高低音譜記號的note距離 高低音譜記號 夠進 的頭 就消掉
-                    for(int go_note = 0 ; go_note < note_count ; go_note++){
-                        cout<<"special_go_note = "<<go_note<<endl;
-                        if(note[2][go_note] != 9){
-                            int distance_x = note[0][go_note] - special_note_x;
-                            int distance_y = note[1][go_note] - special_note_y;
-
-                            ///乾乾乾range要寫好呀!!!!別亂寫ˊ_>ˋ
-                            if( distance_x >= 0 - dist_error && distance_x <= template_img.cols - template_img_4.cols + dist_error &&
-                                distance_y >= 0 - dist_error && distance_y <= template_img.rows - template_img_4.cols + dist_error){
-                                cout<<"head_x = "<<note[0][go_note]
-                                    <<" , head_y = "<<note[1][go_note]
-                                    <<" , special_remove~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
-                                rectangle(debug_img,Point(note[0][go_note],note[1][go_note]),
-                                                    Point(note[0][go_note]+template_img_4.cols,note[1][go_note]+template_img_4.rows),Scalar(0,0,255),3);
-                                position_erase_note(note_count,note,go_note);
-                                go_note--;
-                            }
-
-                            ///如果距離高低音譜記號太遠了就break囉！不用全部的頭都跑完拉！
-                            else if(distance_x > template_img.cols - template_img_4.cols + dist_error &&
-                                    distance_y >= 0 - dist_error && distance_y <= template_img.rows - template_img_4.cols + dist_error) break;
-                        }
-                    }
-                }
-                /// debug整合
-                // imshow("debug",debug_img);
-                // waitKey(0);
-            }
-            // recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
+            Remove_Overlap(9, template_img, note, note_count, staff_img_erase_line);
         }
         break;
     }
