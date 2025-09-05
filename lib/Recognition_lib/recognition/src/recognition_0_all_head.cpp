@@ -22,10 +22,15 @@
 #include "recognition_3_c_merge_head_and_time.h"
 #include "recognition_4_find_picth.h"
 
+#include "Note_infos.h"
+
 using namespace cv;
 using namespace std;
 
-void Remove_Overlap(const int head_type, const Mat head_template, int note[][1000], int& note_count, Mat staff_img_erase_line){
+void Remove_Overlap(const int head_type, const Mat head_template, int note[][1000], int& note_count, Mat staff_img_erase_line, int dist_error){
+    bubbleSort_note(note_count, note, Y_INDEX);
+    bubbleSort_note(note_count, note, X_INDEX);
+    
     Mat debug_img;
     cvtColor(staff_img_erase_line, debug_img, CV_GRAY2BGR);
 
@@ -78,7 +83,7 @@ void Remove_Overlap(const int head_type, const Mat head_template, int note[][100
                     // 注意2: note.cols 也有可能 > special_note.cols(比如 二分音符.cols > 八分音符符桿.cols), 這樣減完會變負的 右邊緣會跑到左邊緣不對了, 這種情況 就直接指定 dist_error, 代表還是要往右找 dist_error個px重疊的話要刪除
                     if( r_limit < dist_error ) r_limit = dist_error;
                     if( d_limit < dist_error ) d_limit = dist_error;
-                    if( sp_to_note_vec_x > r_limit ) continue;
+                    if( sp_to_note_vec_x > r_limit ) break;  // 因為 note對x 已經有排過序, 如果距離高低音譜記號右邊太遠了就break囉！剩下的一定都離太遠不用全部的頭都跑完拉！
                     if( sp_to_note_vec_y > d_limit ) continue;
                     
                     cout << "head_x = "<<note[0][go_note] << ", head_y = "<<note[1][go_note] << ", special_remove~ " << endl;
@@ -86,6 +91,7 @@ void Remove_Overlap(const int head_type, const Mat head_template, int note[][100
                                         Point(note[0][go_note] + template_img_casual.cols, note[1][go_note] + template_img_casual.rows), Scalar(0, 0, 255), 3);
                     position_erase_note(note_count, note,go_note);
                     go_note--;
+
                 }
             }
         }
@@ -333,6 +339,24 @@ void recognition_0_all_head( int head_type,
 
             Remove_Overlap(9, template_img, note, note_count, staff_img_erase_line);
         }
+        break;
+
+        // 八分音符 符桿
+        case 10:{
+            Mat template_img = imread("Resource/note/10/10-1.bmp", 0);
+            recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method2");
+            Grab_MaybeHead_from_ResultMap   (result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.85);
+            
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = 10;
+                note_count++;
+            }
+            Remove_Overlap(10, template_img, note, note_count, staff_img_erase_line, 10);
+        }
+        
         break;
     }
 }

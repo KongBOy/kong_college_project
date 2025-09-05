@@ -31,65 +31,83 @@ void set_formate(int head_type,int time_bar,Scalar & color , Mat & template_img)
     Mat template_img_7 = imread("Resource/note/32-rest/7-2.bmp",0);
 
     Mat template_img_9 = imread("Resource/note/9/9-bin.bmp",0);
+    Mat template_img_10 = imread("Resource/note/10/10-1.bmp",0);
 
     switch(head_type){
+        // 全音符
         case 0:{
-            color = Scalar(140,100,100);
+            color = Scalar(140,100,100);  // 淺紫色 
             template_img = template_img_0.clone();
         }
         break;
-
+        
+        // 全休止
         case 1:{
-            color = Scalar(180,100,100);
+            color = Scalar(180,100,100);  // 淺紫色 
             template_img = template_img_1.clone();
         }
         break;
 
+        // 二分音符
         case 2:{
-            color = Scalar(220,100,100);
+            color = Scalar(220,100,100);  // 淺紫色
             template_img = template_img_2.clone();
         }
         break;
 
+        // 二分休止
         case 3:{
-            color = Scalar(255,120,100);
+            color = Scalar(255,120,100);  // 淺紫色
             template_img = template_img_3.clone();
         }
         break;
-
+        
+        // 四分音符, 八分音符, 十六分音符, 三十二分音符
         case 4:{
-            color = Scalar(100 , 100 , 100+time_bar*70);
+            color = Scalar(100 , 100 , time_bar*70);  // 四分音符 深藍綠, 八分音符 深灰綠色, 十六分音符 淡紫色, 三十二分 粉粉紅
             template_img = template_img_4.clone();
         }
         break;
 
+        // 四分休止符
         case 5:{
-            color = Scalar(255,200,100);
+            color = Scalar(255,200,100);  // 淺藍
             template_img = template_img_5.clone();
         }
         break;
 
+        // 十六分休止符
         case 6:{
-            color = Scalar(255,255,100);
+            color = Scalar(255,255,100);  // 青藍
             template_img = template_img_6.clone();
         }
         break;
 
+        // 三十二分休止符
         case 7:{
-            color = Scalar(140,100,180);
+            color = Scalar(140,100,180);  // 淡紫
             template_img = template_img_7.clone();
         }
         break;
 
+        // 八分休止符
         case 8:{
-            color = Scalar(140,180,180);
+            color = Scalar(140,180,180);  // 亮綠灰
             template_img = template_img_8.clone();
         }
         break;
 
+        // 高音譜記號, 因為 二分音符 容易跟這個搞混, 所以需要額外 把裡面誤判的二分音符頭 刪除
         case 9:{
-            color = Scalar(140,255,180);
+            color = Scalar(140,255,180);  // 淡亮綠
             template_img = template_img_9.clone();
+        }
+        break;
+
+        // 八分符桿, 因為 二分音符 容易跟這個搞混, 所以需要額外找 八分音符符桿 然後 把裡面誤判的二分音符頭 刪除
+        case 10:{
+            color = Scalar(100, 100, 70);  // 用八分音符 深灰綠色
+            template_img = template_img_10.clone();
         }
         break;
     }

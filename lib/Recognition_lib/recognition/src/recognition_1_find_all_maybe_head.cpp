@@ -151,7 +151,7 @@ void MaybeHead_MergeCloseHead(Mat& result_map, Mat staff_bin_erase_line, Mat tem
 
 }
 
-void Grab_MaybeHead_from_ResultMap(Mat result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img){
+void Grab_MaybeHead_from_ResultMap(Mat result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img, float thresh_hold){
     // 五、簡單篩一下，取大量喔！就是找出可能是要找的頭的概念！之後再用特徵篩一次~~
     float thresh_hold = 0.40;
     // normalize( result_map, result_map, 0, 1, NORM_MINMAX, -1, Mat() ); ///如果用這個的話就連其他版本的譜好像也可以，thr設0.75
@@ -239,26 +239,30 @@ void recognition_1_find_all_MaybeHead(Mat& result_map, Mat template_img, Mat sta
     // cout << "result_map_col = " << result_map_col << endl;
     
     // 走訪每座山
+    int grab_left;
+    int grab_width;
     for(int go_mountain = 0 ; go_mountain < e_count ; go_mountain++){
         // 防呆, 如果template的寬度比較大的話, 就把要看的山的距離拉大點囉
-        int width_error_max = 20;  // 最大可以差20個組 width_error
+        int width_error_max = 40;  // 最大可以差40個組 width_error
         int width_error_go  =  0;
-        while(distance[go_mountain] < template_img.cols && width_error_go < width_error_max){
-            if(l_edge[go_mountain] > 0 ) l_edge[go_mountain]--;  // 如果在圖片範圍內, 左擴1
-            if(l_edge[go_mountain]+distance[go_mountain] < staff_bin_erase_line.cols-1) distance[go_mountain] += 2;  // 如果在圖片範圍內, 右擴2
+        grab_left  = l_edge[go_mountain];
+        grab_width = distance[go_mountain];
+        while(grab_width < template_img.cols && width_error_go < width_error_max){
+            if(grab_left > 0 ) grab_left--;  // 如果在圖片範圍內, 左擴1
+            if(grab_left+grab_width < staff_bin_erase_line.cols-1) grab_width += 2;  // 如果在圖片範圍內, 右擴1(因為grab_left--了, 所以想要右擴1 需要 grab_width +2 來抵銷 grab_left--)
             width_error_go++;
-            // cout << "width_error_go = " << width_error_go << " , distance[go_mountain] = " << distance[go_mountain] << endl;
+            // cout << "width_error_go = " << width_error_go << " , grab_width = " << grab_width << endl;
         }
 
         // 二、根據上面防呆後的垂直投影找出來的mountain 根據 左邊界 和 distance 來切圖, 因為 很多符號 都是 瘦瘦高高, 所以 只對寬度仔細切, 高度抓全部 比較安全
-        Mat proc_img = staff_bin_erase_line(Rect(l_edge[go_mountain],0, distance[go_mountain], staff_bin_erase_line.rows ));
+        Mat proc_img = staff_bin_erase_line(Rect(grab_left,0, grab_width, staff_bin_erase_line.rows ));
 
         // 三前置、 建立 放 根據垂直投影切出來的影像做樣本比對結果的容器，根據垂直投影找出來的mountain切, 所以容器大小是: 山圖的大小 - template大小 + 1
         int result_row = staff_bin_erase_line.rows - template_img.rows +1;
-        int result_col = distance[go_mountain]     - template_img.cols +1;
+        int result_col = grab_width     - template_img.cols +1;
+        cout << "result_row = " << result_row << endl;
+        cout << "result_col = " << result_col << endl;
         Mat result(result_row,result_col,CV_32FC1);
-        // cout << "result_row = " << result_row << endl;
-        // cout << "result_col = " << result_col << endl;
 
         // 三、 每座山圖 做樣本比對
         if(method == "method1") matchTemplate (proc_img, template_img, result, CV_TM_CCOEFF_NORMED);
@@ -266,9 +270,11 @@ void recognition_1_find_all_MaybeHead(Mat& result_map, Mat template_img, Mat sta
         // threshold(result, result, 0.5, 1., CV_THRESH_TOZERO);
 
         // 四、 山圖樣本比對的結果圖 根據 左邊界 加回 原始影像比對的結果圖 相應的位置
-        result_map( Rect(l_edge[go_mountain],0,result_col, result_row) ) += result;
+        result_map( Rect(grab_left,0,result_col, result_row) ) += result;
 
         // imshow("proc_img", proc_img);
+        // imshow("result_map", result_map);
+        // cv::imshow("template_img", template_img);
         // cout << result << endl << endl << endl;
         // waitKey(0);
     }
