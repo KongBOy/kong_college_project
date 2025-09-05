@@ -64,7 +64,7 @@ void set_formate(int head_type,int time_bar,Scalar & color , Mat & template_img)
         
         // 四分音符, 八分音符, 十六分音符, 三十二分音符
         case 4:{
-            color = Scalar(100 , 100 , time_bar*70);  // 四分音符 深藍綠, 八分音符 深灰綠色, 十六分音符 淡紫色, 三十二分 粉粉紅
+            color = Scalar(100 , 100 , (100 + time_bar*70) % 256);  // 四分音符 深灰, 八分音符 淺咖啡, 十六分音符 淡粉紅, 三十二分 亮淡粉紅
             template_img = template_img_4.clone();
         }
         break;
@@ -106,7 +106,7 @@ void set_formate(int head_type,int time_bar,Scalar & color , Mat & template_img)
 
         // 八分符桿, 因為 二分音符 容易跟這個搞混, 所以需要額外找 八分音符符桿 然後 把裡面誤判的二分音符頭 刪除
         case 10:{
-            color = Scalar(100, 100, 70);  // 用八分音符 深灰綠色
+            color = Scalar(100, 100, 170);  // 用八分音符 淺咖啡
             template_img = template_img_10.clone();
         }
         break;
