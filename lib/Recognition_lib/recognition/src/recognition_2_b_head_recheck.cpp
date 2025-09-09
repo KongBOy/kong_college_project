@@ -93,8 +93,12 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
     // cout註解
     // cout << "template_recheck.cols = " << template_recheck.cols << endl;
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head ++){
-        if(maybe_head[2][go_head] >=0.75 && head_type != 1 && head_type != 3) maybe_head[2][go_head] = 1.0; // 測試很多次, 除了 全休止 和 二分休止 這種容易搞混的東西外, 大於0.75就是頭！不用recheck了直接指定信心100%
-        // ******** 以下是要做recheck的區段 ************
+        // 測試很多次, 信心0.75以上就是辨識成功了, 不用再recheck了直接指定信心100%
+        if(maybe_head[2][go_head] >=0.75 && head_type != 1 && head_type != 3) {
+            rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]) , Point(maybe_head[0][go_head]+template_recheck.cols,maybe_head[1][go_head]+template_recheck.rows),Scalar(255,0,0),1);
+            maybe_head[2][go_head] = 1.0;
+        }
+        // 如果 信心沒有達到 0.75 就要 recheck
         else if(maybe_head[2][go_head] < 0.75 || //  如果太不像了~~recheck~~
                 head_type == 1 ||  // 或者 是 全休止   這種超級容易搞混的東西
                 head_type == 3){   // 或者 是 二分休止 這種超級容易搞混的東西
