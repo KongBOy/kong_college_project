@@ -24,8 +24,8 @@ void set_formate(int head_type,int time_bar,Scalar & color , Mat & template_img)
     Mat template_img_5 = imread("Resource/note/4-rest/4-rest.bmp",0);
     Mat template_img_2 = imread("Resource/note/2/2.bmp",0);
     Mat template_img_0 = imread("Resource/note/0/0.bmp",0);
-    Mat template_img_1 = imread("Resource/note/0-rest/0-rest.bmp",0);
-    Mat template_img_3 = imread("Resource/note/2-rest/2-rest.bmp",0);
+    Mat template_img_1 = imread("Resource/note/0-rest/0_rest_w_line.bmp",0);
+    Mat template_img_3 = imread("Resource/note/2-rest/2_rest_w_line.bmp",0);
     Mat template_img_8 = imread("Resource/note/8-rest/8-rest-3.bmp",0);
     Mat template_img_6 = imread("Resource/note/6-rest/6-rest-2.bmp",0);
     Mat template_img_7 = imread("Resource/note/32-rest/7-2.bmp",0);

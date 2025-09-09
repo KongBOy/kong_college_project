@@ -146,11 +146,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                 if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
                 if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
                 if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
-                if(head_type == 1 && (size == 14)) maxVal += (float)12/(float)(template_recheck.rows*template_recheck.cols);
-                if(head_type == 3 && (size == 14)) maxVal += (float)12/(float)(template_recheck.rows*template_recheck.cols);
 
-                if(head_type == 1 && (size == 14)) maxVal -= 0.10;
-                if(head_type == 3 && (size == 14)) maxVal -= 0.10;
                 if(head_type == 8 && (size == 14)) maxVal -= 0.070; // 多抓到成 16分音符也沒關係，現在是用16分找精準，回來刪8分
                 if(head_type == 6 && (size == 14)) maxVal -= 0.08 ; // 再多 -0.01是因為如果音符是8分音符，maxVal也會很高~~所以多-0.1讓他比較不會超過門檻~~
                 if(head_type == 7 && (size == 14)) maxVal -= 0.08 ; // 再多 -0.01是因為如果音符是8分音符，maxVal也會很高~~所以多-0.1讓他比較不會超過門檻~~
