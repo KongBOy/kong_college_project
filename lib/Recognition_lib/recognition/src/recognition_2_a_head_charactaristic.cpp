@@ -29,9 +29,7 @@ float black_count_function(Mat image,int top,int down, int left , int right , Ma
 
     float test_area = (down - top + 1) * (right - left + 1);
     float black_rate = black_count / test_area;
-    // cout << "test_area = "      << test_area
-    //      << " , black_count = " << black_count
-    //      << " , black_rate = "  << black_rate << endl;
+    // cout << "test_area=" << test_area << ", black_count=" << black_count << ", black_rate=" << black_rate << endl;
     return black_rate;
 }
 
@@ -143,6 +141,9 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
 
 
             // 十六分休止, 三十二分休止, 八分休止 的 右邊偏上 會是空白沒東西的, 有東西的話就排除
+            // 主要是為了防止
+            //    十六分  休止 下半部的 八分休止 被重複找到, 
+            //    三十二分休止 下半部的 十六分休止, 八分休止 被重複找到
             case 6:
             case 7:
             case 8:{
@@ -154,9 +155,9 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
 
                 rectangle( temp_show2, Point(left,top), Point(right,down), Scalar(255,200,100), 1, 8, 0 );
                 rectangle( temp_show2, Point(maybe_head[0][go_head], maybe_head[1][go_head]), Point(maybe_head[0][go_head] + template_img.cols, maybe_head[1][go_head] + template_img.rows), Scalar(0, 0,255), 1, 8, 0 );
+                float black_rate = black_count_function(staff_bin_erase_line, top, down, left, right, temp_show2);
                 // imshow("temp_show2", temp_show2);
-
-                float black_rate = black_count_function(cut_ord_img, top, down, left, right, temp_show2);
+                // cv::waitKey(0);
 
                 if(black_rate > 0.25){ // 24~32格, 裡面有5~9格以上都是黑色的就太多囉
                     position_erase(maybe_head_count,maybe_head,go_head);
