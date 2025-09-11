@@ -365,6 +365,31 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                     }
                     if(recheck_sucess == true) break;
                 }
+
+
+                if(head_type == 2){
+                    acc_result /= 6;
+                    double minVal; double maxVal; Point minLoc; Point maxLoc;
+                    Point matchLoc;
+                    minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    // cout << "old_value = " << maybe_head[2][go_head] <<  " , max_value_mean = " << maxVal << endl;
+                    cv::imshow("recheck_result", reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )));
+                    
+                    if(maxVal >= 0.49){
+                        recheck_sucess = true;
+                        // cout註解 recheck成功的話標記一下
+                        // cout << "recheck_sucess";
+                        maybe_head[0][go_head] = recheck_l + maxLoc.x;
+                        maybe_head[1][go_head] = recheck_t + maxLoc.y;
+                        maybe_head[2][go_head] = maxVal;
+                        rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                        // *****************************
+                        // imshow("recheck",debug_img);
+                        // waitKey(0);
+                    }
+                    // cv::imshow("debug_img", debug_img);
+                    // cv::waitKey(0);
+                }
             }
 
             if(recheck_sucess == false){

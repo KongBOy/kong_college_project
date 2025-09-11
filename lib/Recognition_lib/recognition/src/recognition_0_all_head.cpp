@@ -176,14 +176,29 @@ void recognition_0_all_head( int head_type,
             Mat debug_img = staff_img_erase_line.clone();
             cvtColor(staff_img_erase_line,debug_img,CV_GRAY2BGR);
 
-            Mat template_img = imread("Resource/note/2/2.bmp",0);
-            recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y, "method1");
-            // recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y, "method1");
-
+            Mat template_img = imread("Resource/note/2/2_hard_to_find1.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            template_img = imread("Resource/note/2/2_hard_to_find2.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            template_img = imread("Resource/note/2/2_hard_to_find3.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            template_img = imread("Resource/note/2/2.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            result_map /= 8;
+    
+            Grab_MaybeHead_from_ResultMap    (result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
+            // cv::waitKey(0);
             // list_head_info(maybe_head_count,maybe_head);
-            // list_lines_info(lines_count,lines,lines_dir);
+            // list_bars_info(bars_count,bars,bars_dir);
             // watch_head(debug_img,template_img,maybe_head_count,maybe_head);
 
+            recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
+            recognition_2_b_head_recheck      (2,               staff_img_erase_line,            maybe_head_count, maybe_head);
+            recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
 
             recognition_3_a_find_vertical_bar (   template_img, staff_img_erase_line,            maybe_head_count, maybe_head, bars_count, bars, bars_dir);
 
