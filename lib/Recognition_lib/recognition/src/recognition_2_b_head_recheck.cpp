@@ -278,78 +278,94 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                 cv::imshow("debug_img", debug_img);
                 cv::waitKey(0);
             }
+            else{
+                // 不同size 做樣本比對
+                for(int size = 14 ; size <= 16 ; size++ ){
+                    // cout註解 看現在正在處理哪顆頭
+                    // cout << "go_head = " << go_head << " , ";
+                    if(head_type == 4) template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp",0);
+                    if(head_type == 2) template_recheck = imread("Resource/note/2/2-" + IntToString(size) +"-white-both-2.bmp",0);
+                    if(head_type == 0) template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp",0);
 
-                // cout << template_recheck << " " << endl;
+                    // cout << template_recheck << " " << endl;
 
-                // imshow("tempalte_recheck",template_recheck);
-                // waitKey(0);
-                // destroyWindow("tempalte_recheck");
+                    // imshow("tempalte_recheck",template_recheck);
+                    // waitKey(0);
+                    // destroyWindow("tempalte_recheck");
 
-                int recheck_result_row = recheck_height - template_recheck.rows +1;
-                int recheck_result_col = recheck_width  - template_recheck.cols +1;
-                Mat recheck_result(recheck_result_row,recheck_result_col,CV_32FC1);
-                matchTemplate2(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                    int recheck_result_row = recheck_height - template_recheck.rows +1;
+                    int recheck_result_col = recheck_width  - template_recheck.cols +1;
+                    Mat recheck_result(recheck_result_row,recheck_result_col,CV_32FC1);
+                    matchTemplate2(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
 
-                double minVal; double maxVal; Point minLoc; Point maxLoc;
-                Point matchLoc;
+                    double minVal; double maxVal; Point minLoc; Point maxLoc;
+                    Point matchLoc;
 
-                minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                if(head_type == 2)                               maxVal += (float)34/(float)(template_recheck.rows*template_recheck.cols);
-                if(head_type == 2 && (size == 15 || size == 16)) maxVal += (float) 8/(float)(template_recheck.rows*template_recheck.cols);
-                if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
-                if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
-                if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
+                    minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
+                    if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
+                    if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
 
-                if(head_type == 6 && (size == 14)) maxVal -= 0.08 ; // 再多 -0.01是因為如果音符是8分音符，maxVal也會很高~~所以多-0.1讓他比較不會超過門檻~~
-                if(head_type == 7 && (size == 14)) maxVal -= 0.08 ; // 再多 -0.01是因為如果音符是8分音符，maxVal也會很高~~所以多-0.1讓他比較不會超過門檻~~
-                // if(head_type == 1 && (size == 14)) maxVal += (float)14/(float)(template_recheck.rows*template_recheck.cols);
+                    
+                    if(head_type == 7 && (size == 14)) maxVal -= 0.08 ; // 再多 -0.01是因為如果音符是8分音符，maxVal也會很高~~所以多-0.1讓他比較不會超過門檻~~
+                    // if(head_type == 1 && (size == 14)) maxVal += (float)14/(float)(template_recheck.rows*template_recheck.cols);
 
-                // cout註解 看recheck後的相似度 和原來的相似度
-                cout << "old_value = " << maybe_head[2][go_head] << ", recheck_size" << size << " , max_value_kong = " << maxVal;
-                if(maxVal >= 0.800){
-                    /*
-                    Mat debug_img2 = reduce_line.clone();
-                    cvtColor(reduce_line,debug_img2,CV_GRAY2BGR);
+                    // cout註解 看recheck後的相似度 和原來的相似度
+                    // cout << "old_value = " << maybe_head[2][go_head] << ", recheck_size" << size << " , max_value_kong = " << maxVal;
+                    
+                    if(head_type == 2){
+                        if(size < 16) acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
 
-                    rectangle(debug_img,Point(recheck_l,recheck_t),Point(recheck_r,recheck_d),Scalar(255,0,0),2);
-                    for(int debug_y = 0 ; debug_y < template_recheck.rows ; debug_y++){
-                        for(int debug_x = 0 ; debug_x < template_recheck.cols ; debug_x++){
-                            if(   reduce_line     .at<uchar>(debug_y + recheck_t + maxLoc.y , debug_x + recheck_l + maxLoc.x)
-                               == template_recheck.at<uchar>(debug_y                        , debug_x)){
-                                line(debug_img2,Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),
-                                                Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),Scalar(0,255,0),1);
-                            }
-                        }
+                        // matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCORR_NORMED);
+                        // if(size < 16) acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                        // minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                        // cout << ", cv1=" << maxVal;
+
+                        // CV_TM_CCOEFF_NORMED 有助於 把八分音符符尾 的 similarity 壓低, 所以 * 2
+                        matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                        if(size < 16) acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result * 2;
+                        minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                        // cout << ", cv2=" << maxVal << endl;
                     }
 
-                    imshow("recheck_debug", debug_img2);
-                    waitKey(0);
-                    */
-                    // ***************************
-                    // imshow("recheck",debug_img);
-                    // waitKey(0);
+                    // 如果在某個size 有信心直超過0.80 就當作過關
+                    if(maxVal >= 0.800){
+                        /*
+                        Mat debug_img2 = reduce_line.clone();
+                        cvtColor(reduce_line,debug_img2,CV_GRAY2BGR);
 
-                    recheck_sucess = true;
-                    // cout註解 recheck成功的話標記一下
-                    // cout << "recheck_sucess";
-                    maybe_head[0][go_head] = recheck_l + maxLoc.x;
-                    maybe_head[1][go_head] = recheck_t + maxLoc.y;
-                    maybe_head[2][go_head] = maxVal;
-                    rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]) , Point(maybe_head[0][go_head]+template_recheck.cols,maybe_head[1][go_head]+template_recheck.rows),Scalar(255,0,0),1);
-                    // *****************************
-                    // imshow("recheck",debug_img);
-                    // waitKey(0);
+                        rectangle(debug_img,Point(recheck_l,recheck_t),Point(recheck_r,recheck_d),Scalar(255,0,0),2);
+                        for(int debug_y = 0 ; debug_y < template_recheck.rows ; debug_y++){
+                            for(int debug_x = 0 ; debug_x < template_recheck.cols ; debug_x++){
+                                if(   reduce_line     .at<uchar>(debug_y + recheck_t + maxLoc.y , debug_x + recheck_l + maxLoc.x)
+                                == template_recheck.at<uchar>(debug_y                        , debug_x)){
+                                    line(debug_img2,Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),
+                                                    Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),Scalar(0,255,0),1);
+                                }
+                            }
+                        }
+
+                        imshow("recheck_debug", debug_img2);
+                        waitKey(0);
+                        */
+                        // ***************************
+                        // imshow("recheck",debug_img);
+                        // waitKey(0);
+
+                        recheck_sucess = true;
+                        // cout註解 recheck成功的話標記一下
+                        // cout << "recheck_sucess";
+                        maybe_head[0][go_head] = recheck_l + maxLoc.x;
+                        maybe_head[1][go_head] = recheck_t + maxLoc.y;
+                        maybe_head[2][go_head] = maxVal;
+                        rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]) , Point(maybe_head[0][go_head]+template_recheck.cols,maybe_head[1][go_head]+template_recheck.rows),Scalar(255,0,0),1);
+                        // *****************************
+                        // imshow("recheck",debug_img);
+                        // waitKey(0);
+                    }
+                    if(recheck_sucess == true) break;
                 }
-                if(recheck_sucess == true) break;
-                if(head_type == 5) break;  // 四分休止
-                if(head_type == 1) break;  // 全休止
-                if(head_type == 3) break;  // 二分休
-                if(head_type == 8) break;  // 八分休止
-                if(head_type == 6) break;  // 十六分休止
-                if(head_type == 7) break;  // 三十二分休止
-                if(head_type == 9) break;  // 高音譜記號
             }
-
 
             if(recheck_sucess == false){
                 // cout註解 recheck失敗也標記一下
