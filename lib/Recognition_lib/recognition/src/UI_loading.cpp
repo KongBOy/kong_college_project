@@ -171,7 +171,7 @@ void Show_loading_bar(Mat UI_bass,string UI_WINDOW_NAME,int start_num , int end_
     int color_load_img_top  = 0;
 
     start_num = set_item_position(start_num);
-    end_num = set_item_position(end_num);
+    end_num   = set_item_position(end_num);
 
 
     for(int go_item = start_num ; go_item <= end_num ; go_item++){

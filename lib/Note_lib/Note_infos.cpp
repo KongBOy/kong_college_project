@@ -219,7 +219,7 @@ void draw_head(Mat& debug_img , Mat template_img,int maybe_head_count, float may
         float thresh_hold_1 = 0.70;
         float thresh_hold_2 = 0.49;
         float thresh_hold_3 = 0.43;
-             if(maybe_head[2][go_head] >= thresh_hold_1)rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(255,0,0), 1, 8, 0 );
+             if(maybe_head[2][go_head] >= thresh_hold_1)                                          rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(255,0,0), 1, 8, 0 );
         else if(maybe_head[2][go_head] <thresh_hold_1 && maybe_head[2][go_head] >= thresh_hold_2) rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(0,255,0), 1, 8, 0 );
         else if(maybe_head[2][go_head] <thresh_hold_2 && maybe_head[2][go_head] >= thresh_hold_3) rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(0,0,255), 1, 8, 0 );
         else rectangle( debug_img, Point(maybe_head[0][go_head],maybe_head[1][go_head]), Point( maybe_head[0][go_head] + template_img.cols ,maybe_head[1][go_head] + template_img.rows ), Scalar(50,150,255), 2, 8, 0 );

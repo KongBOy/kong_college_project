@@ -92,7 +92,6 @@ int find_staff_shift(const Mat cut_ord_img, int first_line_y_ord, int go_staff_x
         // 有可能整條都被符桿蓋住了所以找不到~~~所以如果找不到就往右走一點點再五條線重新找一次看看囉！
         go_staff_x +=3;
     }
-
 }
 
 void recognition_5_find_pitch(Mat cut_ord_img, 
