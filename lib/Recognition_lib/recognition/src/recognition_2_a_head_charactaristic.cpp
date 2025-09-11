@@ -15,11 +15,15 @@
 using namespace cv;
 using namespace std;
 
-float black_count_function(Mat image,int top,int down, int left , int right , Mat& temp_show2){ // 都是 array index
+float black_count_function(Mat image, int top, int down, int left, int right, Mat& temp_show2){ // 都是 array index
     int black_count = 0;
     for(int go_row = top ; go_row <= down  ; go_row++){
         for(int go_col = left ; go_col <= right ; go_col++){
-            if(!image.at<uchar>(go_row,go_col)){
+            // 防呆
+            if(go_row > image.rows - 1 || go_row < 0 || 
+               go_col > image.cols - 1 || go_col < 0) continue;
+
+            if(!image.at<uchar>(go_row, go_col)){
                 black_count++;
 
                 line(temp_show2, Point(go_col,go_row), Point(go_col,go_row), Scalar(0,0,255), 1);  // 標出位置
@@ -148,18 +152,25 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
             case 7:
             case 8:{
                 int check_width = 3;
-                int right = maybe_head[0][go_head] + template_img.cols ;
-                int left  = right - template_img.cols / 2;
-                int down  = maybe_head[1][go_head] - 4;
-                int top   = down - check_width;
+                int ru_right = maybe_head[0][go_head] + template_img.cols ;
+                int ru_left  = ru_right - template_img.cols / 2;
+                int ru_down  = maybe_head[1][go_head] - 4;
+                int ru_top   = ru_down - check_width;
 
-                rectangle( temp_show2, Point(left,top), Point(right,down), Scalar(255,200,100), 1, 8, 0 );
+                int ld_left  = maybe_head[0][go_head];
+                int ld_right = ld_left + template_img.cols / 2 ;
+                int ld_top   = maybe_head[1][go_head] + template_img.rows;
+                int ld_down  = ld_top + check_width;
+
+                rectangle( temp_show2, Point(ru_left, ru_top), Point(ru_right, ru_down), Scalar(255,200,100), 1, 8, 0 );
+                rectangle( temp_show2, Point(ld_left, ld_top), Point(ld_right, ld_down), Scalar(255,200,100), 1, 8, 0 );
                 rectangle( temp_show2, Point(maybe_head[0][go_head], maybe_head[1][go_head]), Point(maybe_head[0][go_head] + template_img.cols, maybe_head[1][go_head] + template_img.rows), Scalar(0, 0,255), 1, 8, 0 );
-                float black_rate = black_count_function(staff_bin_erase_line, top, down, left, right, temp_show2);
-                // imshow("temp_show2", temp_show2);
-                // cv::waitKey(0);
+                float ru_black_rate = black_count_function(staff_bin_erase_line, ru_top, ru_down, ru_left, ru_right, temp_show2);
+                float ld_black_rate = black_count_function(staff_bin_erase_line, ld_top, ld_down, ld_left, ld_right, temp_show2);
+                imshow("temp_show2", temp_show2);
+                cv::waitKey(0);
 
-                if(black_rate > 0.25){ // 24~32格, 裡面有5~9格以上都是黑色的就太多囉
+                if(ru_black_rate > 0.25 || ld_black_rate > 0.25){ // 24~32格, 裡面有5~9格以上都是黑色的就太多囉
                     position_erase(maybe_head_count,maybe_head,go_head);
                     go_head--;
                 }
