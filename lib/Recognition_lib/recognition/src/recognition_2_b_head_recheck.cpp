@@ -124,7 +124,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
 
             bool recheck_sucess = false;
             // 疊加樣本比對結果的容器
-            Mat proc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
+            Mat acc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
             
             // 八分休止 recheck,
             // 先用原本有白色外框的 8-rest-white-both-2-2.bmp 把原本的基礎定出來,
@@ -136,7 +136,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                 int recheck_result_col = recheck_width  - template_recheck.cols +1;
                 Mat recheck_result;
                 matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
-                proc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 
                 // 八分休止最具特色的上半部分 做樣本比對
                 template_recheck = imread("Resource/note/8-rest/8_up_very_fit2.bmp",0);   //
@@ -144,17 +144,17 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 // 有外邊框的八分休止  疊加上 八分休止最具特色的上半部分 做樣本比對的結果
-                proc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 // 取平均
-                proc_result /= 2;
+                acc_result /= 2;
 
                 // 觀察後覺得 超過0.60 就是八分休止
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
-                minMaxLoc( proc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                 // cout << "8 rest maxVal=" << maxVal << endl;
                 // cv::imshow("debug_img", debug_img);
-                // cv::imshow("proc_result", proc_result);
+                // cv::imshow("acc_result", acc_result);
                 // cv::waitKey(0);
                 if(maxVal > 0.60){
                     recheck_sucess = true;

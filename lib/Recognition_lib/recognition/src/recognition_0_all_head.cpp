@@ -300,8 +300,12 @@ void recognition_0_all_head( int head_type,
 
         // 八分休止
         case 8:{
-            Mat template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
-            recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y, "method1");
+            Mat template_img = imread("Resource/note/8-rest/8-rest.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            result_map /= 2;
+            Grab_MaybeHead_from_ResultMap   (result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.15);
 
             recognition_2_a_head_charactristic(8,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
             recognition_2_b_head_recheck(8,staff_img_erase_line,maybe_head_count,maybe_head);
