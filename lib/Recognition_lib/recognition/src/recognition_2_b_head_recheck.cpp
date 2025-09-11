@@ -86,7 +86,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
     if(head_type == 1) template_recheck = imread("Resource/note/0-rest/0-rest-14-white-both-3-3-3.bmp",0);
     if(head_type == 3) template_recheck = imread("Resource/note/2-rest/2-rest-14-white-both-3-3-3.bmp",0);
     if(head_type == 8) template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp",0);   // 上下要留白，八分辨識度 & 區別度較高
-    if(head_type == 6) template_recheck = imread("Resource/note/6-rest/6-rest-white-both-2-2-3.bmp",0); // 上下不要留白，留白會抓到八分的休止符
+    if(head_type == 6) template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1.bmp",0); // 上下不要留白，留白會抓到八分的休止符
     if(head_type == 7) template_recheck = imread("Resource/note/32-rest/7-white-both-2.bmp",0);         // 上下不要留白，留白會抓到八分的休止符
 
     if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp",0);
@@ -164,13 +164,120 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                     rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]) , Point(maybe_head[0][go_head]+template_recheck.cols,maybe_head[1][go_head]+template_recheck.rows),Scalar(255,0,0),1);
                 } 
             }
+            else if(head_type == 6){
+                // 原本的 有外邊框的十六分休止 做樣本比對
+                int recheck_result_row;
+                int recheck_result_col;
 
-            for(int size = 14 ; size <= 16 ; size++ ){
-                // cout註解 看現在正在處理哪顆頭
-                // cout << "go_head = " << go_head << " , ";
-                if(head_type == 4) template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp",0);
-                if(head_type == 2) template_recheck = imread("Resource/note/2/2-" + IntToString(size) +"-white-both-2.bmp",0);
-                if(head_type == 0) template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp",0);
+                Mat recheck_result;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-01.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-02.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-03.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-04.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-05.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-06.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-07.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-08.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-09.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-10.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-11.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-12.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-13.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-hard-14.bmp",0);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                
+                acc_result /= 15;
+
+                double minVal; double maxVal; Point minLoc; Point maxLoc;
+                Point matchLoc;
+                minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+
+
+                // 十六分休止 下面是白色的 做樣本比對
+                template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1_down_white.bmp",0);
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                Mat recheck_result2(recheck_result_row,recheck_result_col,CV_32FC1);
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result2, CV_TM_CCOEFF_NORMED);
+
+                double minVal2; double maxVal2; Point minLoc2; Point maxLoc2;
+                Point matchLoc2;
+                minMaxLoc( recheck_result2 , &minVal2, &maxVal2, &minLoc2, &maxLoc2, Mat() );
+
+                cout <<  "ord maxVal:" << maxVal << ", down white maxVal:" << maxVal2 << endl;
+                if( maxVal > 0.40 and maxVal2 < 0.65){
+                    cout << "OK" << endl;
+                    recheck_sucess = true;
+                    maybe_head[0][go_head] = recheck_l + maxLoc.x;
+                    maybe_head[1][go_head] = recheck_t + maxLoc.y;
+                    maybe_head[2][go_head] = maxVal;
+                    rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]) , Point(maybe_head[0][go_head]+template_recheck.cols,maybe_head[1][go_head]+template_recheck.rows),Scalar(255,0,0),1);
+                }
+            
+                
+                cv::imshow("debug_img", debug_img);
+                cv::waitKey(0);
+            }
 
                 // cout << template_recheck << " " << endl;
 
