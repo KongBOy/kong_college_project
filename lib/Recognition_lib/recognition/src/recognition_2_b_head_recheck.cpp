@@ -528,7 +528,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                     if(recheck_sucess == true) break;
                 }
 
-
+                // 如果是 二分音符 要多看 acc_result
                 if(head_type == 2){
                     acc_result /= 6;
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
