@@ -191,7 +191,7 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                 // cv::imshow("debug_img", debug_img);
                 // cv::imshow("acc_result", acc_result);
                 // cv::waitKey(0);
-                if(maxVal > 0.60){
+                if(maxVal > 0.50){
                     recheck_sucess = true;
                     maybe_head[0][go_head] = recheck_l + maxLoc.x;
                     maybe_head[1][go_head] = recheck_t + maxLoc.y;
