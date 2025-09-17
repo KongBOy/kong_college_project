@@ -77,55 +77,63 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
 
     draw_head(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
 
-    // ~~~template Matching
     Mat template_recheck ;
-    if(head_type == 0) template_recheck = imread("Resource/note/0/0.bmp",0);
-    if(head_type == 2) template_recheck = imread("Resource/note/2/2.bmp",0);
-    if(head_type == 4) template_recheck = imread("Resource/note/4/4.bmp",0);
-    if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp",0);
-    if(head_type == 1) template_recheck = imread("Resource/note/0-rest/0-rest-14-white-both-3-3-3.bmp",0);
-    if(head_type == 3) template_recheck = imread("Resource/note/2-rest/2-rest-14-white-both-3-3-3.bmp",0);
-    if(head_type == 8) template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp",0);   // 上下要留白，八分辨識度 & 區別度較高
-    if(head_type == 6) template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1.bmp",0); // 上下不要留白，留白會抓到八分的休止符
-    if(head_type == 7) template_recheck = imread("Resource/note/32-rest/7-white-both-2.bmp",0);         // 上下不要留白，留白會抓到八分的休止符
-
-    if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp",0);
-    // cout註解
     // cout << "template_recheck.cols = " << template_recheck.cols << endl;
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head ++){
+        if(head_type == 0) template_recheck = imread("Resource/note/0/0.bmp",0);
+        if(head_type == 2) template_recheck = imread("Resource/note/2/2.bmp",0);
+        if(head_type == 4) template_recheck = imread("Resource/note/4/4.bmp",0);
+        if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp",0);
+        if(head_type == 1) template_recheck = imread("Resource/note/0-rest/0-rest-14-white-both-3-3-3.bmp",0);
+        if(head_type == 3) template_recheck = imread("Resource/note/2-rest/2-rest-14-white-both-3-3-3.bmp",0);
+        if(head_type == 8) template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp",0);   // 上下要留白，八分辨識度 & 區別度較高
+        if(head_type == 6) template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1.bmp",0);   // 上下不要留白，留白會抓到八分的休止符
+        if(head_type == 7) template_recheck = imread("Resource/note/32-rest/7-1-up15w-down15w.bmp",0);         // 上下不要留白，留白會抓到八分的休止符
+    
+        if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp",0);
+
+        int extend = 6;
+        int recheck_l = maybe_head[0][go_head] - extend;
+        int recheck_r = recheck_l + template_recheck.cols + extend*2;
+        int recheck_t = maybe_head[1][go_head] - extend;
+        int recheck_d = recheck_t + template_recheck.rows + extend*2;
+        if(recheck_l < 0                  ) recheck_l = 0;
+        if(recheck_r > reduce_line.cols -1) recheck_r = reduce_line.cols -1;
+        if(recheck_t < 0                  ) recheck_t = 0;
+        if(recheck_d > reduce_line.rows -1) recheck_d = reduce_line.rows -1;
+
+        int recheck_width  = recheck_r - recheck_l;
+        int recheck_height = recheck_d - recheck_t;
+        // cout << "recheck_l = " << recheck_l << " , recheck_r = " << recheck_r << endl;
+        // **************************************
+        line(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]), Point(maybe_head[0][go_head], maybe_head[1][go_head]), Scalar(125, 125, 125), 4);
+        rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 1);
+        // imshow("recheck",debug_img);
+        // waitKey(0);
+        // *********************************************************
+
+
+
         // 測試很多次, 信心0.75以上就是辨識成功了, 不用再recheck了直接指定信心100%
-        if(maybe_head[2][go_head] >=0.75 && head_type != 1 && head_type != 3) {
+        if(maybe_head[2][go_head] >=0.75) {
             rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]) , Point(maybe_head[0][go_head]+template_recheck.cols,maybe_head[1][go_head]+template_recheck.rows),Scalar(255,0,0),1);
             maybe_head[2][go_head] = 1.0;
+            // cv::imshow("debug_img", debug_img);
+            // cv::waitKey(0);
         }
         // 如果 信心沒有達到 0.75 就要 recheck
-        else if(maybe_head[2][go_head] < 0.75 || //  如果太不像了~~recheck~~
-                head_type == 1 ||  // 或者 是 全休止   這種超級容易搞混的東西
-                head_type == 3){   // 或者 是 二分休止 這種超級容易搞混的東西
-            int extend = 6;
-            int recheck_l = maybe_head[0][go_head] - extend;
-            int recheck_r = recheck_l + template_recheck.cols + extend*2;
-            int recheck_t = maybe_head[1][go_head] - extend;
-            int recheck_d = recheck_t + template_recheck.rows + extend*2;
-            if(recheck_l < 0                  ) recheck_l = 0;
-            if(recheck_r > reduce_line.cols -1) recheck_r = reduce_line.cols -1;
-            if(recheck_t < 0                  ) recheck_t = 0;
-            if(recheck_d > reduce_line.rows -1) recheck_d = reduce_line.rows -1;
-
-            int recheck_width  = recheck_r - recheck_l;
-            int recheck_height = recheck_d - recheck_t;
-            // cout << "recheck_l = " << recheck_l << " , recheck_r = " << recheck_r << endl;
-            // **************************************
-            rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 1);
-            // imshow("recheck",debug_img);
-            // waitKey(0);
-            // *********************************************************
-
-
+        else if(maybe_head[2][go_head] < 0.75 ) //  如果太不像了~~recheck~~
+        {
             bool recheck_sucess = false;
             // 疊加樣本比對結果的容器
             Mat acc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
             
+
+            // if(head_type == 1 ||  // 或者 是 全休止   這種超級容易搞混的東西
+            //    head_type == 3){   // 或者 是 二分休止 這種超級容易搞混的東西
+            //    }
+
+
             // 八分休止 recheck,
             // 先用原本有白色外框的 8-rest-white-both-2-2.bmp 把原本的基礎定出來,
             // 再疊加上 八分休止 最具特色的上半部分 8_up_very_fit2.bmp, 
@@ -275,8 +283,105 @@ void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_
                 }
             
                 
-                cv::imshow("debug_img", debug_img);
-                cv::waitKey(0);
+                // cv::imshow("debug_img", debug_img);
+                // cv::waitKey(0);
+            }
+            else if(head_type == 7){
+                // 原本的 有外邊框的三十二分休止 做樣本比對
+                int recheck_result_row;
+                int recheck_result_col;
+
+                Mat recheck_result;
+                template_recheck = imread("Resource/note/32-rest/7-1-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                
+                template_recheck = imread("Resource/note/32-rest/7-2-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/32-rest/7-3-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/32-rest/7-4-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/32-rest/7-5-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/32-rest/7-6-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/32-rest/7-7-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                template_recheck = imread("Resource/note/32-rest/7-8-up15w.bmp",0);
+                if(template_recheck.rows > recheck_height) continue;
+                if(template_recheck.cols > recheck_width ) continue;
+                recheck_result_row = recheck_height - template_recheck.rows +1;
+                recheck_result_col = recheck_width  - template_recheck.cols +1;
+                matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                matchTemplate2black(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result);
+                acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                
+                acc_result /= 14;
+
+                double minVal; double maxVal; Point minLoc; Point maxLoc;
+                Point matchLoc;
+                minMaxLoc( recheck_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+
+                cout <<  "ord maxVal:" << maxVal << endl;
+                if( maxVal > 0.15 ){
+                    recheck_sucess = true;
+                    maybe_head[0][go_head] = recheck_l + maxLoc.x;
+                    maybe_head[1][go_head] = recheck_t + maxLoc.y;
+                    maybe_head[2][go_head] = maxVal;
+                    rectangle(debug_img,Point(maybe_head[0][go_head],maybe_head[1][go_head]) , Point(maybe_head[0][go_head]+template_recheck.cols,maybe_head[1][go_head]+template_recheck.rows),Scalar(255,0,0),1);
+                }
+                // cv::imshow("debug_img", debug_img);
+                // cv::waitKey(0);
             }
             else{
                 // 不同size 做樣本比對
