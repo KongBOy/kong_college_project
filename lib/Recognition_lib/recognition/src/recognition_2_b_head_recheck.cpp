@@ -56,7 +56,32 @@ static void matchTemplate2(Mat src_img,Mat template_test,Mat& result)
             for(int go_t_row = 0 ; go_t_row < template_test.rows ; go_t_row++){
                 for(int go_t_col = 0 ; go_t_col < template_test.cols ; go_t_col++){
                     //  另一種寫法：if( !(template_test.at<uchar>(go_t_row,go_t_col) - src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col)) )
-                    if(template_test.at<uchar>(go_t_row,go_t_col) == src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col)){
+                    if(template_test.at<uchar>(go_t_row,go_t_col) == src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col) ){
+                        similar++;
+                    }
+                }
+            }
+            // float similar_rate = similar / total_pix;
+            result.at<float>(go_s_row,go_s_col) = similar / total_pix;// similar_rate;
+            // cout << "similar_rate = " << similar_rate << endl;
+        }
+    }
+    // imshow("template_test",result);
+    // waitKey(0);
+}
+
+static void matchTemplate2black(Mat src_img,Mat template_test,Mat& result)
+{
+    // copy matchTemplate 只有在最中間的if 多加 template_test.at<uchar>(go_t_row,go_t_col) == 0 這個條件
+    float total_pix = template_test.rows * template_test.cols;
+    for(int go_s_row = 0 ; go_s_row < src_img.rows - template_test.rows +1 ; go_s_row++){
+        for(int go_s_col = 0 ; go_s_col < src_img.cols - template_test.cols +1 ; go_s_col++){
+            float similar = 0;
+            for(int go_t_row = 0 ; go_t_row < template_test.rows ; go_t_row++){
+                for(int go_t_col = 0 ; go_t_col < template_test.cols ; go_t_col++){
+                    //  另一種寫法：if( !(template_test.at<uchar>(go_t_row,go_t_col) - src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col)) )
+                    if(template_test.at<uchar>(go_t_row,go_t_col) == src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col) && 
+                       template_test.at<uchar>(go_t_row,go_t_col) == 0    ){
                         similar++;
                     }
                 }
