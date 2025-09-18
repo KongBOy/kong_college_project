@@ -13,7 +13,7 @@
 using namespace cv;
 using namespace std;
 
-#define CHANGE_TOLORANCE 3
+#define CHANGE_TOLORANCE 4
 #define ENOUGH_LINE_HAVE_SAME_DISTANCE 3
 
 
