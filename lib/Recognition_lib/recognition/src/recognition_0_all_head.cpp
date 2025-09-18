@@ -167,7 +167,8 @@ void recognition_0_all_head( int head_type,
     /// note 可以在：
     /// recognition_2_b_recheck 存全音符，四分休止符 只有他一個，所以寫在下面~~~
     /// recognition_2_c_merge_head_and_time 存 二分音符 和 四分音符，因為兩個重複所以寫進去recognition_2_c裡面~~
-
+    
+    Mat result_map;
     switch(head_type){
         // 0 全音
         case 0:{
