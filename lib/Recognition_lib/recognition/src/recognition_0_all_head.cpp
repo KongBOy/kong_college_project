@@ -356,10 +356,11 @@ void recognition_0_all_head( int head_type,
         break;
 
 
-        // 高音譜記號, 最後記得 要用 Remove_Overlap 把 高音譜記號範圍裡面找錯的 note 刪除喔
+        // 高音譜記號, 最後記得 要用 Overlap_Erase_or_Assing8Note 把 高音譜記號範圍裡面找錯的 note 刪除喔
         case 9:{
-            Mat template_img = imread("Resource/note/9/9-bin.bmp",0);
-            Mat template_img_4(13,17,CV_8UC1,Scalar(0)); ///隨便拉~~~只是設定range比較好用ˊ口ˋ
+            Mat template_img = imread("Resource/note/9/9-bin.bmp",0); 
+            recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method2");
+            Grab_MaybeHead_from_ResultMap   (result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
 
             recognition_2_b_head_recheck(9, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
@@ -370,6 +371,8 @@ void recognition_0_all_head( int head_type,
                 note_count++;
             }
 
+            bubbleSort_note(note_count, note, Y_INDEX);
+            bubbleSort_note(note_count, note, X_INDEX);
 
             Overlap_Erase_or_Assing8Note(9, template_img, note, note_count, staff_img_erase_line, 2, ERASE, 0);
         }
