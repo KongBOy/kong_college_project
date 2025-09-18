@@ -63,6 +63,12 @@ void matchTemplate2(Mat src_img,Mat template_test,Mat& result){
 }
 
 void debug_draw_result_map_on_staff_bin_erase_line(Mat result_map, Mat staff_bin_erase_line, Mat template_img, int l, int r, int t, int d, Scalar color, string window_name){
+    // ************ 防呆 ***************
+    if( l < 0) l = 0;
+    if( t < 0) t = 0;
+    if( r > result_map.cols-1) r = result_map.cols -1;
+    if( d > result_map.rows-1) d = result_map.rows -1;
+
     Mat staff_bin_erase_line_color;
     cvtColor(staff_bin_erase_line, staff_bin_erase_line_color, CV_GRAY2BGR);
     for(int go_row = t; go_row <= d; go_row++)
