@@ -430,6 +430,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
             }
             else{
                 // 不同size 做樣本比對
+                if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp",0);
+                if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp",0);
                 for(int size = 14 ; size <= 16 ; size++ ){
                     // cout註解 看現在正在處理哪顆頭
                     // cout << "go_head = " << go_head << " , ";
