@@ -24,10 +24,17 @@
 
 #include "Note_infos.h"
 
+#define ERASE 0
+#define ASSIGN_8_Note 1
+
 using namespace cv;
 using namespace std;
 
-void Remove_Overlap(const int head_type, const Mat head_template, int note[][1000], int& note_count, Mat staff_img_erase_line, int dist_error){
+void Overlap_Erase_or_Assing8Note(const int head_type, const Mat head_template, int note[][1000], int& note_count, Mat staff_img_erase_line, int dist_error, int method, int top_extend){
+    // method: 
+    //     ERASW        : 會把跟 head_type 有 Overlap的head 清除
+    //     ASSIGN_8_Note: 主要是給 head_type == 八分符桿用的, 可以把 跟八分符桿 往上 top_extend 的區域 有Overlap 的head 的 time_bar 指定為1 代表八分音符
+    // top_extend : 找Overlap時 要往上延伸多少pixel
     bubbleSort_note(note_count, note, Y_INDEX);
     bubbleSort_note(note_count, note, X_INDEX);
     
@@ -35,7 +42,6 @@ void Remove_Overlap(const int head_type, const Mat head_template, int note[][100
     cvtColor(staff_img_erase_line, debug_img, CV_GRAY2BGR);
 
     Mat template_img_casual(13,17,CV_8UC1,Scalar(0));  // 常見的頭的大小
-    int dist_error = 2;
     int special_note_index;
     int special_note_x;
     int special_note_y;
@@ -44,7 +50,7 @@ void Remove_Overlap(const int head_type, const Mat head_template, int note[][100
     int sp_to_note_vec_x;
     int sp_to_note_vec_y;
     int l_limit = -dist_error;
-    int t_limit = -dist_error;
+    int t_limit = -dist_error - top_extend;
     int r_limit =  dist_error;
     int d_limit =  dist_error;
 
@@ -89,9 +95,18 @@ void Remove_Overlap(const int head_type, const Mat head_template, int note[][100
                     cout << "head_x = "<<note[0][go_note] << ", head_y = "<<note[1][go_note] << ", special_remove~ " << endl;
                     rectangle(debug_img,Point(note[0][go_note]                           , note[1][go_note]),
                                         Point(note[0][go_note] + template_img_casual.cols, note[1][go_note] + template_img_casual.rows), Scalar(0, 0, 255), 3);
-                    position_erase_note(note_count, note,go_note);
-                    go_note--;
+                    switch(method){
+                        case ERASE:{
+                            position_erase_note(note_count, note,go_note);   
+                            go_note--;
+                        }
+                        break;
 
+                        case ASSIGN_8_Note:{
+                            note[3][go_note] = 1;
+                        }
+                        break;
+                    }
                 }
             }
         }
