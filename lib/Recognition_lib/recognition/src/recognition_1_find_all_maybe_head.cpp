@@ -176,10 +176,11 @@ void Grab_MaybeHead_from_ResultMap(Mat result_map, int& maybe_head_count,float m
     //        for(int j = 0 ; j < 200 ; j++)
     //            maybe_head[i][j] = 0;
     // 四、把可能是頭的點存進我的data structure，改寫from SHOW START 沒有用我的資料結構///
+    int far_from_staff_limit = 65;  // 如果離五線譜太遠(超過 far_from_staff_limit) 也不存
     for(int go_row = 0; go_row < result_map.rows ; go_row++){
         for(int go_col = 0 ; go_col < result_map.cols ; go_col++){
             if( (result_map.at<float>(go_row,go_col) ) &&
-                (go_row - pitch_base_y >= -40) && (go_row - pitch_base_y <= 50 + 40) ){
+                (go_row - pitch_base_y >= -1 * far_from_staff_limit) && (go_row - pitch_base_y <= 50 + far_from_staff_limit) ){  
                 /// ~~~~~~ debug用 ~~~~~~
                 /*
                 if     (result_map.at<float>(go_row,go_col) >= 0.70                                               ) rectangle( temp_show, Point(go_col,go_row), Point( go_col + template_img.cols ,go_row + template_img.rows ), Scalar(255,   0,   0), 1, 8, 0 );
