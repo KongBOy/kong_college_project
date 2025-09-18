@@ -127,7 +127,7 @@ void MaybeHead_MergeCloseHead(Mat& result_map, Mat staff_bin_erase_line, Mat tem
                 int range_height = down - top;
 
                 // before merge 看一下
-                // debug_draw_merging_where(result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where");
+                // debug_draw_merging_where(result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
                 // waitKey(0);
 
                 // 二、找出框框內最好的點(最像的地方)
@@ -146,10 +146,10 @@ void MaybeHead_MergeCloseHead(Mat& result_map, Mat staff_bin_erase_line, Mat tem
                     for(int go_note_col = left ; go_note_col <= right ; go_note_col++)
                         result_map.at<float>(go_note_row, go_note_col) = 0;
                 result_map.at<float>(maxLoc.y, maxLoc.x) = maxVal;
-                cout << "value = " << maxVal << endl;
-
+                
                 // after merge 看一下
-                // debug_draw_merging_where(result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where");
+                // debug_draw_merging_where(result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", false);
+                // cout << "value = " << maxVal << endl;
                 // waitKey(0);
             }
         }
