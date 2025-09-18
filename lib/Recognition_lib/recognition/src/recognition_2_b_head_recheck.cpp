@@ -151,6 +151,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
             // 綜合兩層的結果 取平均, 信心高於 0.60 就OK囉
             if(head_type == 8){
                 // 原本的 有外邊框的八分休止 做樣本比對
+                template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp",0);   // 上下要留白，八分辨識度 & 區別度較高
                 int recheck_result_row = recheck_height - template_recheck.rows +1;
                 int recheck_result_col = recheck_width  - template_recheck.cols +1;
                 Mat recheck_result;
@@ -191,6 +192,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
                 int recheck_result_col;
 
                 Mat recheck_result;
+                template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1.bmp",0);   // 上下不要留白，留白會抓到八分的休止符
                 matchTemplate(reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
