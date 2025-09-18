@@ -77,7 +77,7 @@ void debug_draw_result_map_on_staff_bin_erase_line(Mat result_map, Mat staff_bin
                 rectangle( staff_bin_erase_line_color, Point(go_col, go_row), Point( go_col + template_img.cols, go_row + template_img.rows ), Scalar(0,0,255), 1, 8, 0 );
     imshow(window_name, staff_bin_erase_line_color);
 }
-void debug_draw_merging_where(Mat result_map, Mat staff_bin_erase_line, Mat template_img, int x, int y, Scalar color, string window_name){
+void debug_draw_merging_where(Mat result_map, Mat staff_bin_erase_line, Mat template_img, int x, int y, Scalar color, string window_name, bool print_result_map){
     int check_l, check_r, check_t, check_d;
     check_l = x - 0.5 * template_img.cols;
     check_r = x + 0.5 * template_img.cols;
@@ -96,7 +96,7 @@ void debug_draw_merging_where(Mat result_map, Mat staff_bin_erase_line, Mat temp
     rectangle(result_map_color, Point(check_l, check_t), Point(check_r, check_d), color, 1, 8, 0);
     imshow(window_name, result_map_color);
     imshow("template_img", template_img);
-    cout << result_map( Rect(check_l, check_t, template_img.cols, template_img.rows) ) << " " << endl;
+    if(print_result_map) cout << result_map( Rect(check_l, check_t, check_r - check_l, check_d - check_t) ) << " " << endl;
 
     // 只看 merge 範圍內 的 result_map 在 staff_bin_erase_line 的狀況
     debug_draw_result_map_on_staff_bin_erase_line(result_map, staff_bin_erase_line, template_img, check_l, check_r, check_t, check_d, Scalar(0, 0, 255), window_name + "_staff_line");
