@@ -153,7 +153,6 @@ void MaybeHead_MergeCloseHead(Mat& result_map, Mat staff_bin_erase_line, Mat tem
 
 void Grab_MaybeHead_from_ResultMap(Mat result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img, float thresh_hold){
     // 五、簡單篩一下，取大量喔！就是找出可能是要找的頭的概念！之後再用特徵篩一次~~
-    float thresh_hold = 0.40;
     // normalize( result_map, result_map, 0, 1, NORM_MINMAX, -1, Mat() ); ///如果用這個的話就連其他版本的譜好像也可以，thr設0.75
     threshold(result_map, result_map, thresh_hold , 1.0 , CV_THRESH_TOZERO);
     // debug用  把所有找到的地方都框出來，還沒有合併附近很像的地方
