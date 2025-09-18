@@ -96,30 +96,23 @@ static void matchTemplate2black(Mat src_img,Mat template_test,Mat& result)
 }
 
 
-void recognition_2_b_head_recheck(int head_type,Mat reduce_line,int& maybe_head_count,float maybe_head[][200]){
+void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Mat reduce_line,int& maybe_head_count,float maybe_head[][200]){
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
 
-    draw_head(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
+    // draw_head(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
 
     Mat template_recheck ;
     // cout << "template_recheck.cols = " << template_recheck.cols << endl;
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head ++){
-        if(head_type == 0) template_recheck = imread("Resource/note/0/0.bmp",0);
-        if(head_type == 2) template_recheck = imread("Resource/note/2/2.bmp",0);
-        if(head_type == 4) template_recheck = imread("Resource/note/4/4.bmp",0);
-        if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp",0);
-        if(head_type == 8) template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp",0);   // 上下要留白，八分辨識度 & 區別度較高
-        if(head_type == 6) template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1.bmp",0);   // 上下不要留白，留白會抓到八分的休止符
         if(head_type == 7) template_recheck = imread("Resource/note/32-rest/7-1-up15w-down15w.bmp",0);         // 上下不要留白，留白會抓到八分的休止符
     
-        if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp",0);
 
         int extend = 6;
         int recheck_l = maybe_head[0][go_head] - extend;
-        int recheck_r = recheck_l + template_recheck.cols + extend*2;
+        int recheck_r = recheck_l + MaybeHead_final_template.cols + extend*2;
         int recheck_t = maybe_head[1][go_head] - extend;
-        int recheck_d = recheck_t + template_recheck.rows + extend*2;
+        int recheck_d = recheck_t + MaybeHead_final_template.rows + extend*2;
         if(recheck_l < 0                  ) recheck_l = 0;
         if(recheck_r > reduce_line.cols -1) recheck_r = reduce_line.cols -1;
         if(recheck_t < 0                  ) recheck_t = 0;

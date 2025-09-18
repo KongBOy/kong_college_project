@@ -159,7 +159,7 @@ void recognition_0_all_head( int head_type,
             Mat template_img = imread("Resource/note/0/0.bmp",0);
             recognition_1_find_all_maybe_head(template_img, staff_img_erase_line, e_count, l_edge, distance, maybe_head_count, maybe_head, pitch_base_y, "method1");
 
-            recognition_2_b_head_recheck(0, staff_img_erase_line, maybe_head_count, maybe_head);
+            recognition_2_b_head_recheck(0, template_img, staff_img_erase_line, maybe_head_count, maybe_head);
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -197,7 +197,7 @@ void recognition_0_all_head( int head_type,
             // watch_head(debug_img,template_img,maybe_head_count,maybe_head);
 
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
-            recognition_2_b_head_recheck      (2,               staff_img_erase_line,            maybe_head_count, maybe_head);
+            recognition_2_b_head_recheck      (2, template_img,  staff_img_erase_line,            maybe_head_count, maybe_head);
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
 
             recognition_3_a_find_vertical_bar (   template_img, staff_img_erase_line,            maybe_head_count, maybe_head, bars_count, bars, bars_dir);
@@ -214,7 +214,7 @@ void recognition_0_all_head( int head_type,
 
 
             recognition_2_a_head_charactristic(4,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
-            recognition_2_b_head_recheck(4,staff_img_erase_line,maybe_head_count,maybe_head);
+            recognition_2_b_head_recheck(4, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
 
 
             recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir);
@@ -236,7 +236,7 @@ void recognition_0_all_head( int head_type,
             Mat template_img = imread("Resource/note/4-rest/4-rest.bmp",0);
             recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y, "method1");
 
-            recognition_2_b_head_recheck(5,staff_img_erase_line,maybe_head_count,maybe_head);
+            recognition_2_b_head_recheck(5, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -286,7 +286,7 @@ void recognition_0_all_head( int head_type,
             Grab_MaybeHead_from_ResultMap   (result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.35);
 
             recognition_2_a_head_charactristic(6,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
-            recognition_2_b_head_recheck(6,staff_img_erase_line,maybe_head_count,maybe_head);
+            recognition_2_b_head_recheck(6, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -299,11 +299,14 @@ void recognition_0_all_head( int head_type,
 
         // 三十二分休止
         case 7:{
-            Mat template_img = imread("Resource/note/32-rest/7-2.bmp",0);
-            recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y, "method1");
-
-            recognition_2_a_head_charactristic(7,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
-            recognition_2_b_head_recheck(7,staff_img_erase_line,maybe_head_count,maybe_head);
+            Mat template_img = imread("Resource/note/32-rest/7-1-up15w.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            template_img = imread("Resource/note/32-rest/7-1-up15w-down15w.bmp",0);
+            recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            result_map /= 2;
+            Grab_MaybeHead_from_ResultMap   (result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.38);
+            
+            recognition_2_b_head_recheck(7, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -316,15 +319,16 @@ void recognition_0_all_head( int head_type,
 
         // 八分休止
         case 8:{
-            Mat template_img = imread("Resource/note/8-rest/8-rest.bmp",0);
+            Mat template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
             recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
-            template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
+            template_img = imread("Resource/note/8-rest/8-rest.bmp",0);
             recognition_1_find_all_MaybeHead(result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
             result_map /= 2;
             Grab_MaybeHead_from_ResultMap   (result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.15);
-
+            
             recognition_2_a_head_charactristic(8,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
-            recognition_2_b_head_recheck(8,staff_img_erase_line,maybe_head_count,maybe_head);
+            recognition_2_b_head_recheck(8, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
+
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
             {
                 int go_note = note_count;
@@ -342,9 +346,7 @@ void recognition_0_all_head( int head_type,
             Mat template_img = imread("Resource/note/9/9-bin.bmp",0);
             Mat template_img_4(13,17,CV_8UC1,Scalar(0)); ///隨便拉~~~只是設定range比較好用ˊ口ˋ
 
-            recognition_1_find_all_maybe_head(template_img,staff_img_erase_line,e_count,l_edge,distance,maybe_head_count,maybe_head,pitch_base_y, "method2");
-
-            recognition_2_b_head_recheck(9,staff_img_erase_line,maybe_head_count,maybe_head);
+            recognition_2_b_head_recheck(9, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
