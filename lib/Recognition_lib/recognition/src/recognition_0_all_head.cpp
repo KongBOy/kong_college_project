@@ -371,7 +371,7 @@ void recognition_0_all_head( int head_type,
             }
 
 
-            Remove_Overlap(9, template_img, note, note_count, staff_img_erase_line);
+            Overlap_Erase_or_Assing8Note(9, template_img, note, note_count, staff_img_erase_line, 2, ERASE, 0);
         }
         break;
 
@@ -388,7 +388,8 @@ void recognition_0_all_head( int head_type,
                 note[2][note_count] = 10;
                 note_count++;
             }
-            Remove_Overlap(10, template_img, note, note_count, staff_img_erase_line, 10);
+            Overlap_Erase_or_Assing8Note(10, template_img, note, note_count, staff_img_erase_line, 10, ERASE, 0);
+            Overlap_Erase_or_Assing8Note(10, template_img, note, note_count, staff_img_erase_line, 10, ASSIGN_8_Note, template_img.rows / 2);
         }
         
         break;
