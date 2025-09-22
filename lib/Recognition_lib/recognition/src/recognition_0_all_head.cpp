@@ -23,6 +23,7 @@
 #include "recognition_4_find_picth.h"
 
 #include "Note_infos.h"
+#include "Maybe_head_tool.h"
 
 #define ERASE 0
 #define ASSIGN_8_Note 1
