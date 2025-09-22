@@ -249,21 +249,35 @@ void recognition_1_find_all_MaybeHead(Mat& staff_result_map, Mat template_img, M
     // cout << "cur_template_result_map_row = " << cur_template_result_map_row << endl;
     // cout << "cur_template_result_map_col = " << cur_template_result_map_col << endl;
     
-    // 走訪每座山
+    // 二、加速，看想看的小地方地方即可, 走訪每座山
     int grab_left;
     int grab_width;
+    int extend_full;
+    int extend_half;
+    int right_boundary_index = staff_bin_erase_line.cols - 1;
     for(int go_mountain = 0 ; go_mountain < e_count ; go_mountain++){
         // 防呆, 如果template的寬度比較大的話, 就把要看的山的距離拉大點囉
-        int width_error_max = 40;  // 最大可以差40個組 width_error
-        int width_error_go  =  0;
         grab_left  = l_edge[go_mountain];
         grab_width = distance[go_mountain];
-        while(grab_width < template_img.cols && width_error_go < width_error_max){
-            if(grab_left > 0 ) grab_left--;  // 如果在圖片範圍內, 左擴1
-            if(grab_left+grab_width < staff_bin_erase_line.cols-1) grab_width += 2;  // 如果在圖片範圍內, 右擴1(因為grab_left--了, 所以想要右擴1 需要 grab_width +2 來抵銷 grab_left--)
-            width_error_go++;
-            // cout << "width_error_go = " << width_error_go << " , grab_width = " << grab_width << endl;
+        if(debuging) cout << "staff_bin_erase_line.cols:" << staff_bin_erase_line.cols << ", template_img.cols:" << template_img.cols << ", grab_left:" << grab_left << ", grab_width:" << grab_width << endl;
+        if (template_img.cols > grab_width){
+            // 往左右各延伸 extend_full 來把 山的距離拉到足夠大, 要補的隔數 如果是 偶數格左右可以拉得剛剛好, 基數格 往右補(給 grab_width)
+            extend_full = (template_img.cols - grab_width) / 2;
+            extend_half = (template_img.cols - grab_width) % 2;
+            grab_left  -= extend_full;
+            grab_width += extend_full * 2 + extend_half;
+            // 如果往左補 超出範圍, 往左補超過範圍的部分 丟給右邊
+            if(grab_left < 0){
+                grab_width += grab_width + std::abs(grab_left);
+                grab_left   = 0;
+            }
+            // 如果往右補 超出範圍, 往右補超過範圍的部分 丟給左邊
+            if(grab_left + grab_width > right_boundary_index){
+                grab_left  -= (grab_left + grab_width) - (right_boundary_index);  // 往右補的目的地 - 右邊界 == 往右補超過的部分
+                grab_width  = (right_boundary_index) - grab_left;                 // 現在就是 右邊界 當作目的地, 用此來重新計算 grab_width
+            }
         }
+        if(debuging) cout << "cur_template_result_map_col:" << cur_template_result_map_col << ", template_img.cols:" << template_img.cols << ", grab_left:" << grab_left << ", grab_width:" << grab_width << endl << endl;
 
         // 二、根據上面防呆後的垂直投影找出來的mountain 根據 左邊界 和 distance 來切圖, 因為 很多符號 都是 瘦瘦高高, 所以 只對寬度仔細切, 高度抓全部 比較安全
         Mat proc_img = staff_bin_erase_line(Rect(grab_left,0, grab_width, staff_bin_erase_line.rows ));
