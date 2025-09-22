@@ -338,19 +338,23 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         // start_time = getTickCount();
         // end_time   = getTickCount() - start_time;
         // cout<<"maybe_head cost Time = "<<end_time<<endl;
+        
+        // 全休止, 二分休止
+        recognition_0_all_head(1, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+        recognition_0_all_head(3, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
 
-        recognition_0_all_head(1,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(3,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-
-
-        recognition_0_all_head(4,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(2,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(0,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(5,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-
-
-        recognition_0_all_head(8,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        recognition_0_all_head(6,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
+        // 四分, 二分, 全音, 四分休止
+        recognition_0_all_head(4, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+        recognition_0_all_head(2, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+        recognition_0_all_head(0, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+        recognition_0_all_head(5, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+    
+        // 八分休止, 十六分休止
+        recognition_0_all_head(8, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+        recognition_0_all_head(6, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+        
+        // 三十二分休止
+        recognition_0_all_head(7, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
 
 
 
@@ -360,6 +364,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         recognition_5_find_pitch(staff_img[go_staff], Mat(15, 15, CV_8UC1), row_note_count, row_note, trans_start_point_y[go_staff], go_staff);
 
 
+        // 高音譜記號
         recognition_0_all_head( 9, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
         recognition_0_all_head(10, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
 

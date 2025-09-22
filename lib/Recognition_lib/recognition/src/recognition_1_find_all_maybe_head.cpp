@@ -219,7 +219,7 @@ void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count,f
 
 void recognition_1_find_all_MaybeHead(Mat& staff_result_map, Mat template_img, Mat staff_bin_erase_line,
                                        int e_count, int* l_edge, int* distance,
-                                       string method){
+                                       string method, bool debuging){
 
     /// 一、整個大圖片的 staff_result_map 容器
     /// 二、加速，看想看的小地方地方即可：根據垂直投影找出來的mountain切

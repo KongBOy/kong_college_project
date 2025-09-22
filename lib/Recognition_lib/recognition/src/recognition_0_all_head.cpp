@@ -122,7 +122,8 @@ void recognition_0_all_head( int head_type,
                              int e_count, int* l_edge, int* distance, ///從 recognition_0 的資料來 加速
                              int pitch_base_y,
                              int& note_count,
-                             int note[][1000]){
+                             int note[][1000],
+                             bool debuging){
     // 自己設資料結構 head, 0是左上角x, 1是左上角y, 2是similarity
     int maybe_head_count = 0;
     float maybe_head[3][200];
@@ -173,7 +174,7 @@ void recognition_0_all_head( int head_type,
         // 0 全音
         case 0:{
             Mat template_img = imread("Resource/note/0/0.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count, l_edge, distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count, l_edge, distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
 
             recognition_2_b_head_recheck(0, template_img, staff_img_erase_line, maybe_head_count, maybe_head);
@@ -194,17 +195,17 @@ void recognition_0_all_head( int head_type,
             cvtColor(staff_img_erase_line,debug_img,CV_GRAY2BGR);
 
             Mat template_img = imread("Resource/note/2/2_hard_to_find1.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1", debuging);
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2", debuging);
             template_img = imread("Resource/note/2/2_hard_to_find2.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1", debuging);
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2", debuging);
             template_img = imread("Resource/note/2/2_hard_to_find3.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1", debuging);
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2", debuging);
             template_img = imread("Resource/note/2/2.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1");
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method1", debuging);
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img_erase_line, e_count,l_edge,distance, "method2", debuging);
             staff_result_map /= 8;
     
             Grab_MaybeHead_from_ResultMap    (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
@@ -227,7 +228,7 @@ void recognition_0_all_head( int head_type,
         // 4 四分
         case 4:{
             Mat template_img = imread("Resource/note/4/4.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
 
 
@@ -252,7 +253,7 @@ void recognition_0_all_head( int head_type,
         // 4-rest
         case 5:{
             Mat template_img = imread("Resource/note/4-rest/4-rest.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
 
             recognition_2_b_head_recheck(5, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
@@ -269,7 +270,7 @@ void recognition_0_all_head( int head_type,
         // 全休止
         case 1:{
             Mat template_img = imread("Resource/note/0-rest/0_rest_w_line.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img, e_count, l_edge, distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img, e_count, l_edge, distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img, template_img, 0.80);
 
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
@@ -285,7 +286,7 @@ void recognition_0_all_head( int head_type,
         // 二分休止
         case 3:{
             Mat template_img = imread("Resource/note/2-rest/2_rest_w_line.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img, e_count, l_edge, distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img, e_count, l_edge, distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img, template_img, 0.80);
 
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
@@ -301,7 +302,7 @@ void recognition_0_all_head( int head_type,
         // 十六分休止
         case 6:{
             Mat template_img = imread("Resource/note/6-rest/6-rest-2.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.35);
 
             recognition_2_a_head_charactristic(6,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
@@ -319,9 +320,9 @@ void recognition_0_all_head( int head_type,
         // 三十二分休止
         case 7:{
             Mat template_img = imread("Resource/note/32-rest/7-1-up15w.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             template_img = imread("Resource/note/32-rest/7-1-up15w-down15w.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             staff_result_map /= 2;
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.38);
             
@@ -339,9 +340,9 @@ void recognition_0_all_head( int head_type,
         // 八分休止
         case 8:{
             Mat template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             template_img = imread("Resource/note/8-rest/8-rest.bmp",0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             staff_result_map /= 2;
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.15);
             
@@ -363,7 +364,7 @@ void recognition_0_all_head( int head_type,
         // 高音譜記號, 最後記得 要用 Overlap_Erase_or_Assing8Note 把 高音譜記號範圍裡面找錯的 note 刪除喔
         case 9:{
             Mat template_img = imread("Resource/note/9/9-bin.bmp",0); 
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method2");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method2", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
 
             recognition_2_b_head_recheck(9, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
@@ -385,7 +386,7 @@ void recognition_0_all_head( int head_type,
         // 八分音符 符桿
         case 10:{
             Mat template_img = imread("Resource/note/10/10-1.bmp", 0);
-            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method2");
+            recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method2", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.85);
             
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
