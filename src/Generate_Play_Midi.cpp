@@ -350,19 +350,19 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
             Scalar circle_background(0,0,0);
 
             switch( (note_infos -> note[4][note_infos -> go_note]/12) ){
-                case 4:/// 低音c
+                case 4:  // 低音c
                     circle_background = Scalar(100,120,125);///灰色
                     break;
 
-                case 5:/// 中央C
+                case 5:  // 中央C
                     circle_background = Scalar(255,143,218);///粉紅色
                     break;
 
-                case 6:/// 高音C
+                case 6:  // 高音C
                     circle_background = Scalar(255,180,100);///蛋藍色
                     break;
 
-                case 7:/// 高高音c
+                case 7:  // 高高音c
                     circle_background = Scalar(100,120,125);///灰色
                     break;
 

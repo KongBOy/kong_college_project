@@ -231,8 +231,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
     Mat src_bin_erase_line = src_bin.clone();
     cvtColor(src_img, color_src_img, CV_GRAY2BGR);
 
-    int*** left_point;// = new int**[staff_count];
-    int*** right_point;// = new int**[staff_count];a
+    int*** left_point ;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
+    int*** right_point;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
     try{
         Find_Head_and_Erase_Line_Interface(src_bin, lines, staff_count, left_point, right_point, color_src_img, src_bin_erase_line, debuging);
         cout<<"find_head_end~"<<endl;
@@ -241,8 +241,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         imshow(Title,UI2_5);
         waitKey(2000);
         return -2;
-    //    NextStep=0;
-    //    break;
+        // NextStep=0;
+        // break;
     }
     // *******************************************************************
     // *******************************************************************
@@ -288,14 +288,15 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
 
 
     for(int go_staff = 0 ; go_staff < staff_count ; go_staff++){
+        // vertical_map 是debug用
         Mat vertical_map(staff_img_erase_line[go_staff].rows,
                          staff_img_erase_line[go_staff].cols,CV_8UC1,Scalar(255));
-
-        int l_edge[200];
-        int r_edge[200];
-        int distance[200];
+        // 主要用這些
+        int e_count = 0;  // edge_count
+        int l_edge       [200];
+        int r_edge       [200];
+        int distance     [200];
         int mountain_area[200];
-        int e_count = 0;
         int* note_type;
         recognition_0_vertical_map_to_speed_up(staff_img_erase_line[go_staff],
                                                vertical_map,
@@ -309,8 +310,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
             for(int j = 0 ; j < 1000 ; j++)
                 row_note[i][j] = 0;
 
-        /// 0  1 分音符
-        /// 1  1 休止
+        /// 0  1 全音符
+        /// 1  1 全休止
         /// 2  2 分音符
         /// 3  2 休止
         /// 4  4 分音符
@@ -335,7 +336,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         // recognition_0_all_head(2,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
         // start_time = getTickCount();
-        // end_time = getTickCount() - start_time;
+        // end_time   = getTickCount() - start_time;
         // cout<<"maybe_head cost Time = "<<end_time<<endl;
 
         recognition_0_all_head(1,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
@@ -351,20 +352,16 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         recognition_0_all_head(8,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
         recognition_0_all_head(6,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
-        // recognition_0_all_head(7,template_img_8,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
 
 
+        bubbleSort_note(row_note_count, row_note, Y_INDEX);
+        bubbleSort_note(row_note_count, row_note, X_INDEX);
 
-        bubbleSort_note(row_note_count,row_note,Y_INDEX);
-        bubbleSort_note(row_note_count,row_note,X_INDEX);
-
-        recognition_5_find_pitch(staff_img[go_staff],Mat(15,15,CV_8UC1),row_note_count,row_note,trans_start_point_y[go_staff]);
-
+        recognition_5_find_pitch(staff_img[go_staff], Mat(15, 15, CV_8UC1), row_note_count, row_note, trans_start_point_y[go_staff], go_staff);
 
 
-        recognition_0_all_head(9,staff_img_erase_line[go_staff],staff_img[go_staff],e_count,l_edge,distance,trans_start_point_y[go_staff],row_note_count,row_note);
-        bubbleSort_note(row_note_count,row_note,Y_INDEX);
-        bubbleSort_note(row_note_count,row_note,X_INDEX);
+        recognition_0_all_head( 9, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
+        recognition_0_all_head(10, staff_img_erase_line[go_staff], staff_img[go_staff], e_count, l_edge, distance, trans_start_point_y[go_staff], row_note_count, row_note, developing_debuging);
 
         // midi(row_note_count,row_note);
 
