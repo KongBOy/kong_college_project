@@ -209,10 +209,8 @@ void recognition_0_all_head( int head_type,
             staff_result_map /= 8;
     
             Grab_MaybeHead_from_ResultMap    (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
+            // MaybeHead_list_infos(maybe_head_count,maybe_head);
             // cv::waitKey(0);
-            // list_head_info(maybe_head_count,maybe_head);
-            // list_bars_info(bars_count,bars,bars_dir);
-            // watch_head(debug_img,template_img,maybe_head_count,maybe_head);
 
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
             recognition_2_b_head_recheck      (2, template_img,  staff_img_erase_line,            maybe_head_count, maybe_head);
@@ -239,11 +237,8 @@ void recognition_0_all_head( int head_type,
             recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir);
             recognition_3_b_find_time_bar(template_img,bars_count,bars,bars_dir,bars_time,staff_img_erase_line);
 
-            // cout<<"end 3~~~~~~~~~~~~~~~~~~~~~~~~~~ "<<endl;
-            // list_head_info(maybe_head_count,maybe_head);
-            // list_bars_info(bars_count,bars,bars_dir);
-            // watch_head(debug_img,template_img,maybe_head_count,maybe_head);
-
+            // MaybeHead_list_infos(maybe_head_count,maybe_head);
+            // list_Bars_infos(bars_count,bars,bars_dir);
 
             recognition_4_merge_head_and_time(4,template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir,bars_time,note_count,note);
             // recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);

@@ -38,6 +38,3 @@ void watch_row_note(Mat debug_img , int row_note_count, int row_note[][1000]);
 void draw_row_note(Mat debug_img , int row_note_count, int row_note[][1000]);
 
 
-void list_head_info(int maybe_head_count,float maybe_head[][200]);
-void watch_head(Mat debug_img , Mat template_img, int maybe_head_count, float maybe_head[][200]);
-void draw_head(Mat& debug_img , Mat template_img, int maybe_head_count, float maybe_head[][200]);

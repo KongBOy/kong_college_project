@@ -14,7 +14,8 @@ message(STATUS "(可省, 看一下變數內容而已)OpenCV_LIBS        : ${Open
 message(STATUS "(可省, 看一下變數內容而已)CMAKE_BUILD_TYPE   : ${CMAKE_BUILD_TYPE}" )
 
 # Note_lib
-add_library               (Note_lib lib/Note_lib/Note_infos.cpp)
+add_library               (Note_lib lib/Note_lib/Note_infos.cpp
+                                    lib/Note_lib/Maybe_head_tool.cpp)
 target_include_directories(Note_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include )
 
 # String_tool_lib

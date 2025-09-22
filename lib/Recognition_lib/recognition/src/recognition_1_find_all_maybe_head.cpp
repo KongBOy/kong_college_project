@@ -15,7 +15,7 @@
 
 #include "recognition_0_array_tools.h"
 #include "recognition_0_debug_tools.h"
-#include "Note_infos.h"
+#include "Maybe_head_tool.h"
 #include "recognition_1_find_all_maybe_head.h"
 
 
@@ -150,7 +150,7 @@ void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, M
 void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img, float thresh_hold){
     Mat temp_show;
     cvtColor(staff_bin_erase_line, temp_show, CV_GRAY2BGR);
-    // draw_head(temp_show, template_img, maybe_head_count, maybe_head);
+    // MaybeHead_draw(temp_show, template_img, maybe_head_count, maybe_head);
     // cv::imshow("before merge", staff_result_map);
     // cv::waitKey(0);
 
@@ -199,7 +199,8 @@ void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, 
     // imshow("after_merge", temp_show);
 
     // debug整合
-    // imshow("draw_head", temp_show);
+    // MaybeHead_draw(temp_show, template_img, maybe_head_count, maybe_head);
+    // imshow("MaybeHead_draw", temp_show);
     // waitKey(0);
 }
 
