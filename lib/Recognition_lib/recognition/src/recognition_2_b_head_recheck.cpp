@@ -10,8 +10,7 @@ using namespace cv;
 using namespace std;
 
 #include "recognition_0_array_tools.h"
-#include "recognition_0_debug_tools.h"
-#include "Note_infos.h"
+#include "Maybe_head_tool.h"
 #include "recognition_2_b_head_recheck.h"
 
 #include "string_tools.h"

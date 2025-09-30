@@ -8,7 +8,6 @@
 #include <iostream>
 
 #include "recognition_0_array_tools.h"
-#include "recognition_0_debug_tools.h"
 #include "Maybe_head_tool.h"
 #include "recognition_2_a_head_charactaristic.h"
 
