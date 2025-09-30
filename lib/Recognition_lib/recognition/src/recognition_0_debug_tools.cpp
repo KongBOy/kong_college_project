@@ -29,7 +29,7 @@ static Mat template_img_6 = imread("Resource/note/6-rest/6-rest-2.bmp",0);
 static Mat template_img_7 = imread("Resource/note/32-rest/7-2.bmp",0);
 */
 
-void list_bars_info(int bars_count,short bars[][200],bool bars_dir[200]){
+void list_Bars_infos(int bars_count,short bars[][200],bool bars_dir[200]){
     cout << "bars_count = " << bars_count<<endl;
     for(int go_bar = 0 ; go_bar < bars_count ; go_bar++)
         cout << "go_bar = "   << go_bar
