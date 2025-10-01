@@ -101,7 +101,7 @@ void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, M
     for(int go_row = 0; go_row < staff_result_map.rows; go_row++){
         for(int go_col = 0; go_col < staff_result_map.cols; go_col++){
             if(staff_result_map.at<float>(go_row, go_col)){
-                // 一、框result_map的框框，防呆變數設定START///
+                // 一、框result_map的框框，防呆變數設定START //
                 int left  = go_col - 0.5 * template_img.cols;
                 int right = go_col + 0.5 * template_img.cols;
                 int top   = go_row - 0.5 * template_img.rows;  // 0.5那個是因為音符不可能會兩顆重疊在一起
@@ -154,7 +154,7 @@ void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, 
     // cv::waitKey(0);
 
     // 五、簡單篩一下，取大量喔！就是找出可能是要找的頭的概念！之後再用特徵篩一次~~
-    // normalize( staff_result_map, staff_result_map, 0, 1, NORM_MINMAX, -1, Mat() ); ///如果用這個的話就連其他版本的譜好像也可以，thr設0.75
+    // normalize( staff_result_map, staff_result_map, 0, 1, NORM_MINMAX, -1, Mat() );  //如果用這個的話就連其他版本的譜好像也可以，thr設0.75
     threshold(staff_result_map, staff_result_map, thresh_hold , 1.0 , CV_THRESH_TOZERO);
     // debug用  把所有找到的地方都框出來，還沒有合併附近很像的地方
     // debug_draw_result_map_on_staff_bin_erase_line(staff_result_map, staff_bin_erase_line, template_img, 0, staff_result_map.cols - 1, 0, staff_result_map.rows - 1, Scalar(0, 0, 255), "before merge");
@@ -175,28 +175,25 @@ void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, 
     //    for(int i = 0; i < 3; i++)
     //        for(int j = 0; j < 200; j++)
     //            maybe_head[i][j] = 0;
-    // 四、把可能是頭的點存進我的data structure，改寫from SHOW START 沒有用我的資料結構///
+    // 四、把可能是頭的點存進我的data structure，改寫from SHOW START 沒有用我的資料結構 //
     int far_from_staff_limit = 65;  // 如果離五線譜太遠(超過 far_from_staff_limit) 也不存
     for(int go_row = 0; go_row < staff_result_map.rows; go_row++){
         for(int go_col = 0; go_col < staff_result_map.cols; go_col++){
             if( (staff_result_map.at<float>(go_row, go_col) ) &&
                 (go_row - pitch_base_y >= -1 * far_from_staff_limit) && (go_row - pitch_base_y <= 50 + far_from_staff_limit) ){  
-                maybe_head[0][maybe_head_count] = go_col; /// x
-                maybe_head[1][maybe_head_count] = go_row; /// y
-                maybe_head[2][maybe_head_count] = staff_result_map.at<float>(go_row, go_col); /// value
+                maybe_head[0][maybe_head_count] = go_col;  // x
+                maybe_head[1][maybe_head_count] = go_row;  // y
+                maybe_head[2][maybe_head_count] = staff_result_map.at<float>(go_row, go_col);  // value
                 maybe_head_count++;
             }
         }
     }
-
-    draw_head(temp_show, template_img, maybe_head_count, maybe_head);
-
-    // 把可能是頭的點存進我的 data_structure，改寫from SHOW END 沒有用我的資料結構///
-
+    // 把可能是頭的點存進我的 data_structure，改寫from SHOW END 沒有用我的資料結構 //
+    
     bubbleSort_maybe_head(maybe_head_count, maybe_head,Y_INDEX);
     bubbleSort_maybe_head(maybe_head_count, maybe_head,X_INDEX);
     // imshow("after_merge", temp_show);
-
+    
     // debug整合
     // MaybeHead_draw(temp_show, template_img, maybe_head_count, maybe_head);
     // imshow("MaybeHead_draw", temp_show);
@@ -207,10 +204,10 @@ void recognition_1_find_all_MaybeHead(Mat& staff_result_map, Mat template_img, M
                                        int e_count, int* l_edge, int* distance,
                                        string method, bool debuging){
 
-    /// 一、整個大圖片的 staff_result_map 容器
-    /// 二、加速，看想看的小地方地方即可：根據垂直投影找出來的mountain切
-    /// 三、對想看的小地方做template_match，結果存在小result
-    /// 四、把 小結果result 加回去 大圖result_map
+    // 一、整個大圖片的 staff_result_map 容器
+    // 二、加速，看想看的小地方地方即可：根據垂直投影找出來的mountain切
+    // 三、對想看的小地方做template_match，結果存在小result
+    // 四、把 小結果result 加回去 大圖result_map
 
     // 一、建立 放原始圖片做樣本比對結果的容器 或 使用外面丟進來的 staff_result_map 承接之前的結果 繼續累加現在的比對的結果
     // 因為是用樣本比對 用 樣本一格格滑過原始影像 計算 每隔往右切往下切樣本大小的影像 與 樣本 比對相似度, 所以容器大小是: 原圖大小 - template大小 + 1
