@@ -148,7 +148,6 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
             //    十六分  休止 下半部的 八分休止 被重複找到, 
             //    三十二分休止 下半部的 十六分休止, 八分休止 被重複找到
             case 6:
-            case 7:
             case 8:{
                 int check_width = 3;
                 int ru_right = maybe_head[0][go_head] + template_img.cols ;
@@ -166,8 +165,8 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
                 rectangle( temp_show2, Point(maybe_head[0][go_head], maybe_head[1][go_head]), Point(maybe_head[0][go_head] + template_img.cols, maybe_head[1][go_head] + template_img.rows), Scalar(0, 0,255), 1, 8, 0 );
                 float ru_black_rate = black_count_function(staff_bin_erase_line, ru_top, ru_down, ru_left, ru_right, temp_show2);
                 float ld_black_rate = black_count_function(staff_bin_erase_line, ld_top, ld_down, ld_left, ld_right, temp_show2);
-                imshow("temp_show2", temp_show2);
-                cv::waitKey(0);
+                // imshow("temp_show2", temp_show2);
+                // cv::waitKey(0);
 
                 if(ru_black_rate > 0.25 || ld_black_rate > 0.25){ // 24~32格, 裡面有5~9格以上都是黑色的就太多囉
                     position_erase(maybe_head_count,maybe_head,go_head);
@@ -178,7 +177,7 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
         }
     }
     // 秀出 做完CHECK_SOLID的頭
-    MaybeHead_draw(temp_show2, template_img, maybe_head_count, maybe_head);
+    // MaybeHead_draw(temp_show2, template_img, maybe_head_count, maybe_head);
     // imshow("debug", temp_show2);
     // waitKey(0);
     // destroyWindow("debug");
