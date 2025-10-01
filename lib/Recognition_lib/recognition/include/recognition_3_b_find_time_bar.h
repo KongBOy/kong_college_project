@@ -13,4 +13,4 @@ void recognition_3_b_find_time_bar(Mat template_img,
                                    int bars_count,short bars[][200],bool bars_dir[200],
                                    int bars_time[200],
                                    Mat reduce_line, 
-                                   bool debuging = true);
+                                   bool debuging = false);
