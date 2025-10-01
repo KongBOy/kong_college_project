@@ -30,54 +30,34 @@ static Mat template_img_7 = imread("Resource/note/32-rest/7-2.bmp",0);
 */
 
 void list_Bars_infos(int bars_count,short bars[][200],bool bars_dir[200]){
+    // 文字 show 資訊
     cout << "bars_count = " << bars_count<<endl;
-    for(int go_bar = 0 ; go_bar < bars_count ; go_bar++)
-        cout << "go_bar = "   << go_bar
-             << " , x = "      << bars[0][go_bar]
-             << " , y = "      << bars[1][go_bar]
-             << " , length = " << bars[2][go_bar]
-             << " , down = "   << bars_dir[go_bar]
-             << " , top = "    << bars_dir[go_bar] << endl;
+    for(int go_bar = 0; go_bar < bars_count; go_bar++)
+        cout << "go_bar="      << go_bar
+             << ", x="         << bars[0][go_bar]
+             << ", y="         << bars[1][go_bar]
+             << ", length="    << bars[2][go_bar]
+             << ", direction=" << bars_dir[go_bar] << endl;
     cout << endl;
 }
 
-void draw_bars(Mat& debug_img,int bars_count,short bars[][200],bool bars_dir[200]){
+void draw_bars(Mat& debug_img, int bars_count, short bars[][200], bool bars_dir[200], bool show){
     // 顯示 線
     for(int go_bar = 0 ; go_bar < bars_count ; go_bar++){
-        // 左, TOPTODOWN
-        if(bars_dir[go_bar] == true){
-            line(debug_img, Point(bars[0][go_bar],bars[1][go_bar]),Point(bars[0][go_bar],bars[1][go_bar]+bars[2][go_bar]),Scalar(123,255,123),2 );  // 淺綠
-        }
-        // 右, DOWNTOTOP
-        else if(bars_dir[go_bar] == false ){
-            line(debug_img, Point(bars[0][go_bar],bars[1][go_bar]),Point(bars[0][go_bar],bars[1][go_bar]-bars[2][go_bar]),Scalar(23,255,223),2 );  // 淺黃綠
-        }
+        // TOPTODOWN (通常在head左下角從head往下延伸)
+        if     (bars_dir[go_bar] == true  ) line(debug_img, Point(bars[0][go_bar], bars[1][go_bar]), Point(bars[0][go_bar], bars[1][go_bar] + bars[2][go_bar]), Scalar(123, 255, 123), 2 );  // 淺綠
+        // DOWNTOTOP (通常在head右上角從head往上延伸)
+        else if(bars_dir[go_bar] == false ) line(debug_img, Point(bars[0][go_bar], bars[1][go_bar]), Point(bars[0][go_bar], bars[1][go_bar] - bars[2][go_bar]), Scalar( 23, 255, 223), 2 );  // 淺黃綠
 
-        // cout<<"go_bar = "<<go_bar<<" , x = "<<bars[0][go_bar]<<" , y = "<<bars[1][go_bar]<<" , length = "<<bars[2][go_bar]<<" , left = "<<bars_dir[go_bar]<<" , right = "<<bars_dir[go_bar]<<endl;
-        // imshow("bars",debug_img);
-
-        // waitKey(0); ///一條一條慢慢看
+        // 如果要一條一條慢慢看 可以把註解拿掉
+        // if(show){
+        //     imshow("bars", debug_img);
+        //     waitKey(0);
+        // }
+    }
+    if(show){
+        imshow("watch bars", debug_img);
+        waitKey(0);
     }
 }
 
-
-void watch_bars(Mat debug_img,int bars_count,short bars[][200],bool bars_dir[200]){
-    // 顯示 線
-    for(int go_bar = 0 ; go_bar < bars_count ; go_bar++){
-        // 左
-        if(bars_dir[go_bar] == true){
-            line(debug_img, Point(bars[0][go_bar], bars[1][go_bar]), Point(bars[0][go_bar], bars[1][go_bar]+bars[2][go_bar]), Scalar(123,255,123), 2);
-        }
-        // 右
-        else if(bars_dir[go_bar] == false ){
-            line(debug_img, Point(bars[0][go_bar], bars[1][go_bar]), Point(bars[0][go_bar], bars[1][go_bar]+bars[2][go_bar]), Scalar(23,255,223), 2);
-        }
-
-        // cout<<"go_bar = "<<go_bar<<" , x = "<<bars[0][go_bar]<<" , y = "<<bars[1][go_bar]<<" , length = "<<bars[2][go_bar]<<" , left = "<<bars_dir[go_bar]<<" , right = "<<bars_dir[go_bar] << endl;
-        imshow("bars", debug_img);
-        waitKey(0);  // 一條一條慢慢看
-    }
-
-    imshow("watch_bars()", debug_img);
-    waitKey(0);
-}

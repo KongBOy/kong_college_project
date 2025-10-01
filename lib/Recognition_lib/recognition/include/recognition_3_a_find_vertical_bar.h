@@ -12,7 +12,5 @@ using namespace cv;
 void recognition_3_a_find_vertical_bar(Mat template_img ,
                                      Mat reduce_line,
                                      int& maybe_head_count , float maybe_head[][200],
-                                     int& bars_count , short bars[][200] , bool bars_dir[200]);
-///內涵：
-///void find_vertical_bar( Mat reduce_line , int left , int right , int& top , int& down , int test_depth , bool direction ,Mat & debug)
-
+                                     int& bars_count , short bars[][200] , bool bars_dir[200],
+                                     bool debuging=true);

@@ -10,5 +10,4 @@ using namespace cv;
 
 
 void list_Bars_infos(int bars_count,short bars[][200],bool bars_dir[200]);
-void draw_bars(Mat& debug_img,int bars_count,short bars[][200],bool bars_dir[200]);
-void watch_bars(Mat debug_img,int bars_count,short bars[][200],bool bars_dir[200]);
+void draw_bars(Mat& debug_img,int bars_count,short bars[][200],bool bars_dir[200], bool show=false);

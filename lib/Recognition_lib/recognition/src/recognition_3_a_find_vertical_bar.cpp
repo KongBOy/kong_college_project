@@ -20,7 +20,7 @@ using namespace cv;
 using namespace std;
 
 
-int find_vertical_bar(Mat reduce_line, int left, int right, int floor_stand, int test_depth, bool direction, Mat& debug){
+int find_vertical_bar(Mat reduce_line, int left, int right, int floor_stand, int test_depth, bool direction, Mat& debug, bool debuging){
     // left, right: 要搜尋的 寬度
     // test_depth : 要搜尋的 高度
     // floor_stand, direction:
@@ -49,41 +49,51 @@ int find_vertical_bar(Mat reduce_line, int left, int right, int floor_stand, int
 
             // 如果此row 一碰到 黑色
             if(reduce_line.at<uchar>(searching_row, go_width) == 0){
+                if(debuging) circle( debug, Point(go_width, floor_go), 1, Scalar(0, 22, 163), 1);  // 深咖啡
                 searching_have_black = true;   // 標記此row有黑色
                 floor_go = searching_row;      // floor 更新 
-                line( debug, Point(go_width, floor_go), Point(go_width, floor_go), Scalar(0, 22, 163), 2, CV_AA);  // 深咖啡
-                white_coda_acc = 0;  // white_coda_acc 重新計算
-                break;               // break直接換下個row
+                white_coda_acc = 0;            // white_coda_acc 重新計算
+                break;                         // break直接換下個row
             }
         }
 
-        // 如果走到這裡, 一種可能是 此row有找到黑色跳出迴圈 , 一種可能是 此row跑完for迴圈 沒碰到任一點是黑色的
+        // 如果走到這裡, 一種可能是 此row有找到黑色跳出迴圈(searching_have_black==true), OK正常繼續下一個row, 
+        // 另一種可能是 此row跑完for迴圈 沒碰到任一點是黑色的(searching_have_black==false), 可能到頭了 也可能 中間因為畫質差黑色小斷掉
+
         // 跑完for迴圈 沒碰到任一點是黑色的, 就代表此row全白, 白色容忍值++, 一方面怕原始影像品質差中間有斷掉要留些coda跳過空白, 另一方面也是找到頭的線索
         if( searching_have_black == false){
-            // cout<<"now top_white_coda = "<<top_white_coda<<endl;
-            line( debug, Point(left, searching_row), Point(right, searching_row), Scalar(204, 255, 0), 2, CV_AA);  // 蔚藍
+            if(debuging){
+                cout<<"now white_coda_acc = "<< white_coda_acc <<endl;
+                line( debug, Point(left, searching_row), Point(right, searching_row), Scalar(204, 255, 0), 1, CV_AA);  // 蔚藍
+            }
             white_coda_acc++;
-            // waitKey(0);
         }
-        // cv::imshow("searching vertical bar", debug);
-        // cv::waitKey(0);
 
+        // 每跑一個row就看一次結果 的話就註解拿掉
+        // if(debuging){
+        //     cv::imshow("searching vertical bar", debug);
+        //     cv::waitKey(0);
+        // }
+        
         // 連續出現 white_coda_ok 個row 是全白的, 就代表找到頭了
         if(white_coda_acc > white_coda_ok) break;
     }
 
-    line( debug, Point(right, floor_go), Point(right, floor_go), Scalar(0, 0, 255), 5, CV_AA);
-    // 找右邊的線 END 每條線的 線頭(top_t)都應該要被找到囉！
+    // 走道這邊都應該要被找到囉！
+    if(debuging){
+        line( debug, Point(left, floor_go), Point(right, floor_go), Scalar(0, 0, 255), 2);  // 紅色
+        cv::imshow("searching vertical bar", debug);
+        cv::waitKey(0);
+    }
 
     return floor_go;
-    // if      (direction == DOWNTOTOP) top  = floor_go;
-    // else if (direction == TOPTODOWN) down = floor_go;
 }
 
 
 void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line, 
                                        int& maybe_head_count, float maybe_head[][200], 
-                                       int& bars_count, short bars[][200], bool bars_dir[200]){
+                                       int& bars_count, short bars[][200], bool bars_dir[200],
+                                       bool debuging){
     // 需要找線的原因 是 需要找 符桿 來判斷 8, 16, 32, ... 音符
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
@@ -99,58 +109,72 @@ void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
         // 定出要找的範圍 右上
         int i_feel_top_r_shift = -2;
         int top_right_r  = maybe_head[0][go_head] + template_img.cols + test_width/2 + i_feel_top_r_shift;  // 框框的右邊
-        int top_right_l  = top_right_r - test_width;  // 總共想測 test_width 格
+        int top_right_l  = top_right_r - test_width;    // 總共想測 test_width 格
         int top_right_d  = maybe_head[1][go_head] -1;   // 框框的上一格
-        // cout<<"top_r_distance = "<<top_right_r - top_right_l <<endl;
-        rectangle( debug_img, Point(top_right_l , top_right_d -test_depth), Point( top_right_r , top_right_d  ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        if(debuging){
+            cout<<"top_r_distance = "<<top_right_r - top_right_l <<endl;
+            rectangle( debug_img, Point(top_right_l , top_right_d -test_depth), Point( top_right_r , top_right_d  ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        }
 
         // 定出要找的範圍 左上
         int i_feel_top_l_shift = +2;
         int top_left_l   = maybe_head[0][go_head] - test_width/2 + i_feel_top_l_shift;//框框的右邊
         int top_left_r   = top_left_l + test_width ;   // 總共想測 test_width 格
         int top_left_d   = maybe_head[1][go_head] -1;  // 框框的上一格
-        // cout<<"top_l_distance = "<<top_left_r - top_left_l  <<endl;
-        rectangle( debug_img, Point(top_left_l  , top_right_d -test_depth), Point( top_left_r  , top_left_d   ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        if(debuging){
+            cout<<"top_l_distance = "<<top_left_r - top_left_l  <<endl;
+            rectangle( debug_img, Point(top_left_l  , top_right_d -test_depth), Point( top_left_r  , top_left_d   ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        }
 
         // 定出要找的範圍 右下
         int i_feel_down_l_shift = +2;
         int down_left_l  = maybe_head[0][go_head] - test_width/2 + i_feel_down_l_shift; // 框框的左邊
-        int down_left_r  = down_left_l + test_width ;  // 總共想測 test_width 格
+        int down_left_r  = down_left_l + test_width ;                      // 總共想測 test_width 格
         int down_left_t  = maybe_head[1][go_head] + template_img.rows +1;  // 框框的下
-        // cout<<"down_l_distance = "<<down_left_r - down_left_l <<endl;
-        rectangle( debug_img, Point(down_left_l , down_left_t ), Point( down_left_r , down_left_t +test_depth ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        if(debuging){
+            cout<<"down_l_distance = "<<down_left_r - down_left_l <<endl;
+            rectangle( debug_img, Point(down_left_l , down_left_t ), Point( down_left_r , down_left_t +test_depth ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        }
 
         // 定出要找的範圍 左下
         int i_feel_down_r_shift = -2;
         int down_right_l = maybe_head[0][go_head] + template_img.cols - test_width/2 + i_feel_down_r_shift;  // 框框的左邊
-        int down_right_r = down_right_l + test_width ;  // 總共想測 test_width 格
+        int down_right_r = down_right_l + test_width ;                     // 總共想測 test_width 格
         int down_right_t = maybe_head[1][go_head] + template_img.rows +1;  // 框框的下
-        // cout<<"down_r_distance = "<<down_right_r - down_right_l<<endl;
-        rectangle( debug_img, Point(down_right_l, down_right_t), Point( down_right_r, down_left_t+test_depth ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        if(debuging){
+            cout<<"down_r_distance = "<<down_right_r - down_right_l<<endl;
+            rectangle( debug_img, Point(down_right_l, down_right_t), Point( down_right_r, down_left_t+test_depth ), Scalar(200, 155, 255), 1, 8, 0 );  // 粉紅色
+        }
 
         // 看一下圈找線的範圍對不對
-        cv::imshow("seek 4 corner range", debug_img);
-        cv::waitKey(0);
+        if(debuging){
+            cv::imshow("see 4 corner", debug_img);
+            cv::waitKey(0);
+        }
         
         // 在圈定的範圍內找bar
-        int top_right_t  = find_vertical_bar(reduce_line, top_right_l , top_right_r , top_right_d , test_depth, DOWNTOTOP, debug_img);  // 右上
-        int top_left_t   = find_vertical_bar(reduce_line, top_left_l  , top_left_r  , top_left_d  , test_depth, DOWNTOTOP, debug_img);  // 左上
-        int down_right_d = find_vertical_bar(reduce_line, down_right_l, down_right_r, down_right_t, test_depth, TOPTODOWN, debug_img);  // 右下
-        int down_left_d  = find_vertical_bar(reduce_line, down_left_l , down_left_r , down_left_t , test_depth, TOPTODOWN, debug_img);  // 左下
-        cv::imshow("seek 4 corner result", debug_img);
-        cv::waitKey(0);
-
+        int top_right_t  = find_vertical_bar(reduce_line, top_right_l , top_right_r , top_right_d , test_depth, DOWNTOTOP, debug_img, debuging);  // 右上
+        int top_left_t   = find_vertical_bar(reduce_line, top_left_l  , top_left_r  , top_left_d  , test_depth, DOWNTOTOP, debug_img, debuging);  // 左上
+        int down_right_d = find_vertical_bar(reduce_line, down_right_l, down_right_r, down_right_t, test_depth, TOPTODOWN, debug_img, debuging);  // 右下
+        int down_left_d  = find_vertical_bar(reduce_line, down_left_l , down_left_r , down_left_t , test_depth, TOPTODOWN, debug_img, debuging);  // 左下
+        // 看一下找線的結果
+        if(debuging){
+            cv::imshow("see 4 corner", debug_img);
+            cv::waitKey(0);
+        }
+        
         // 此顆頭 往右上, 左上, 右下, 左下 找到的線的長度
         int top_right_length  = top_right_d  - top_right_t ;
         int top_left_length   = top_left_d   - top_left_t  ;
         int down_right_length = down_right_d - down_right_t;
         int down_left_length  = down_left_d  - down_left_t ;
-
-        // cout <<  "head.x = "    << maybe_head[0][go_head]
-        //      <<", head.y = "    << maybe_head[1][go_head]
-        //      <<", top_line = "  << top_left_length <<", " << top_right_length
-        //      <<", down_line = " << down_left_length<<", " << down_right_length
-        //      <<endl;
+        if(debuging){
+            cout <<  "head.x = "    << maybe_head[0][go_head]
+                <<", head.y = "    << maybe_head[1][go_head]
+                <<", top_line = "  << top_left_length <<", " << top_right_length
+                <<", down_line = " << down_left_length<<", " << down_right_length
+                <<endl;
+        }
 
 
         // 不一定所有的線都要存喔, 存右上 + 左下的就好了其實
@@ -193,15 +217,15 @@ void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
             position_erase(maybe_head_count, maybe_head, go_head);
             go_head--;
         }
-        // imshow("debug", debug_img);
-        // waitKey(0);
     }
 
     // 看一下 找到的 bars before merge
-    cv::cvtColor(reduce_line, debug_img, CV_GRAY2BGR);  // 重製一下要不然話太多東西太亂了
-    draw_bars(debug_img, bars_count, bars, bars_dir);
-    cv::imshow("bars result before merge", debug_img);
-    cv::waitKey(0);
+    if(debuging){
+        cv::cvtColor(reduce_line, debug_img, CV_GRAY2BGR);  // 重製一下debug圖要不然話太多東西太亂了
+        draw_bars(debug_img, bars_count, bars, bars_dir);
+        cv::imshow("bars result before merge", debug_img);
+        cv::waitKey(0);
+    }
 
     
     ///////////////////////////////////////////////////////////////////////////////////////////
@@ -229,21 +253,27 @@ void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
         int next_dir = bars_dir[next];
         
         // merge bar 的過程
-        // Mat debug_img2;
-        // cvtColor(reduce_line, debug_img2, CV_GRAY2BGR);
-        // cout << "now , x = " << curr_x << ", y = " << curr_y << ", length = " << curr_len << ", tail = " << curr_y + curr_len << endl;
-        // line(debug_img2, Point(curr_x, curr_y),  Point(curr_x, curr_y + curr_len), Scalar(0, 255, 0), 2);
-        // line(debug_img2, Point(next_x, next_y),  Point(next_x, next_y + next_len), Scalar(0, 0, 255), 2);
-        // imshow("bar now and next", debug_img2);
-        // waitKey(0);
+        if(debuging){
+            Mat debug_img2;
+            cvtColor(reduce_line, debug_img2, CV_GRAY2BGR);
+            cout << "now , x = " << curr_x << ", y = " << curr_y << ", length = " << curr_len << ", tail = " << curr_y + curr_len << endl;
+            if      (curr_dir == TOPTODOWN) line(debug_img2, Point(curr_x, curr_y),  Point(curr_x, curr_y + curr_len), Scalar(0, 255, 0), 2);
+            else if (curr_dir == DOWNTOTOP) line(debug_img2, Point(curr_x, curr_y),  Point(curr_x, curr_y - curr_len), Scalar(0, 255, 0), 2);
+            if      (next_dir == TOPTODOWN) line(debug_img2, Point(next_x, next_y),  Point(next_x, next_y + next_len), Scalar(0, 0, 255), 2);
+            else if (next_dir == DOWNTOTOP) line(debug_img2, Point(next_x, next_y),  Point(next_x, next_y - next_len), Scalar(0, 0, 255), 2);
+            imshow("bar now green and next red", debug_img2);
+            waitKey(0);
+        }
         
         int distance_x = abs( next_x - curr_x );
         // cout<<"distance_x = "<<distance_x<<endl;
         // 如果 x 離的夠近, x座標取平均, y座標,長度,方向 就挑長的存
         if( distance_x  <= template_img.cols / 2){
-            cout<<"case merge_line, bars_count = "<<bars_count<<endl;
-            cout << "now , x = " << curr_x << ", y = "<< curr_y << ", length = "<< curr_len << ", dir" << curr_dir << endl;
-            cout << "next, x = " << next_x << ", y = "<< next_y << ", length = "<< next_len << ", dir" << next_dir << endl;
+            if(debuging){
+                cout<<"case merge_line, bars_count = "<<bars_count<<endl;
+                cout << "now , x = " << curr_x << ", y = "<< curr_y << ", length = "<< curr_len << ", dir" << curr_dir << endl;
+                cout << "next, x = " << next_x << ", y = "<< next_y << ", length = "<< next_len << ", dir" << next_dir << endl;
+            }
 
             // x座標取平均
             bars[0][go_bar] = (bars[0][next] + bars[0][go_bar])/2 ;  //x存中間
@@ -253,17 +283,18 @@ void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
                 bars[2][go_bar] = next_len;   // 存長的 len
                 bars_dir[go_bar] = next_dir;  // 存長的 dir
             }
-
+            // 被合併的線就刪掉囉
             position_erase_bar(bars_count, bars, bars_dir, next);
             go_bar--;
         }
     }
 
-
     // 看一下 找到的 bars after merge
-    cv::cvtColor(reduce_line, debug_img, CV_GRAY2BGR);  // 重製一下要不然話太多東西太亂了
-    draw_bars(debug_img, bars_count, bars, bars_dir);
-    cv::imshow("bars result after merge", debug_img);
-    cv::waitKey(0);
+    if(debuging){
+        cv::cvtColor(reduce_line, debug_img, CV_GRAY2BGR);  // 重製一下debug圖要不然話太多東西太亂了
+        draw_bars(debug_img, bars_count, bars, bars_dir);
+        cv::imshow("bars result after merge", debug_img);
+        cv::waitKey(0);
+    }
 
 }
