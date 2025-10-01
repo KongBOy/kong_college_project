@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "recognition_0_array_tools.h"
-#include "recognition_0_debug_tools.h"
+#include "Bar_tool.h"
 #include "Note_infos.h"
 #include "recognition_3_a_find_vertical_bar.h"
 
@@ -296,5 +296,4 @@ void recognition_3_a_find_vertical_bar(Mat template_img, Mat reduce_line,
         cv::imshow("bars result after merge", debug_img);
         cv::waitKey(0);
     }
-
 }

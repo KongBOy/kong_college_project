@@ -7,7 +7,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 #include <iostream>
-#include "recognition_0_debug_tools.h"
+#include "Bar_tool.h"
 #include "recognition_3_c_merge_head_and_time.h"
 #include "recognition_0_array_tools.h"
 

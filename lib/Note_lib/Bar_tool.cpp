@@ -12,7 +12,7 @@
 
 #include <iostream>
 
-#include "recognition_0_debug_tools.h"
+#include "Bar_tool.h"
 
 using namespace std;
 using namespace cv;

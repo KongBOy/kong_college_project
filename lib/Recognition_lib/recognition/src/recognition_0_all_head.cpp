@@ -10,7 +10,7 @@
 
 
 #include "recognition_0_array_tools.h"
-#include "recognition_0_debug_tools.h"
+#include "Bar_tool.h"
 
 #include "recognition_0_vertical_map_to_speed_up.h"
 #include "recognition_1_find_all_maybe_head.h"

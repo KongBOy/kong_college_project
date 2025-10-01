@@ -15,7 +15,8 @@ message(STATUS "(可省, 看一下變數內容而已)CMAKE_BUILD_TYPE   : ${CMAK
 
 # Note_lib
 add_library               (Note_lib lib/Note_lib/Note_infos.cpp
-                                    lib/Note_lib/Maybe_head_tool.cpp)
+                                    lib/Note_lib/Maybe_head_tool.cpp
+                                    lib/Note_lib/Bar_tool.cpp)
 target_include_directories(Note_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include )
 
 # String_tool_lib
@@ -43,7 +44,6 @@ add_library(Recognition_lib lib/Recognition_lib/Recognition.cpp
 
                             lib/Recognition_lib/recognition/src/recognition_0_all_head.cpp
                             lib/Recognition_lib/recognition/src/recognition_0_array_tools.cpp
-                            lib/Recognition_lib/recognition/src/recognition_0_debug_tools.cpp
                             lib/Recognition_lib/recognition/src/recognition_0_vertical_map_to_speed_up.cpp
                             lib/Recognition_lib/recognition/src/recognition_1_find_all_maybe_head.cpp
                             lib/Recognition_lib/recognition/src/recognition_2_a_head_charactaristic.cpp
