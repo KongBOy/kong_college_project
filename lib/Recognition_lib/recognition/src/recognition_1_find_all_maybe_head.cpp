@@ -36,7 +36,7 @@ void matchTemplate2(Mat src_img, Mat template_test, Mat& result){
             similar = 0;
             for(int go_t_row = 0; go_t_row < template_test.rows; go_t_row++){
                 for(int go_t_col = 0; go_t_col < template_test.cols; go_t_col++){
-                    /// 另一種寫法：if( !(template_test.at<uchar>(go_t_row, go_t_col) - src_img.at<uchar>(go_s_row + go_t_row, go_s_col + go_t_col)) )
+                     // 另一種寫法：if( !(template_test.at<uchar>(go_t_row, go_t_col) - src_img.at<uchar>(go_s_row + go_t_row, go_s_col + go_t_col)) )
                     if(template_test.at<uchar>(go_t_row, go_t_col) == src_img.at<uchar>(go_s_row + go_t_row, go_s_col + go_t_col)){
                         similar++;
                     }
