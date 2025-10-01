@@ -18,6 +18,7 @@ using namespace std;
 
 static void matchTemplate2(Mat src_img,Mat template_test,Mat& result)
 {
+    // 位置, 顏色 都有匹配的話 才算算一格 similar
     // 另一種寫法：
     /*
         Mat test2 = src_img(Rect(0,0,template_test.cols,template_test.rows)).clone();
@@ -546,14 +547,14 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
             if(recheck_sucess == false){
                 // cout註解 recheck失敗也標記一下
                 // cout << "this head might not be head" << endl;
-                rectangle(debug_img,Point(recheck_l,recheck_t),Point(recheck_r,recheck_d),Scalar(0, 255, 0), 1);
+                rectangle(debug_img,Point(recheck_l,recheck_t),Point(recheck_r,recheck_d),Scalar(0, 0, 255), 1);
                 // **************************
                 // imshow("recheck",debug_img);
                 // waitKey(0);
                 position_erase(maybe_head_count,maybe_head,go_head);
                 go_head--;
             }
-            cout << endl;
+            // cout << endl;
         }
     }
     // **************************
