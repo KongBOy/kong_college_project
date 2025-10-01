@@ -186,7 +186,6 @@ void recognition_0_all_head( int head_type,
                 note[2][note_count] = 0;
                 note_count++;
             }
-            // recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
         }
         break;
 
@@ -217,10 +216,13 @@ void recognition_0_all_head( int head_type,
             recognition_2_b_head_recheck      (2, template_img,  staff_img_erase_line,            maybe_head_count, maybe_head);
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
 
-            recognition_3_a_find_vertical_bar (   template_img, staff_img_erase_line,            maybe_head_count, maybe_head, bars_count, bars, bars_dir);
-
-            recognition_4_merge_head_and_time (2,template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir,bars_time,note_count,note);
-            // recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = 2;
+                note_count++;
+            }
         }
         break;
 
@@ -230,10 +232,8 @@ void recognition_0_all_head( int head_type,
             recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img);
 
-
             recognition_2_a_head_charactristic(4,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
             recognition_2_b_head_recheck(4, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
-
 
             recognition_3_a_find_vertical_bar(template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir);
             recognition_3_b_find_time_bar(template_img,bars_count,bars,bars_dir,bars_time,staff_img_erase_line);
@@ -242,7 +242,6 @@ void recognition_0_all_head( int head_type,
             // list_Bars_infos(bars_count,bars,bars_dir);
 
             recognition_4_merge_head_and_time(4,template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir,bars_time,note_count,note);
-            // recognition_5_find_pitch(staff_img,template_img,note_count,note,pitch_base_y);
         }
         break;
 
@@ -395,7 +394,6 @@ void recognition_0_all_head( int head_type,
             Overlap_Erase_or_Assing8Note(10, template_img, note, note_count, staff_img_erase_line, 10, ERASE, 0);
             Overlap_Erase_or_Assing8Note(10, template_img, note, note_count, staff_img_erase_line, 10, ASSIGN_8_Note, template_img.rows / 2);
         }
-        
         break;
     }
 }
