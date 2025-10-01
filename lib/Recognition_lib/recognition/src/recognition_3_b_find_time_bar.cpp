@@ -16,18 +16,19 @@
 using namespace cv;
 using namespace std;
 
-int find_bars_time( Mat reduce_line, int left , int right , int test_depth, int bar_y, int bar_len, bool direction , Mat & debug_img){
+int find_bars_time( Mat reduce_line, int left, int right, int test_depth, int bar_y, int bar_len, bool direction, Mat & debug_img, bool debuging){
     // 在指定的 left ~ right範圍內 的 每個 x,
     // 根據 bar_direction 從 bar_y 走到符桿的位置 搜尋 符桿種類
     // 以 bar_direction 如果是 DOWNTOTOP 為例, 代表 bar 是從下走到上可以 找到符桿, 所以就先從下往上走到底, 再往下(one_step == +1)搜尋符桿就搜的到了, 反之亦然(TOPTODOWN)
     int start_search_y;
-    if(direction == false) start_search_y = bar_y - bar_len;  // bar_dir 為 DOWNTOTOP
-    else                   start_search_y = bar_y + bar_len;  // bar_dir 為 TOPTODOWN
+    if(direction == DOWNTOTOP) start_search_y = bar_y - bar_len;  // bar_dir 為 DOWNTOTOP
+    else                       start_search_y = bar_y + bar_len;  // bar_dir 為 TOPTODOWN
 
     int one_step;
     if     (direction == DOWNTOTOP) one_step = +1;
     else if(direction == TOPTODOWN) one_step = -1;
-    cv::rectangle(debug_img, cv::Point(left, start_search_y + test_depth * one_step), cv::Point(right, start_search_y), cv::Scalar(123, 251, 20), 1);  // 螢光綠
+    // 把 搜尋的範圍框一下
+    if(debuging) cv::rectangle(debug_img, cv::Point(left, start_search_y + test_depth * one_step), cv::Point(right, start_search_y), cv::Scalar(123, 251, 20), 1);  // 螢光綠
 
 
     // 每個x都會找到自己的 八分符桿種類 並到該類別++ 做累積,
@@ -40,9 +41,12 @@ int find_bars_time( Mat reduce_line, int left , int right , int test_depth, int 
     // 將 start_search_y 位移到確定是黑色的 符桿上, 就將這個位置定為 基準位置floor_y, 要這樣做是因為怕 符桿 會因為樂句是上行 或 下行 是斜的, 所以一開始可能是白連續的一堆白色(不在符桿上)
     // 會用到的變數先宣告在這邊
     const int find_floor_range = 13;
-    cv::rectangle(debug_img, cv::Point(left, start_search_y + find_floor_range), cv::Point(right, start_search_y - find_floor_range), cv::Scalar(0, 0, 255), 1);  // 紅色
-    cv::imshow("finding floor range", debug_img);
-    cv::waitKey(0);
+    // 把 find_floor_range 往上往下shift 的 搜尋範圍 範圍框一下(咖啡色)
+    if(debuging) {
+        cv::rectangle(debug_img, cv::Point(left, start_search_y + find_floor_range), cv::Point(right, start_search_y - find_floor_range), cv::Scalar(0, 66, 165), 1);
+        cv::imshow("find_bars_time", debug_img);
+        cv::waitKey(0);
+    }
     int floor_y;  // 定位符桿頭的基準y
     int stand_curr_u_row;
     int stand_curr_d_row;
@@ -100,9 +104,12 @@ int find_bars_time( Mat reduce_line, int left , int right , int test_depth, int 
                 go_y = curr_row;
                 white_coda = 0;
                 
-                line(debug_img, Point(go_x, go_y), Point(go_x, go_y), Scalar(230, 100, 150), 2);  // 淺紫色
-                // imshow("time", debug_img);
-                // waitKey(0);
+                // 如果要 一個個 row 跑一次視覺化一次 可以把 cv::waitKey(0) 註解拿掉
+                if(debuging){
+                    cv::circle(debug_img, Point(go_x, go_y), 1, Scalar(230, 100, 150), 1);  // 淺紫色
+                    cv::imshow("find_bars_time", debug_img);
+                    // cv::waitKey(0);
+                }
             }
             // 如果 沒遇到黑色, 就 白色容忍值 累加
             else{
@@ -120,11 +127,13 @@ int find_bars_time( Mat reduce_line, int left , int right , int test_depth, int 
         if(time_bar_length < 4 ) time_bar_acc[time_bar_length]++;
         else                     time_bar_acc[4]++;
 
-        // cout註解 看找完time_bar的狀況
-        cout << "left = " << left << ", right = " << right << ", go_x = " << go_x << ", time_bar_length = " << time_bar_length << endl;
-        // line( debug_img , Point(go_x, go_y), Point(go_x, go_y), Scalar(0, 0, 255), 3, CV_AA);
-        // imshow("debug_img", debug_img);
-        // waitKey(0);
+        // 最後的go_y跑到哪裡視覺化一下
+        if(debuging){
+            cout << "left=" << left << ", right=" << right << ", go_x=" << go_x  << ", go_y=" << go_y << ", time_bar_length=" << time_bar_length << endl;
+            circle( debug_img, Point(go_x, go_y), 1, Scalar(0, 0, 255), 2);
+            imshow("find_bars_time", debug_img);
+            waitKey(0);
+        }
     }
 
     // 看 time_bar_length 哪邊累積的最多就候選
@@ -132,7 +141,7 @@ int find_bars_time( Mat reduce_line, int left , int right , int test_depth, int 
     for(int i = 1; i < (time_bar_type_amount -1); i++){  // 垃圾桶不用比，所以-1
         if(time_bar_acc[max_place] < time_bar_acc[i]) max_place = i;
     }
-    cout << "max_place:" << max_place << endl;
+    if(debuging) cout << "max_place:" << max_place << endl << endl;
     return max_place;
 }
 
@@ -140,7 +149,8 @@ int find_bars_time( Mat reduce_line, int left , int right , int test_depth, int 
 void recognition_3_b_find_time_bar(Mat template_img, 
                                    int bars_count, short bars[][200], bool bars_dir[200], 
                                    int bars_time[200],
-                                   Mat reduce_line){
+                                   Mat reduce_line, 
+                                   bool debuging){
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
 
@@ -182,14 +192,9 @@ void recognition_3_b_find_time_bar(Mat template_img,
 
 
         // 定位完 right框, left框 後就可以把 time_length 找出來囉(bar_dir 為 TOPTODOWN 同理)
-        int length_r = find_bars_time(reduce_line, time_right_l, time_right_r, test_depth, bar_y, bar_len, bar_dir, debug_img);
-        int length_l = find_bars_time(reduce_line, time_left_l , time_left_r , test_depth, bar_y, bar_len, bar_dir, debug_img);
+        int length_r = find_bars_time(reduce_line, time_right_l, time_right_r, test_depth, bar_y, bar_len, bar_dir, debug_img, debuging);
+        int length_l = find_bars_time(reduce_line, time_left_l , time_left_r , test_depth, bar_y, bar_len, bar_dir, debug_img, debuging);
         if(length_l > length_r) bars_time[go_bar] = length_l;
         else                    bars_time[go_bar] = length_r;
-
     }
-
-    // imshow("debug", debug_img);
-    // waitKey(0);
-    // waitKey(0);
 }

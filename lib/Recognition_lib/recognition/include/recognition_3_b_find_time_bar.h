@@ -12,7 +12,5 @@ using namespace cv;
 void recognition_3_b_find_time_bar(Mat template_img,
                                    int bars_count,short bars[][200],bool bars_dir[200],
                                    int bars_time[200],
-                                   Mat reduce_line);
-///
-///int find_bars_time( Mat reduce_line ,int line_x,int line_y,int left , int right ,int test_depth , bool direction ,Mat & debug)
-
+                                   Mat reduce_line, 
+                                   bool debuging = true);
