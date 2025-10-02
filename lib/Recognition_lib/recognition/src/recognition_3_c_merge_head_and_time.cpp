@@ -160,7 +160,9 @@ void recognition_4_merge_head_and_time(int head_type,
             // 如果 第一條bar 還在 頭 的 太右邊, 代表這顆頭怪怪的, 所以直接 continue 掉 不存這顆頭 覺得比較合理
             continue;
         }
-        imshow("debug", debug_img);
-        waitKey(0);
+        if(debuging){
+            imshow("debug", debug_img);
+            waitKey(0);
+        }
     }
 }
