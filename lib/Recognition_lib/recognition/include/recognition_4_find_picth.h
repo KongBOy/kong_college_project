@@ -16,4 +16,5 @@ void recognition_5_find_pitch(Mat cut_ord_img,
                               Mat template_img,
                               int note_count , int note[][1000],
                               const int first_line_y_ord, 
-                              int go_staff);
+                              int go_staff,
+                              bool debuging=false);

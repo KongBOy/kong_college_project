@@ -18,7 +18,7 @@ using namespace cv;
 using namespace std;
 
 
-int find_staff_shift(const Mat cut_ord_img, int first_line_y_ord, int go_staff_x, int go_staff_y, Mat& debug_img){
+int find_staff_shift(const Mat cut_ord_img, int first_line_y_ord, int go_staff_x, int go_staff_y, Mat& debug_img, bool debuging){
     // 從五線譜的第一條線 往上往下搜尋 哪裡有 線的上邊緣(本格會是黑色 前一格會是白色), 如果第一條線搜尋失敗, 會依序換第二~五條來搜尋
     int go_staff_shift = 0;
     while(true){
@@ -27,44 +27,44 @@ int find_staff_shift(const Mat cut_ord_img, int first_line_y_ord, int go_staff_x
         // 走訪目前指定的五線譜 的每條線
         for(int go_staff_line = 0; go_staff_line < 5; go_staff_line++){
             go_staff_y = first_line_y_ord + 11 * go_staff_line;
-            line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y), Scalar(165, 0, 151), 3);  // 紫色
+            if(debuging) circle(debug_img, Point(go_staff_x, go_staff_y), 1, Scalar(165, 0, 151), 5);  // 紫色
 
             // 線的特性： 本格是黑色(x, y) 而 上面一格格是白色(x, y-1)
             // 往上下跑 測試 4格, 不能測太多格喔！！因為怕會定位定到別條五線譜就gg了！(五線譜間距11, 所以測 4格 就好)
             for(int go_shift = 0; go_shift <= 4; go_shift++ ){
+                // 搜尋的地方畫一下確定沒找錯, 想要一個個row 看的話就把 waitKey 註解拿掉
+                if(debuging){
+                    cout << "down case, go_shift = " << go_shift << endl;
+                    // 往上搜尋 上邊緣(上白下黑)
+                    circle(debug_img, Point(go_staff_x, go_staff_y -go_shift), 1, Scalar(14, 105 + 30 * go_staff_line, 60 * go_staff_line), 1);  // 深綠色, 換線時顏色會越來越亮
+                    // 往下搜尋 上邊緣(上白下黑)
+                    circle(debug_img, Point(go_staff_x, go_staff_y +go_shift), 1, Scalar(14, 105 + 30 * go_staff_line, 60 * go_staff_line), 1);  // 深綠色, 換線時顏色會越來越亮
+                    imshow("debug", debug_img);
+                    // cv::waitKey(0);
+                }
                 // **** 往上 ****// 
-                line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y -1 -go_shift), Scalar(14, 105 + 30 * go_staff_line, 60 * go_staff_line), 1);  // 深綠色, 換線時顏色會越來越亮
-                line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y -1 +go_shift), Scalar(14, 105 + 30 * go_staff_line, 60 * go_staff_line), 1);  // 深綠色, 換線時顏色會越來越亮
                 if( (cut_ord_img.at<uchar>(go_staff_y -1 -go_shift, go_staff_x) == 255) &&(cut_ord_img.at<uchar>(go_staff_y -go_shift, go_staff_x) == 0) ){
-                    // cout<<"up   case, go_shift = "<<go_shift<<endl;
-                    // 找到go_shift了，看要不要保留go_shift
-                    // 用線寬 來判斷 看要不要保留go_shift
-                    // *************************************************************************************
+                    // 找到go_shift了，看要不要保留go_shift, 用線寬 來判斷 看要不要保留go_shift
                     // 找線寬~~~可以function化 不過短短的就直接寫近來好了~~
                     int check_width = 0;
                     int check_x = go_staff_x;
                     int check_y = go_staff_y -go_shift;
-
                     // 找 線寬
                     while(cut_ord_img.at<uchar>(check_y, check_x) == 0){
                         check_width++;
                         check_y++;
                     }
-                    // cout<<"check_width = "<<check_width<<endl;
-                    // ~~~~~~~~~~~~~~~~ debug 用來看找線寬的過程 ~~~~~~~~~~~~~~~~~~~
-                    // imshow("debug", debug_img);
-                    // waitKey(0);
-                    // *************************************************************************************
+                    if(debuging) cout << "check_width = " << check_width << endl;
+
                     // 由 線寬 來判斷現在是不是 五線譜的線 而不是 符桿 或 音頭
                     if(check_width < 5){
-                        line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y + go_shift), Scalar(0, 255, 255), 1);  // 黃綠色
-                        return  go_shift*-1;
+                        if(debuging) line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y + go_shift), Scalar(0, 255, 255), 1);  // 黃綠色
+                        return  go_shift * -1;
                     }
                 }
                 // **** 往下 ****// 幾乎複製貼上~~上面的case，再小改即可~~
                 else if( (cut_ord_img.at<uchar>(go_staff_y -1 +go_shift, go_staff_x) == 255) &&(cut_ord_img.at<uchar>(go_staff_y +go_shift, go_staff_x) == 0) ){
-                    // cout<<"down case, go_shift = "<<go_shift<<endl;
-                    // *************************************************************************************
+                    // 找到go_shift了，看要不要保留go_shift, 用線寬 來判斷 看要不要保留go_shift
                     // 找線寬~~~可以function化 不過短短的就直接寫近來好了~~
                     int check_width = 0;
                     int check_x = go_staff_x;
@@ -75,14 +75,11 @@ int find_staff_shift(const Mat cut_ord_img, int first_line_y_ord, int go_staff_x
                         check_width++;
                         check_y++;
                     }
-                    // cout<<"check_width = "<<check_width<<endl;
-                    // ~~~~~~~~~~~~~~~ debug 用來看找線寬的過程 ~~~~~~~~~~~~~~
-                    // imshow("debug", debug_img);
-                    // waitKey(0);
-                    // *************************************************************************************
+                    if(debuging)  cout << "check_width = " << check_width << endl;
+                    
                     // 由 線寬 來判斷現在是不是 五線譜的線 而不是 符桿 或 音頭
                     if(check_width < 5){
-                        line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y + go_shift), Scalar(170, 255, 0), 1);   // 青綠色
+                        if(debuging) line(debug_img, Point(go_staff_x, go_staff_y), Point(go_staff_x, go_staff_y + go_shift), Scalar(170, 255, 0), 1);   // 青綠色
                         return go_shift;
                     }
                 }
@@ -98,7 +95,8 @@ void recognition_5_find_pitch(Mat cut_ord_img,
                               Mat template_img, 
                               int note_count , int note[][1000], 
                               const int first_line_y_ord,
-                              int go_staff){
+                              int go_staff,
+                              bool debuging){
     cout << "go_staff:" << go_staff << endl;
     Mat debug_img = cut_ord_img.clone();
     cvtColor(cut_ord_img, debug_img, CV_GRAY2BGR);
@@ -129,29 +127,31 @@ void recognition_5_find_pitch(Mat cut_ord_img,
         // 第一階段: 找 五線譜的位移
         note_x = note[0][go_note];
         note_y = note[1][go_note];
-        line(debug_img, Point(note_x, note_y), Point(note_x, note_y), Scalar(255, 0, 0), 3);  // 藍色
+        // 看一下 note左上角起始位置
+        if(debuging) rectangle( debug_img, Point(note_x, note_y), Point( note_x + template_img.cols , note_y + template_img.rows ), Scalar(255, 0, 0), 1 );  // 藍色
 
-        
-        // 看此組 此組五線譜 位移了多少, note_x 加 note_x_shift 是怕受符桿影響 找成符桿中間因為二質化品質差斷斷續續時產生的上邊緣
-        // 如果 是線的上邊緣 那麼 本格會是黑色 前一格會是白色,
+        // 看此組 此組五線譜 位移了多少, 如果 是線的上邊緣 那麼 本格會是黑色 前一格會是白色,
         //   如果 一開始就符合 就代表直接在線上了 staff_shift = 0,
         //   如果不符合 代表 五線譜可能當初拍照時沒有攤平有點彎曲導致位移, 呼叫 find_staff_shift 找 此 note_x 往右偏移一點(怕被符桿影響)狀態下的 五線譜 往上往下搜尋 哪裡有 線的上邊緣(本格會是黑色 前一格會是白色)
-        go_staff_x = note_x + note_x_shift; 
+        go_staff_x = note_x + note_x_shift;  // note_x 再加 note_x_shift 是怕受符桿影響
         go_staff_y = first_line_y_ord;
         if( (cut_ord_img.at<uchar>(go_staff_y -1, go_staff_x) == 255) && (cut_ord_img.at<uchar>(go_staff_y, go_staff_x) == 0) )
             staff_shift = 0;
         else{
-            staff_shift = find_staff_shift(cut_ord_img, first_line_y_ord, go_staff_x, go_staff_y, debug_img);
+            staff_shift = find_staff_shift(cut_ord_img, first_line_y_ord, go_staff_x, go_staff_y, debug_img, debuging);
         }
-        // cout<<"staff_shift = "<< staff_shift <<endl;
+        // 文字顯示一下 staff_shift 是多少
+        if(debuging) cout<<"staff_shift = "<< staff_shift <<endl;
 
 
         // 第一條線 根據上面找出的 五線譜位移 做調整
         first_line_y_result = first_line_y_ord + staff_shift;
         // 畫一下找的效果
-        for(int i = 0; i < 5; i++) line(debug_img, Point(go_staff_x, first_line_y_result + i * 11), Point(go_staff_x+ 5, first_line_y_result + i * 11), Scalar(0, 0, 255), 1);  // 紅色
-        cout<<"first_line_y_ord = "<<first_line_y_ord<<" , first_line_y_result = "<< first_line_y_result <<endl;
-        // imshow("debug", debug_img);
+        if(debuging){
+            for(int i = 0; i < 5; i++) line(debug_img, Point(go_staff_x, first_line_y_result + i * 11), Point(go_staff_x+ 5, first_line_y_result + i * 11), Scalar(0, 0, 255), 1);  // 紅色
+            cout << "first_line_y_ord = " << first_line_y_ord << " , first_line_y_result = " <<  first_line_y_result  << endl;
+            imshow("debug", debug_img);
+        }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 第二階段: 根據 五線譜的位移, 從第一條線來算音高
@@ -174,17 +174,16 @@ void recognition_5_find_pitch(Mat cut_ord_img,
         //  2 
         //  3 
         // 視覺化 -2 ~ 3 是 "間的音", 4 ~ 8 是 "線的音"
-        int go_pitch;
-        for(int staff_line_index = -4; staff_line_index <= 8; staff_line_index++){
-            for(int i = 0; i < 11; i++){
-                go_pitch = i - 2;
-                if     ( -2 <= go_pitch && go_pitch <= 3) line(debug_img, Point(note_x - 5, first_line_y_result + 11 * staff_line_index + go_pitch), Point(note_x - 1, first_line_y_result + 11 * staff_line_index + go_pitch), Scalar(0, 200, 200), 1);
-                else if(  4 <= go_pitch && go_pitch <= 8) line(debug_img, Point(note_x - 5, first_line_y_result + 11 * staff_line_index + go_pitch), Point(note_x - 1, first_line_y_result + 11 * staff_line_index + go_pitch), Scalar(200, 0, 200), 1);
+        if(debuging){
+            int go_pitch;
+            for(int staff_line_index = -4; staff_line_index <= 8; staff_line_index++){
+                for(int i = 0; i < 11; i++){
+                    go_pitch = i - 2;
+                    if     ( -2 <= go_pitch && go_pitch <= 3) line(debug_img, Point(note_x - 5, first_line_y_result + 11 * staff_line_index + go_pitch), Point(note_x - 1, first_line_y_result + 11 * staff_line_index + go_pitch), Scalar(0, 200, 200), 1);
+                    else if(  4 <= go_pitch && go_pitch <= 8) line(debug_img, Point(note_x - 5, first_line_y_result + 11 * staff_line_index + go_pitch), Point(note_x - 1, first_line_y_result + 11 * staff_line_index + go_pitch), Scalar(200, 0, 200), 1);
+                }
             }
         }
-        line(debug_img, Point(note_x+10, note_y), Point(note_x+10, note_y), Scalar(255, 255, 255), 1);
-        cv::imshow("pitch_debug_img", debug_img);
-        cv::waitKey(0);
 
         // 規律是 11個數字一輪, 從-2開始, 所以計算音高的時候一開始就先 -2 比較好算
         first_line_y_result_calculate = first_line_y_result -2;
@@ -208,7 +207,7 @@ void recognition_5_find_pitch(Mat cut_ord_img,
         //  5
         // 計算 第一條線 到 note_y 的 向量
         first_line_cal_to_note_vec_y = note_y - first_line_y_result_calculate;
-        // cout << "note_y = " << note_y << " , first_line_cal_to_note_vec_y = " << first_line_cal_to_note_vec_y <<  " , first_line_cal_to_note_vec_y / 11 +1= " << first_line_cal_to_note_vec_y / 11 +1 << " , first_line_cal_to_note_vec_y % 11 = " << first_line_cal_to_note_vec_y % 11;
+        if(debuging) cout << "note_y=" << note_y << ", first_line_y_result_calculate=" << first_line_y_result_calculate << " , first_line_cal_to_note_vec_y=" << first_line_cal_to_note_vec_y;
 
         //  一間 高度用眼睛觀察後是 11 px,
         vec_y_through_line = first_line_cal_to_note_vec_y / 11;
@@ -228,10 +227,11 @@ void recognition_5_find_pitch(Mat cut_ord_img,
         
         // 走過幾個間的音 和 剩下線上的音 加起來 就是 我們要的音囉
         pitch = full_space_pitch + half_space_pitch;
-        // cout << " , pitch = " << pitch <<endl;
-
-        // imshow("debug", debug_img);
-        // waitKey(0);
+        if(debuging){
+            cout << " , pitch = " << pitch <<endl;
+            imshow("debug", debug_img);
+            waitKey(0);
+        }
 
         // 找好的pitch 存起來
         note[4][go_note] = pitch;
@@ -307,16 +307,6 @@ void recognition_5_find_pitch(Mat cut_ord_img,
             }
         }
     }
-
-    // 顯示頭
-    for(int go_note = 0; go_note < note_count; go_note++){
-        note_x = note[0][go_note];
-        note_y = note[1][go_note];
-        rectangle( debug_img, Point(note_x, note_y), Point( note_x + template_img.cols , note_y + template_img.rows ), Scalar(255, 0, 0), 1 );  // 藍色
-    }
-    // debug整合
-    // imshow("after_temp_solid_line_show", debug_img);
-    // waitKey(0);
 
     // 存debug圖
     string debug_dir = "debug_img/reg4_find_pitch";
