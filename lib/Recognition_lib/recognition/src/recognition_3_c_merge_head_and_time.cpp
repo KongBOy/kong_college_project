@@ -73,49 +73,45 @@ void recognition_4_merge_head_and_time(int head_type,
         bar_len = bars[2][go_bar];
         bar_dir = bars_dir[go_bar];
 
-        // bar到head 的x向量, 值代表大小，+-代表方向，-往左，+往右
-        vector_x = maybe_head_x - bar_x;
+        // head走到bar 的x向量, 值代表大小，+-代表方向，-往左，+往右
+        vector_x = bar_x - maybe_head_x;
 
         // 看一下處理中的 head, bar, head到bar的vector
         if(debuging){
-            // 目前處理的頭
+            // 目前處理的head
             rectangle(debug_img, Point(maybe_head_x, maybe_head_y), Point(maybe_head_x + template_img.cols, maybe_head_y +template_img.rows), Scalar(0, 255, 0), 2);
             // 目前處理的bar
-            if     (bar_dir == TOPTODOWN) line( debug_img, Point(bar_x, bar_y), Point(bar_x, bar_y + bar_len), Scalar(100, 200, 0), 2 );
-            else if(bar_dir == DOWNTOTOP) line( debug_img, Point(bar_x, bar_y), Point(bar_x, bar_y - bar_len), Scalar(100, 200, 0), 2 );
-            // 目前處理的bar 走到 目前的頭 的 向量
-            arrowLR(debug_img, Point(bar_x, maybe_head_y), Point(maybe_head_x, maybe_head_y), Scalar(200, 200, 200), 2 );
+            if     (bar_dir == TOPTODOWN) line( debug_img, Point(bar_x, bar_y), Point(bar_x, bar_y + bar_len), Scalar( 36, 135,  0), 2 );
+            else if(bar_dir == DOWNTOTOP) line( debug_img, Point(bar_x, bar_y), Point(bar_x, bar_y - bar_len), Scalar( 36, 135,  0), 2 );
+            // 目前head 走到 目前bar 的 向量
+            arrowLR(debug_img, Point(maybe_head_x, maybe_head_y), Point(bar_x, maybe_head_y), Scalar(160, 160, 160), 2 );
 
-            // 目前處理的bar 走到 目前的頭 往左走的合格向量
-            arrowLR(debug_img, Point(maybe_head_x + template_img.cols, maybe_head_y + template_img.rows ), Point(maybe_head_x + template_img.cols + (template_img.cols + dist_error) * -1, maybe_head_y + template_img.rows ), Scalar( 36, 135,  0), 2 );
-            // 目前處理的bar 走到 目前的頭 往右走的合格向量
-            arrowLR(debug_img, Point(maybe_head_x + template_img.cols, maybe_head_y + template_img.rows ), Point(maybe_head_x + template_img.cols +                      dist_error      , maybe_head_y + template_img.rows ), Scalar( 36, 135,  0), 2 );
-            // 目前處理的bar 以 head的右上角 為基準的點
-            cv::circle(debug_img, Point(maybe_head_x + template_img.cols, maybe_head_y + template_img.rows ), 1, Scalar( 0, 135,  255), 2 );
+            // 目前head 走到 目前bar 往左走的合格向量
+            arrowLR(debug_img, Point(maybe_head_x, maybe_head_y + template_img.rows ), Point(maybe_head_x + dist_error * -1               , maybe_head_y + template_img.rows ), Scalar( 36, 135,  0), 2 );
+            // 目前head 走到 目前bar 往右走的合格向量
+            arrowLR(debug_img, Point(maybe_head_x, maybe_head_y + template_img.rows ), Point(maybe_head_x + template_img.cols + dist_error, maybe_head_y + template_img.rows ), Scalar( 36, 135,  0), 2 );
+            // 目前適用head的左上角的x 為基準的點
+            cv::circle(debug_img, Point(maybe_head_x, maybe_head_y + template_img.rows ), 1, Scalar( 0, 135,  255), 2 );
             
             // 文字顯示
             cout << "maybe_head_x[" << go_head << "]=" << maybe_head_x << ", bar_x[" << go_bar << "]=" << bar_x << ", vector_x=" << vector_x << endl;
             imshow("debug", debug_img);
-            waitKey(0);
+            cv::waitKey(0);
         }
 
-        // bar離 頭的左邊 太右, 不抓線 且 這顆頭忽略不儲存 直接continue到下顆頭
-        if((vector_x) < ((template_img.cols + dist_error) * -1) ){
+        // 頭的左邊 往左走太左, 該換下一條線了, 這顆頭 換了下一條線 後 需要再跟 這條新的線 比一次，所以go_head--
+        if( vector_x <  dist_error * -1 ){
             if(debuging){
-                cout << "  case 1 bar too right" << endl;
-                arrowLR(debug_img, Point(bar_x, maybe_head_y), Point(maybe_head_x, maybe_head_y), Scalar(0, 255, 0), 1 );
+                arrowLR(debug_img, Point(maybe_head_x, maybe_head_y), Point(bar_x, maybe_head_y), Scalar(0, 0, 255), 1 );
+                cout << "  case 3 bar too left, change bar" << endl;
             }
-            // 在 maybe_head 和 bar 都已經對x排序了以後,
-            // 目前的機制是 走訪所有的頭 來找線, 換下顆頭時 對下顆頭來說 目前的bar通常會變左或右一點點而已, 左太多就會換下條bar, 所以不會有變bar右太多的機會
-            // 所以如果太右了 唯一可能就是發生在 最一開始 第一顆頭 遇到 第一條bar 太右
-            // 如果 第一條bar 還在 頭 的 太右邊, 代表這顆頭怪怪的, 所以直接 continue 掉 不存這顆頭 覺得比較合理
-            continue;
+            go_bar++;
+            go_head--;
         }
-        // bar離 頭的左邊夠近 抓 同一條 線(go_bar沒有要++喔, 除非符合一些特例 比如 擁擠case)
-        else if( ((vector_x) >= ((template_img.cols + dist_error) * -1)) &&
-                 ((vector_x) <= (0 + dist_error) ) ){
+        // 頭的左邊 往左走 dist_error ~ 往右走 template_img.cols + dist_error 都算夠近, 抓 同一條 線(go_bar沒有要++喔, 除非符合一些特例 比如 擁擠case)
+        else if(  dist_error * -1 <= vector_x && vector_x <= template_img.cols + dist_error  ){
             if(debuging){
-                arrowLR(debug_img, Point(bar_x, maybe_head_y), Point(maybe_head_x, maybe_head_y), Scalar(255, 0, 0), 1 );
+                arrowLR(debug_img, Point(maybe_head_x, maybe_head_y), Point(bar_x, maybe_head_y), Scalar(255, 0, 0), 1 );
                 rectangle(debug_img, Point(maybe_head_x, maybe_head_y), Point(maybe_head_x + template_img.cols, maybe_head_y +template_img.rows), Scalar(255, 0, 0), 1);
                 cout << "  case 2 bar OK" << endl;
             }
@@ -128,10 +124,9 @@ void recognition_4_merge_head_and_time(int head_type,
             //    * 目前在這顆頭, 
             //   | 這條目前是 next_bar, 以此圖例的話是離next_bar較近所以希望抓這條
             //   |
-            if( 0 <= vector_x  && vector_x <= dist_error && bar_dir == DOWNTOTOP ){
+            if( template_img.cols <= vector_x  && vector_x <= template_img.cols + dist_error && bar_dir == DOWNTOTOP ){
                 if(go_bar < bars_count-1){  // 防呆, 因為要看下一條線, 所以只能做到倒數第二條
-                    int distance_next = maybe_head_x - bars[0][go_bar+1];
-                    distance_next += template_img.cols;
+                    int distance_next = bars[0][go_bar+1] - maybe_head_x;
                     if(debuging) cout << "    check crowd, vector_x = " << vector_x  << ", distance_next = " << distance_next;
                     
                     // 現在的頭 和 下一條線比較接近，做case4 next bar colser so choose next 換下一條線拉！
@@ -153,14 +148,17 @@ void recognition_4_merge_head_and_time(int head_type,
             note[3][note_count] =  bars_time[go_bar]; // 抓同條線
             note_count++;
         }
-        // bar離 頭的左邊 太左 該換下一條線了, 這顆頭 換了下一條線 後 需要再跟 這條新的線 比一次，所以go_head--
-        else{ // 即if((vector_x > (0 + dist_error))
+        // 頭的左邊 往右走太右, 不抓線 且 這顆頭忽略不儲存 直接continue到下顆頭
+        else{
             if(debuging){
-                arrowLR(debug_img, Point(bar_x, maybe_head_y), Point(maybe_head_x, maybe_head_y), Scalar(0, 0, 255), 1 );
-                cout << "  case 3 bar too left, change bar" << endl;
+                cout << "  case 1 bar too left" << endl;
+                arrowLR(debug_img, Point(maybe_head_x, maybe_head_y), Point(bar_x, maybe_head_y), Scalar(0, 255, 0), 1 );
             }
-            go_bar++;
-            go_head--;
+            // 在 maybe_head 和 bar 都已經對x排序了以後,
+            // 目前的機制是 走訪所有的頭 來找線, 換下顆頭時 對下顆頭來說 目前的bar通常會變左或右一點點(一個bar有多顆音) 或 直接變太左, 太左多就會換下條bar, 所以不會有變bar太右太多的機會
+            // 所以如果太右了 唯一可能就是發生在 最一開始 第一顆頭 遇到 第一條bar 太右
+            // 如果 第一條bar 還在 頭 的 太右邊, 代表這顆頭怪怪的, 所以直接 continue 掉 不存這顆頭 覺得比較合理
+            continue;
         }
         imshow("debug", debug_img);
         waitKey(0);
