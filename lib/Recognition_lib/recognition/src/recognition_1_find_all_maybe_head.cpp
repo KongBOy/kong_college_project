@@ -42,8 +42,7 @@ void matchTemplate2(Mat src_img, Mat template_test, Mat& result_map){
                     }
                 }
             }
-            // float similar_rate = similar / total_pix;
-            result_map.at<float>(go_s_row, go_s_col) = similar / total_pix;// similar_rate;
+            result_map.at<float>(go_s_row, go_s_col) = similar / total_pix;
             // cout<<"similar_rate = "<<similar_rate<<endl;
         }
     }
@@ -193,7 +192,7 @@ void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, 
     if(debuging){
         MaybeHead_draw_w_color(temp_show, template_img, maybe_head_count, maybe_head);
         imshow("after merge, MaybeHead_draw_w_color", temp_show);
-        cvMoveWindow("after merge, MaybeHead_draw_w_color", 10, 450);
+        cvMoveWindow("after merge, MaybeHead_draw_w_color", 10, 470);
         waitKey(0);
     }
 }
