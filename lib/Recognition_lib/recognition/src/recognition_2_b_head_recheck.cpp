@@ -96,17 +96,24 @@ static void matchTemplate2black(Mat src_img,Mat template_test,Mat& result)
 }
 
 
-void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Mat reduce_line,int& maybe_head_count,float maybe_head[][200]){
+void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, Mat reduce_line, int& maybe_head_count, float maybe_head[][200], bool debuging){
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
 
-    // MaybeHead_draw_w_color(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
+    // 先看一下 recheck 之前的 maybe_head 狀況
+    if(debuging){
+        cv::imshow("template_img", MaybeHead_final_template);
+        MaybeHead_draw_w_color(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
+        cv::imshow("debug_img", debug_img);
+        cvMoveWindow("debug_img", 10, 80);
+        cv::waitKey(0);
+    }
 
     Mat template_recheck ;
-    // cout << "template_recheck.cols = " << template_recheck.cols << endl;
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head ++){
         if(head_type == 7) template_recheck = imread("Resource/note/32-rest/7-1-up15w-down15w.bmp",0);         // 上下不要留白，留白會抓到八分的休止符
-    
+        if(debuging) cout << "template_recheck.cols = " << template_recheck.cols << endl;
+
 
         int extend = 6;
         int recheck_l = maybe_head[0][go_head] - extend;
@@ -152,6 +159,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
             if(head_type == 8){
                 // 原本的 有外邊框的八分休止 做樣本比對
                 template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp",0);   // 上下要留白，八分辨識度 & 區別度較高
+                if(debuging) cout << "template_recheck.cols = " << template_recheck.cols << endl;
+
                 int recheck_result_row = recheck_height - template_recheck.rows +1;
                 int recheck_result_col = recheck_width  - template_recheck.cols +1;
                 Mat recheck_result;
@@ -525,7 +534,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
                     Point matchLoc;
                     minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                     // cout << "old_value = " << maybe_head[2][go_head] <<  " , max_value_mean = " << maxVal << endl;
-                    cv::imshow("recheck_result", reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )));
+                    // cv::imshow("recheck_result", reduce_line(Rect( recheck_l,recheck_t,recheck_width,recheck_height )));
                     
                     if(maxVal >= 0.49){
                         recheck_sucess = true;
@@ -564,4 +573,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
     // imshow("debug",debug_img);
     // waitKey(0);
     // destroyWindow("recheck");
+    if(debuging){
+        cv::destroyAllWindows();
+    }
+
 }
