@@ -28,7 +28,7 @@ static int end_time = 0;
 
 
 // 位置, 顏色 都有匹配的話 才算算一格 similar
-void matchTemplate2(Mat src_img, Mat template_test, Mat& result){
+void matchTemplate2(Mat src_img, Mat template_test, Mat& result_map){
     float total_pix = template_test.rows * template_test.cols;
     float similar;
     for(int go_s_row = 0; go_s_row < src_img.rows - template_test.rows +1; go_s_row++){
@@ -43,15 +43,15 @@ void matchTemplate2(Mat src_img, Mat template_test, Mat& result){
                 }
             }
             // float similar_rate = similar / total_pix;
-            result.at<float>(go_s_row, go_s_col) = similar / total_pix;// similar_rate;
+            result_map.at<float>(go_s_row, go_s_col) = similar / total_pix;// similar_rate;
             // cout<<"similar_rate = "<<similar_rate<<endl;
         }
     }
-    // imshow("template_test", result);
+    // imshow("template_test", result_map);
     // waitKey(0);
 }
 
-void debug_draw_result_map_on_staff_bin_erase_line(Mat staff_result_map, Mat staff_bin_erase_line, Mat template_img, int l, int r, int t, int d, Scalar color, string window_name){
+void debug_draw_result_map_rect_on_staff_bin_erase_line(Mat staff_result_map, Mat staff_bin_erase_line, Mat template_img, int l, int r, int t, int d, Scalar color, string window_name){
     // ************ 防呆 ***************
     if( l < 0) l = 0;
     if( t < 0) t = 0;
@@ -65,9 +65,13 @@ void debug_draw_result_map_on_staff_bin_erase_line(Mat staff_result_map, Mat sta
             if(staff_result_map.at<float>(go_row, go_col) ) 
                 rectangle( staff_bin_erase_line_color, Point(go_col, go_row), Point( go_col + template_img.cols, go_row + template_img.rows ), Scalar(0, 0, 255), 1, 8, 0 );
     imshow(window_name, staff_bin_erase_line_color);
+    cvMoveWindow(window_name.c_str(), 10, 250);
 }
 
 void debug_draw_merging_where(Mat staff_result_map, Mat staff_bin_erase_line, Mat template_img, int x, int y, Scalar color, string window_name, bool print_result_map){
+    imshow("template_img", template_img);
+    cvMoveWindow("template_img", 10, 10);
+
     int check_l, check_r, check_t, check_d;
     check_l = x - 0.5 * template_img.cols;
     check_r = x + 0.5 * template_img.cols;
@@ -85,19 +89,16 @@ void debug_draw_merging_where(Mat staff_result_map, Mat staff_bin_erase_line, Ma
     cvtColor(staff_result_map, result_map_color, CV_GRAY2BGR);
     rectangle(result_map_color, Point(check_l, check_t), Point(check_r, check_d), color, 1, 8, 0);
     imshow(window_name, result_map_color);
-    imshow("template_img", template_img);
+    cvMoveWindow(window_name.c_str(), 10, 50);
     if(print_result_map) cout << staff_result_map( Rect(check_l, check_t, check_r - check_l, check_d - check_t) ) << " " << endl;
 
-    // 只看 merge 範圍內 的 staff_result_map 在 staff_bin_erase_line 的狀況
-    debug_draw_result_map_on_staff_bin_erase_line(staff_result_map, staff_bin_erase_line, template_img, check_l, check_r, check_t, check_d, Scalar(0, 0, 255), window_name + "_staff_line");
-    
     // 看整張圖 的 staff_result_map 在 staff_bin_erase_line 的狀況
-    debug_draw_result_map_on_staff_bin_erase_line(staff_result_map, staff_bin_erase_line, template_img, 0, staff_result_map.cols - 1, 0, staff_result_map.rows - 1, Scalar(0, 0, 255), window_name + "_staff_line_all");
+    debug_draw_result_map_rect_on_staff_bin_erase_line(staff_result_map, staff_bin_erase_line, template_img, 0, staff_result_map.cols - 1, 0, staff_result_map.rows - 1, Scalar(0, 0, 255), window_name + "_staff_line_all");
 }
 
 
 // staff_result_map 遇到非0時 將其周圍 0.5 template 大小的區域 只留下一點最大值
-void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, Mat template_img){
+void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, Mat template_img, bool debuging){
     for(int go_row = 0; go_row < staff_result_map.rows; go_row++){
         for(int go_col = 0; go_col < staff_result_map.cols; go_col++){
             if(staff_result_map.at<float>(go_row, go_col)){
@@ -117,8 +118,10 @@ void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, M
                 int range_height = down - top;
 
                 // before merge 看一下
-                // debug_draw_merging_where(staff_result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
-                // waitKey(0);
+                if(debuging){
+                    debug_draw_merging_where(staff_result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
+                    waitKey(0);
+                }
 
                 // 二、找出框框內最好的點(最像的地方)
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
@@ -137,36 +140,29 @@ void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, M
                 staff_result_map.at<float>(maxLoc.y, maxLoc.x) = maxVal;
                 
                 // after merge 看一下
-                // debug_draw_merging_where(staff_result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", false);
-                // cout << "value = " << maxVal << endl;
-                // waitKey(0);
+                if(debuging){
+                    debug_draw_merging_where(staff_result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
+                    cout << "maxVal=" << maxVal << ", maxLoc=" << maxLoc << endl << endl;
+                    waitKey(0);
+                }
             }
         }
     }
 
 }
 
-void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img, float thresh_hold){
+void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img, float thresh_hold, bool debuging){
     Mat temp_show;
     cvtColor(staff_bin_erase_line, temp_show, CV_GRAY2BGR);
-    // MaybeHead_draw(temp_show, template_img, maybe_head_count, maybe_head);
-    // cv::imshow("before merge", staff_result_map);
-    // cv::waitKey(0);
 
     // 五、簡單篩一下，取大量喔！就是找出可能是要找的頭的概念！之後再用特徵篩一次~~
-    // normalize( staff_result_map, staff_result_map, 0, 1, NORM_MINMAX, -1, Mat() );  //如果用這個的話就連其他版本的譜好像也可以，thr設0.75
     threshold(staff_result_map, staff_result_map, thresh_hold , 1.0 , CV_THRESH_TOZERO);
-    // debug用  把所有找到的地方都框出來，還沒有合併附近很像的地方
-    // debug_draw_result_map_on_staff_bin_erase_line(staff_result_map, staff_bin_erase_line, template_img, 0, staff_result_map.cols - 1, 0, staff_result_map.rows - 1, Scalar(0, 0, 255), "before merge");
     // *******************************************************************************************************
     // 把附近找出來一堆很像的的東西合併成一個：
     // 一、先框好範圍，
     // 二、找出框框內最好的點，
     // 三、只留下那個點其他點去掉，
-    MaybeHead_MergeCloseHead(staff_result_map, staff_bin_erase_line, template_img);
-    // debug用 合併完也看看
-    // debug_draw_result_map_on_staff_bin_erase_line(staff_result_map, staff_bin_erase_line, template_img, 0, staff_result_map.cols - 1, 0, staff_result_map.rows - 1, Scalar(0, 0, 255), "after merge");
-    // waitKey(0);
+    MaybeHead_MergeCloseHead(staff_result_map, staff_bin_erase_line, template_img, debuging);
     
     // *******************************************************************************************************
     // 自己設資料結構 移到外面去囉
@@ -192,12 +188,14 @@ void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count, 
     
     bubbleSort_maybe_head(maybe_head_count, maybe_head,Y_INDEX);
     bubbleSort_maybe_head(maybe_head_count, maybe_head,X_INDEX);
-    // imshow("after_merge", temp_show);
     
-    // debug整合
-    // MaybeHead_draw(temp_show, template_img, maybe_head_count, maybe_head);
-    // imshow("MaybeHead_draw", temp_show);
-    // waitKey(0);
+    // merge完的 head 畫出來看看
+    if(debuging){
+        MaybeHead_draw_w_color(temp_show, template_img, maybe_head_count, maybe_head);
+        imshow("after merge, MaybeHead_draw_w_color", temp_show);
+        cvMoveWindow("after merge, MaybeHead_draw_w_color", 10, 450);
+        waitKey(0);
+    }
 }
 
 void recognition_1_find_all_MaybeHead(Mat& staff_result_map, Mat template_img, Mat staff_bin_erase_line,
@@ -264,27 +262,31 @@ void recognition_1_find_all_MaybeHead(Mat& staff_result_map, Mat template_img, M
         if(debuging) cout << "cur_template_result_map_col:" << cur_template_result_map_col << ", template_img.cols:" << template_img.cols << ", grab_left:" << grab_left << ", grab_width:" << grab_width << endl << endl;
 
         // 二、根據上面防呆後的垂直投影找出來的mountain 根據 左邊界 和 distance 來切圖, 因為 很多符號 都是 瘦瘦高高, 所以 只對寬度仔細切, 高度抓全部 比較安全
-        Mat proc_img = staff_bin_erase_line(Rect(grab_left, 0, grab_width, staff_bin_erase_line.rows ));
+        Mat proc_part_img = staff_bin_erase_line(Rect(grab_left, 0, grab_width, staff_bin_erase_line.rows ));
 
         // 三前置、 建立 放 根據垂直投影切出來的影像做樣本比對結果的容器，根據垂直投影找出來的mountain切, 所以容器大小是: 山圖的大小 - template大小 + 1
         int result_row = staff_bin_erase_line.rows - template_img.rows +1;
         int result_col = grab_width     - template_img.cols +1;
-        // cout << "result_row = " << result_row << endl;
-        // cout << "result_col = " << result_col << endl;
-        Mat result(result_row, result_col, CV_32FC1);
+        Mat part_result_map(result_row, result_col, CV_32FC1);
+        if(debuging){
+            cout << "result_row=" << result_row << endl;
+            cout << "result_col=" << result_col << endl;
+        }
 
         // 三、 每座山圖 做樣本比對
-        if(method == "method1") matchTemplate (proc_img, template_img, result, CV_TM_CCOEFF_NORMED);
-        else                    matchTemplate2(proc_img, template_img, result);
-        // threshold(result, result, 0.5, 1., CV_THRESH_TOZERO);
+        if(method == "method1") matchTemplate (proc_part_img, template_img, part_result_map, CV_TM_CCOEFF_NORMED);
+        else                    matchTemplate2(proc_part_img, template_img, part_result_map);
 
         // 四、 山圖樣本比對的結果圖 根據 左邊界 加回 原始影像比對的結果圖 相應的位置
-        staff_result_map( Rect(grab_left, 0, result_col, result_row) ) += result;
+        staff_result_map( Rect(grab_left, 0, result_col, result_row) ) += part_result_map;
 
-        // imshow("proc_img", proc_img);
-        // imshow("staff_result_map", staff_result_map);
-        // cv::imshow("template_img", template_img);
-        // cout << result << endl << endl << endl;
-        // waitKey(0);
+        // debug想看的東西可以寫這裡
+        if(debuging){
+            imshow("proc_part_img", proc_part_img);         // 正在 處理中的山影像
+            imshow("staff_result_map", staff_result_map);   // 山影像處理後的 result_map 放回 總結果長怎樣
+            cv::imshow("template_img", template_img);       // 目前的 template_img
+            // cout << part_result_map << endl << endl;        // 稍微看一下 處理中的山影像 數值大概長怎樣, 想看再把註解拿掉吧
+            waitKey(0);
+        }
     }
 }

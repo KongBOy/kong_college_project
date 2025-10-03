@@ -23,8 +23,6 @@ void recognition_1_find_all_MaybeHead(Mat& staff_result_map,
                                        Mat reduce_line,    /// 消掉五線譜線的圖
                                        int e_count, int* l_edge, int* distance, ///從 recognition_0 的資料來 加速
                                        string method,
-                                       bool debuging);
+                                       bool debuging=false);
 
-void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img, float thresh_hold = 0.38);
-
-void debug_draw_result_map_on_staff_bin_erase_line(Mat staff_result_map, Mat staff_bin_erase_line, Mat template_img, int l, int r, int t, int d, Scalar color=Scalar(0, 0, 255), string window_name="debug");
+void Grab_MaybeHead_from_ResultMap(Mat staff_result_map, int& maybe_head_count,float maybe_head[][200], int pitch_base_y, Mat staff_bin_erase_line, Mat template_img, float thresh_hold = 0.38, bool debuging=false);

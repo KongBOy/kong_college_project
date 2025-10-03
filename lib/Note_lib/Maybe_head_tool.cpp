@@ -17,7 +17,7 @@ void MaybeHead_list_infos(int maybe_head_count,float maybe_head[][200]){
     cout<<endl;
 }
 
-void MaybeHead_draw(Mat& debug_img , Mat template_img,int maybe_head_count, float maybe_head[][200], float th1, float th2, float th3){
+void MaybeHead_draw_w_color(Mat& debug_img , Mat template_img,int maybe_head_count, float maybe_head[][200], float th1, float th2, float th3){
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
         /// 一、無限大 ~ th1
         /// 二、th1 ~ th2

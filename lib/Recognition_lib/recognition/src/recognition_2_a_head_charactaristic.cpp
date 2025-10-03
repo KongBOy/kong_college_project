@@ -177,7 +177,7 @@ void recognition_2_a_head_charactristic(int head_type, Mat template_img, Mat sta
         }
     }
     // 秀出 做完CHECK_SOLID的頭
-    // MaybeHead_draw(temp_show2, template_img, maybe_head_count, maybe_head);
+    // MaybeHead_draw_w_color(temp_show2, template_img, maybe_head_count, maybe_head);
     // imshow("debug", temp_show2);
     // waitKey(0);
     // destroyWindow("debug");

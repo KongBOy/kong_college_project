@@ -100,7 +100,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template,Ma
     Mat debug_img = reduce_line.clone();
     cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
 
-    // MaybeHead_draw(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
+    // MaybeHead_draw_w_color(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
 
     Mat template_recheck ;
     // cout << "template_recheck.cols = " << template_recheck.cols << endl;
