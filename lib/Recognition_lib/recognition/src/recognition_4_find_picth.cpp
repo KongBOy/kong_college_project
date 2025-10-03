@@ -127,7 +127,7 @@ void recognition_5_find_pitch(Mat cut_ord_img,
         // 第一階段: 找 五線譜的位移
         note_x = note[0][go_note];
         note_y = note[1][go_note];
-        // 看一下 note左上角起始位置
+        // 看一下 note位置
         if(debuging) rectangle( debug_img, Point(note_x, note_y), Point( note_x + template_img.cols , note_y + template_img.rows ), Scalar(255, 0, 0), 1 );  // 藍色
 
         // 看此組 此組五線譜 位移了多少, 如果 是線的上邊緣 那麼 本格會是黑色 前一格會是白色,
@@ -146,7 +146,7 @@ void recognition_5_find_pitch(Mat cut_ord_img,
 
         // 第一條線 根據上面找出的 五線譜位移 做調整
         first_line_y_result = first_line_y_ord + staff_shift;
-        // 畫一下找的效果
+        // 畫短短的五線譜水平紅線 看一下找的效果
         if(debuging){
             for(int i = 0; i < 5; i++) line(debug_img, Point(go_staff_x, first_line_y_result + i * 11), Point(go_staff_x+ 5, first_line_y_result + i * 11), Scalar(0, 0, 255), 1);  // 紅色
             cout << "first_line_y_ord = " << first_line_y_ord << " , first_line_y_result = " <<  first_line_y_result  << endl;
@@ -176,6 +176,7 @@ void recognition_5_find_pitch(Mat cut_ord_img,
         // 視覺化 -2 ~ 3 是 "間的音", 4 ~ 8 是 "線的音"
         if(debuging){
             int go_pitch;
+            // 視覺畫 第一條線 往上四間(-4 ~ -1) ~ 第一條線 往下9間(0 ~ 8)
             for(int staff_line_index = -4; staff_line_index <= 8; staff_line_index++){
                 for(int i = 0; i < 11; i++){
                     go_pitch = i - 2;
@@ -239,9 +240,8 @@ void recognition_5_find_pitch(Mat cut_ord_img,
 
     
     for(int i = 0; i < note_count; i++){
-        // ***********防呆呆呆呆*********** 但小心別設錯呀！！！！
+        // *********** 防呆 ***********
         if( (note[4][i] <= 16) && (note[4][i] >= -11) ){
-            // cout<<"i'm here~~"<<endl;
             switch(note[4][i]){
                 case  16:note[4][i] = 48;  // C; 低音3C
                     break;
