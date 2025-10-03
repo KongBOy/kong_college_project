@@ -15,6 +15,7 @@ void recognition_2_a_head_charactristic(int head_type,
                                         Mat template_img,
                                         Mat staff_bin_erase_line,
                                         Mat cut_ord_img,
-                                        int& maybe_head_count,float maybe_head[][200]);
+                                        int& maybe_head_count,float maybe_head[][200],
+                                        bool debuging=false);
 /// cpp 要記得分case喔！！
 
