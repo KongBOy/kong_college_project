@@ -213,7 +213,7 @@ void recognition_0_all_head( int head_type,
             // cv::waitKey(0);
 
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
-            recognition_2_b_head_recheck      (2, template_img,  staff_img_erase_line,            maybe_head_count, maybe_head);
+            recognition_2_b_head_recheck      (2, template_img, staff_img_erase_line,            maybe_head_count, maybe_head);
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
 
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
