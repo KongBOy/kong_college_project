@@ -453,12 +453,34 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     // waitKey(0);
                 }
             }
-            else{
-                // 不同size 做樣本比對
+            else if(head_type == 5 or head_type == 9){
+                // 四分休止符 和 高音譜記號
                 if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp", 0);
                 if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp", 0);
+
+                int recheck_result_row = recheck_height - template_recheck.rows +1;
+                int recheck_result_col = recheck_width  - template_recheck.cols +1;
+                Mat recheck_result(recheck_result_row,recheck_result_col, CV_32FC1);
+                matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+    
+                double minVal; double maxVal; Point minLoc; Point maxLoc;
+                Point matchLoc;
+                minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+
+                // 如果在某個size 有信心直超過0.80 就當作過關
+                if(maxVal >= 0.800){
+                    recheck_sucess = true;
+                    // cout << "recheck_sucess";
+                    maybe_head[0][go_head] = recheck_l + maxLoc.x;
+                    maybe_head[1][go_head] = recheck_t + maxLoc.y;
+                    maybe_head[2][go_head] = maxVal;
+                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                }
+            }
+            else if(head_type == 0 or head_type == 4){{
+                // 全音符, 四分音符
+                // 不同size 做樣本比對
                 for(int size = 14 ; size <= 16 ; size++ ){
-                    // cout註解 看現在正在處理哪顆頭
                     // cout << "go_head = " << go_head << " , ";
                     if(head_type == 4) template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp", 0);
                     if(head_type == 0) template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp", 0);
@@ -473,8 +495,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
-
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+
                     if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
@@ -482,6 +504,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     // 如果在某個size 有信心直超過0.80 就當作過關
                     if(maxVal >= 0.800){
                         /*
+                        // matchTemplate2 的視覺化版本, 把有完全隊上的pixel標上色
                         Mat debug_img2 = reduce_line.clone();
                         cvtColor(reduce_line,debug_img2,CV_GRAY2BGR);
 
@@ -504,17 +527,18 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                         // waitKey(0);
 
                         recheck_sucess = true;
-                        // cout << "recheck_sucess";
                         maybe_head[0][go_head] = recheck_l + maxLoc.x;
                         maybe_head[1][go_head] = recheck_t + maxLoc.y;
                         maybe_head[2][go_head] = maxVal;
                         rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
                         // *****************************
                         // imshow("recheck", debug_img);
+                        // waitKey(0);
                     }
                     if(recheck_sucess == true) break;
                 }
             }
+            // head_type == 1(全休止符), 3(二分休止符) 前面的step已經做得很好了 不用recheck 所以這邊就沒有寫了
 
             if(recheck_sucess == false){
                 // cout註解 recheck失敗也標記一下
