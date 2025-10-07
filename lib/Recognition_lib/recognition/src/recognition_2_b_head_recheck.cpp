@@ -16,7 +16,12 @@ using namespace std;
 #include "string_tools.h"
 
 
-static void matchTemplate2(Mat src_img,Mat template_test,Mat& result){
+static void matchTemplate2(Mat src_img, Mat template_test, Mat& result){
+    // result部分 模仿opencv 無論如何都重建一個新的 不會用外面傳進來原本的Mat
+    int recheck_result_row = src_img.rows - template_test.rows +1;
+    int recheck_result_col = src_img.cols - template_test.cols +1;
+    result = Mat(recheck_result_row,recheck_result_col, CV_32FC1);
+
     // 位置, 顏色 都有匹配的話 才算算一格 similar
     float total_pix = template_test.rows * template_test.cols;
     float similar;
