@@ -408,6 +408,50 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 // cv::imshow("debug_img", debug_img);
                 // cv::waitKey(0);
             }
+            else if(head_type == 2){
+                for(int size = 14 ; size <= 15 ; size++ ){
+                    template_recheck = imread("Resource/note/2/2-" + IntToString(size) +"-white-both-2.bmp", 0);
+                    Mat recheck_result;
+                    int recheck_result_row = recheck_height - template_recheck.rows +1;
+                    int recheck_result_col = recheck_width  - template_recheck.cols +1;
+
+                    matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+
+                    double minVal; double maxVal; Point minLoc; Point maxLoc;
+                    Point matchLoc;
+                    minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    cout << "kong2=" << maxVal << endl;
+                    
+                    acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                    
+
+                    // CV_TM_CCOEFF_NORMED 有助於 把八分音符符尾 的 similarity 壓低, 所以 * 2
+                    matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                    minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    cout << "cv2=" << maxVal << endl;
+                    
+                    acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result * 2;
+                }
+                acc_result /= 6;
+                double minVal; double maxVal; Point minLoc; Point maxLoc;
+                Point matchLoc;
+                minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                // cout << "old_value = " << maybe_head[2][go_head] <<  " , max_value_mean = " << maxVal << endl;
+                // cv::imshow("recheck_result", reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )));
+                
+                if(maxVal >= 0.49){
+                    recheck_sucess = true;
+                    // cout註解 recheck成功的話標記一下
+                    // cout << "recheck_sucess";
+                    maybe_head[0][go_head] = recheck_l + maxLoc.x;
+                    maybe_head[1][go_head] = recheck_t + maxLoc.y;
+                    maybe_head[2][go_head] = maxVal;
+                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                    // *****************************
+                    // imshow("recheck", debug_img);
+                    // waitKey(0);
+                }
+            }
             else{
                 // 不同size 做樣本比對
                 if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp", 0);
@@ -416,11 +460,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     // cout註解 看現在正在處理哪顆頭
                     // cout << "go_head = " << go_head << " , ";
                     if(head_type == 4) template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp", 0);
-                    if(head_type == 2) template_recheck = imread("Resource/note/2/2-" + IntToString(size) +"-white-both-2.bmp", 0);
                     if(head_type == 0) template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp", 0);
-
-                    // cout << template_recheck << " " << endl;
-
                     // imshow("template_recheck", template_recheck);
                     // waitKey(0);
                     // destroyWindow("template_recheck");
@@ -437,24 +477,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
-
-                    // cout註解 看recheck後的相似度 和原來的相似度
-                    // cout << "old_value = " << maybe_head[2][go_head] << ", recheck_size" << size << " , max_value_kong = " << maxVal;
-                    
-                    if(head_type == 2){
-                        if(size < 16) acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-
-                        // matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCORR_NORMED);
-                        // if(size < 16) acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                        // minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                        // cout << ", cv1=" << maxVal;
-
-                        // CV_TM_CCOEFF_NORMED 有助於 把八分音符符尾 的 similarity 壓低, 所以 * 2
-                        matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
-                        if(size < 16) acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result * 2;
-                        minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                        // cout << ", cv2=" << maxVal << endl;
-                    }
 
                     // 如果在某個size 有信心直超過0.80 就當作過關
                     if(maxVal >= 0.800){
@@ -490,31 +512,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                         // imshow("recheck", debug_img);
                     }
                     if(recheck_sucess == true) break;
-                }
-
-                // 如果是 二分音符 要多看 acc_result
-                if(head_type == 2){
-                    acc_result /= 6;
-                    double minVal; double maxVal; Point minLoc; Point maxLoc;
-                    Point matchLoc;
-                    minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                    // cout << "old_value = " << maybe_head[2][go_head] <<  " , max_value_mean = " << maxVal << endl;
-                    // cv::imshow("recheck_result", reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )));
-                    
-                    if(maxVal >= 0.49){
-                        recheck_sucess = true;
-                        // cout註解 recheck成功的話標記一下
-                        // cout << "recheck_sucess";
-                        maybe_head[0][go_head] = recheck_l + maxLoc.x;
-                        maybe_head[1][go_head] = recheck_t + maxLoc.y;
-                        maybe_head[2][go_head] = maxVal;
-                        rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
-                        // *****************************
-                        // imshow("recheck",debug_img);
-                        // waitKey(0);
-                    }
-                    // cv::imshow("debug_img", debug_img);
-                    // cv::waitKey(0);
                 }
             }
 
