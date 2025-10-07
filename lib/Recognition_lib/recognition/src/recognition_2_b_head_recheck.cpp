@@ -150,7 +150,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 // 觀察後覺得 超過0.60 就是八分休止
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
-                minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                 // cout << "8 rest maxVal=" << maxVal << endl;
                 // cv::imshow("debug_img", debug_img);
                 // cv::imshow("acc_result", acc_result);
@@ -278,7 +278,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
-                minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
 
 
                 // 十六分休止 下面是白色的 做樣本比對
@@ -416,9 +416,9 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                     // cout << template_recheck << " " << endl;
 
-                    // imshow("tempalte_recheck", template_recheck);
+                    // imshow("template_recheck", template_recheck);
                     // waitKey(0);
-                    // destroyWindow("tempalte_recheck");
+                    // destroyWindow("template_recheck");
 
                     int recheck_result_row = recheck_height - template_recheck.rows +1;
                     int recheck_result_col = recheck_width  - template_recheck.cols +1;
@@ -461,13 +461,13 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                         Mat debug_img2 = reduce_line.clone();
                         cvtColor(reduce_line,debug_img2,CV_GRAY2BGR);
 
-                        rectangle(debug_img, Point(recheck_l, recheck_t),Point(recheck_r,recheck_d),Scalar(255, 0, 0),2);
+                        rectangle(debug_img, Point(recheck_l, recheck_t),Point(recheck_r, recheck_d),Scalar(255, 0, 0), 2);
                         for(int debug_y = 0 ; debug_y < template_recheck.rows ; debug_y++){
                             for(int debug_x = 0 ; debug_x < template_recheck.cols ; debug_x++){
                                 if(   reduce_line     .at<uchar>(debug_y + recheck_t + maxLoc.y , debug_x + recheck_l + maxLoc.x)
                                 == template_recheck.at<uchar>(debug_y                        , debug_x)){
                                     line(debug_img2,Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),
-                                                    Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),Scalar(0, 255, 0),1);
+                                                    Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),Scalar(0, 255, 0), 1);
                                 }
                             }
                         }
@@ -498,7 +498,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     acc_result /= 6;
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
-                    minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                     // cout << "old_value = " << maybe_head[2][go_head] <<  " , max_value_mean = " << maxVal << endl;
                     // cv::imshow("recheck_result", reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )));
                     
@@ -522,11 +522,11 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
             if(recheck_sucess == false){
                 // cout註解 recheck失敗也標記一下
                 // cout << "this head might not be head" << endl;
-                rectangle(debug_img, Point(recheck_l, recheck_t),Point(recheck_r,recheck_d),Scalar(0, 0, 255), 1);
+                rectangle(debug_img, Point(recheck_l, recheck_t),Point(recheck_r, recheck_d),Scalar(0, 0, 255), 1);
                 // **************************
                 // imshow("recheck",debug_img);
                 // waitKey(0);
-                position_erase(maybe_head_count,maybe_head,go_head);
+                position_erase(maybe_head_count, maybe_head, go_head);
                 go_head--;
             }
             // cout << endl;
