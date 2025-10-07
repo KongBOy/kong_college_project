@@ -75,7 +75,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
         cvMoveWindow("debug_img", 10, 80);
         cv::waitKey(0);
     }
-
+    // 會用到的變數先宣告
     Mat template_recheck ;
     int maybe_head_x;
     int maybe_head_y;
@@ -83,48 +83,43 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
         maybe_head_x = maybe_head[0][go_head];
         maybe_head_y = maybe_head[1][go_head];
 
-        if(head_type == 7) template_recheck = imread("Resource/note/32-rest/7-1-up15w-down15w.bmp", 0);         // 上下不要留白，留白會抓到八分的休止符
-        if(debuging) cout << "template_recheck.cols = " << template_recheck.cols << endl;
-
-        // 定出 recheck範圍: maybe_head 本身範圍 往左右上下 延伸 extend 個 pixel
-        int extend = 6;
-        int recheck_l = maybe_head[0][go_head] - extend;
-        int recheck_r = recheck_l + MaybeHead_final_template.cols + extend*2;
-        int recheck_t = maybe_head[1][go_head] - extend;
-        int recheck_d = recheck_t + MaybeHead_final_template.rows + extend*2;
-        if(recheck_l < 0                  ) recheck_l = 0;
-        if(recheck_r > reduce_line.cols -1) recheck_r = reduce_line.cols -1;
-        if(recheck_t < 0                  ) recheck_t = 0;
-        if(recheck_d > reduce_line.rows -1) recheck_d = reduce_line.rows -1;
-
-        int recheck_width  = recheck_r - recheck_l;
-        int recheck_height = recheck_d - recheck_t;
-        // recheck範圍 看一下有沒有圈對
-        if(debuging){
-            cout << "recheck_l=" << recheck_l << " , recheck_r=" << recheck_r << ", recheck_t=" << recheck_t << " , recheck_d=" << recheck_d << endl;
-            rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 1);
-            imshow("recheck",debug_img);
-            waitKey(0);
-        }
-        // *********************************************************
-
-
-
         // 測試很多次, 信心0.75以上就是辨識成功了, 不用再recheck了直接指定信心100%
         if(maybe_head[2][go_head] >=0.75) {
             maybe_head[2][go_head] = 1.0;
             if(debuging){
-                rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                rectangle(debug_img, Point(maybe_head_x, maybe_head_y) , Point(maybe_head_x + template_recheck.cols, maybe_head_y + template_recheck.rows), Scalar(255, 0, 0), 1);
                 cv::imshow("debug_img", debug_img);
                 cv::waitKey(0);
             }
         }
         // 如果 信心沒有達到 0.75 就要 recheck
         else if(maybe_head[2][go_head] < 0.75 ){ //  如果太不像了~~recheck~~
+            // 定出 recheck範圍: maybe_head 本身範圍 往左右上下 延伸 extend 個 pixel
+            int extend = 6;
+            int recheck_l = maybe_head[0][go_head] - extend;
+            int recheck_r = recheck_l + MaybeHead_final_template.cols + extend*2;
+            int recheck_t = maybe_head[1][go_head] - extend;
+            int recheck_d = recheck_t + MaybeHead_final_template.rows + extend*2;
+            if(recheck_l < 0                  ) recheck_l = 0;
+            if(recheck_r > reduce_line.cols -1) recheck_r = reduce_line.cols -1;
+            if(recheck_t < 0                  ) recheck_t = 0;
+            if(recheck_d > reduce_line.rows -1) recheck_d = reduce_line.rows -1;
+
+            int recheck_width  = recheck_r - recheck_l;
+            int recheck_height = recheck_d - recheck_t;
+            // recheck範圍 看一下有沒有圈對
+            if(debuging){
+                cout << "recheck_l=" << recheck_l << " , recheck_r=" << recheck_r << ", recheck_t=" << recheck_t << " , recheck_d=" << recheck_d << endl;
+                rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 1);
+                imshow("recheck",debug_img);
+                waitKey(0);
+            }
+            // *********************************************************
+
             bool recheck_sucess = false;
             // 疊加樣本比對結果的容器
             Mat acc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
-
+            
             // 八分休止 recheck,
             // 先用原本有白色外框的 8-rest-white-both-2-2.bmp 把原本的基礎定出來,
             // 再疊加上 八分休止 最具特色的上半部分 8_up_very_fit2.bmp, 
@@ -308,8 +303,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     maybe_head[2][go_head] = maxVal;
                     rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
                 }
-            
-                
                 // cv::imshow("debug_img", debug_img);
                 // cv::waitKey(0);
             }
