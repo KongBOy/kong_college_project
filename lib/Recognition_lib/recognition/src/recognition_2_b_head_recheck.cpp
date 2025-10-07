@@ -433,10 +433,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
 
-                    
-                    if(head_type == 7 && (size == 14)) maxVal -= 0.08 ; // 再多 -0.01是因為如果音符是8分音符，maxVal也會很高~~所以多-0.1讓他比較不會超過門檻~~
-                    // if(head_type == 1 && (size == 14)) maxVal += (float)14/(float)(template_recheck.rows*template_recheck.cols);
-
                     // cout註解 看recheck後的相似度 和原來的相似度
                     // cout << "old_value = " << maybe_head[2][go_head] << ", recheck_size" << size << " , max_value_kong = " << maxVal;
                     
