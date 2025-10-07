@@ -409,6 +409,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 // cv::waitKey(0);
             }
             else if(head_type == 2){
+                // 二分音符
                 for(int size = 14 ; size <= 15 ; size++ ){
                     template_recheck = imread("Resource/note/2/2-" + IntToString(size) +"-white-both-2.bmp", 0);
                     Mat recheck_result;
