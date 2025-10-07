@@ -16,43 +16,13 @@ using namespace std;
 #include "string_tools.h"
 
 
-static void matchTemplate2(Mat src_img,Mat template_test,Mat& result)
-{
+static void matchTemplate2(Mat src_img,Mat template_test,Mat& result){
     // 位置, 顏色 都有匹配的話 才算算一格 similar
-    // 另一種寫法：
-    /*
-        Mat test2 = src_img(Rect(0,0,template_test.cols,template_test.rows)).clone();
-        test = template_test-test2;
-        cout << test << ' ' << endl;
-        imshow("mat subscrib",test);
-        waitKey(0);
-    */
-    // 另一種寫法：這寫法雖然要簡潔，但反而比較慢喔~~
-    /*
-        Mat test2(template_test.rows,template_test.cols,CV_8UC1);
-        float total_pix = template_test.rows * template_test.cols;
-        for(int go_s_row = 0; go_s_row < src_img.rows - template_test.rows +1; go_s_row++)
-        {
-            for(int go_s_col = 0 ; go_s_col < src_img.cols - template_test.cols +1 ; go_s_col++)
-            {
-                float similar = 0;
-                test2 = src_img(Rect(go_s_col,go_s_row,template_test.cols,template_test.rows)).clone();
-                test2 -= template_test;
-                for(int go_t_row = 0 ; go_t_row < template_test.rows ; go_t_row++)
-                {
-                    for(int go_t_col = 0 ; go_t_col < template_test.cols ; go_t_col++)
-                    {
-                        if( !test2.at<uchar>(go_t_row, go_t_col) ) similar++;
-                    }
-                }
-            }
-        }
-    */
-
     float total_pix = template_test.rows * template_test.cols;
+    float similar;
     for(int go_s_row = 0; go_s_row < src_img.rows - template_test.rows +1; go_s_row++){
         for(int go_s_col = 0 ; go_s_col < src_img.cols - template_test.cols +1 ; go_s_col++){
-            float similar = 0;
+            similar = 0;
             for(int go_t_row = 0 ; go_t_row < template_test.rows ; go_t_row++){
                 for(int go_t_col = 0 ; go_t_col < template_test.cols ; go_t_col++){
                     //  另一種寫法：if( !(template_test.at<uchar>(go_t_row, go_t_col) - src_img.at<uchar>(go_s_row + go_t_row,go_s_col + go_t_col)) )
@@ -61,8 +31,7 @@ static void matchTemplate2(Mat src_img,Mat template_test,Mat& result)
                     }
                 }
             }
-            // float similar_rate = similar / total_pix;
-            result.at<float>(go_s_row,go_s_col) = similar / total_pix;// similar_rate;
+            result.at<float>(go_s_row,go_s_col) = similar / total_pix;
             // cout << "similar_rate = " << similar_rate << endl;
         }
     }
@@ -70,8 +39,7 @@ static void matchTemplate2(Mat src_img,Mat template_test,Mat& result)
     // waitKey(0);
 }
 
-static void matchTemplate2black(Mat src_img,Mat template_test,Mat& result)
-{
+static void matchTemplate2black(Mat src_img, Mat template_test, Mat& result){
     // copy matchTemplate 只有在最中間的if 多加 template_test.at<uchar>(go_t_row, go_t_col) == 0 這個條件
     float total_pix = template_test.rows * template_test.cols;
     for(int go_s_row = 0; go_s_row < src_img.rows - template_test.rows +1; go_s_row++){
@@ -86,8 +54,7 @@ static void matchTemplate2black(Mat src_img,Mat template_test,Mat& result)
                     }
                 }
             }
-            // float similar_rate = similar / total_pix;
-            result.at<float>(go_s_row,go_s_col) = similar / total_pix;// similar_rate;
+            result.at<float>(go_s_row,go_s_col) = similar / total_pix;
             // cout << "similar_rate = " << similar_rate << endl;
         }
     }
