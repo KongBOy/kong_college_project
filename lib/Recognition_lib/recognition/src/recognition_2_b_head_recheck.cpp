@@ -428,7 +428,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                     // CV_TM_CCOEFF_NORMED 有助於 把八分音符符尾 的 similarity 壓低, 所以 * 2
                     matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
-                    minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    minMaxLoc( recheck_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                     cout << "cv2=" << maxVal << endl;
                     
                     acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result * 2;
@@ -541,7 +541,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
             // head_type == 1(全休止符), 3(二分休止符) 前面的step已經做得很好了 不用recheck 所以這邊就沒有寫了
 
             if(recheck_sucess == false){
-                // cout註解 recheck失敗也標記一下
+                // recheck失敗也標記一下
                 // cout << "this head might not be head" << endl;
                 rectangle(debug_img, Point(recheck_l, recheck_t),Point(recheck_r, recheck_d),Scalar(0, 0, 255), 1);
                 // **************************
