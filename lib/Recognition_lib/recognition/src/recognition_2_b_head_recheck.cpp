@@ -176,9 +176,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
             // recheck範圍 看一下有沒有圈對
             if(debuging){
                 cout << "recheck_l=" << recheck_l << " , recheck_r=" << recheck_r << ", recheck_t=" << recheck_t << " , recheck_d=" << recheck_d << endl;
-                rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 1);
-                imshow("recheck", debug_img);
-                waitKey(0);
+                rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 2);
+                imshow("debug_img", debug_img);
             }
             // *********************************************************
 
