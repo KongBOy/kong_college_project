@@ -569,7 +569,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                         maybe_head[0][go_head] = recheck_l + maxLoc.x;
                         maybe_head[1][go_head] = recheck_t + maxLoc.y;
                         maybe_head[2][go_head] = maxVal;
-                        rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                        rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
                         // *****************************
                         // imshow("recheck", debug_img);
                         // waitKey(0);
@@ -581,8 +581,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
             if(recheck_sucess == false){
                 // recheck失敗也標記一下
-                // cout << "this head might not be head" << endl;
-                rectangle(debug_img, Point(recheck_l, recheck_t),Point(recheck_r, recheck_d),Scalar(0, 0, 255), 1);
+                if(debuging) cout << "recheck fail" << endl;
+                rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 1);
                 // **************************
                 // imshow("recheck", debug_img);
                 // waitKey(0);
