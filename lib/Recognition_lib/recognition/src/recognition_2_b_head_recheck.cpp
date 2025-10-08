@@ -92,13 +92,13 @@ void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
         for(int go_x = 0 ; go_x < width; go_x++){
             if( src_img.at<uchar>(go_y + top, go_x + left) == template_img.at<uchar>(go_y, go_x)){
                 similar++;
-                if     (template_img.at<uchar>(go_y, go_x) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0, 255, 170), 1);
-                else                                               circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 36, 135,   0), 1);
+                if     (src_img.at<uchar>(go_y + top, go_x + left) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0, 255, 170), 1);
+                else                                                       circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 36, 135,   0), 1);
             }
             else{
                 no_sim++;
-                if     (template_img.at<uchar>(go_y, go_x) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0,   0, 255), 1);
-                else                                               circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 10,   0, 105), 1);
+                if     (src_img.at<uchar>(go_y + top, go_x + left) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0,   0, 255), 1);
+                else                                                       circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 10,   0, 105), 1);
                 
             }
         }
@@ -481,6 +481,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    debug_matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, maxLoc.x, maxLoc.y);
                     cout << "kong2=" << maxVal << endl;
                     
                     acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
@@ -557,6 +558,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    debug_matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, maxLoc.x, maxLoc.y);
 
                     if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
