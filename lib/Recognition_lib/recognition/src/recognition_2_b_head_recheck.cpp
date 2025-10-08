@@ -111,11 +111,20 @@ void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
     string ok_ratio_str = ss.str();
 
     // 放大顯示
-    int show_width = 300;
-    float show_ratio = show_width / width;
-    cv::resize(debug_img, debug_img, cv::Size(show_ratio * width, show_ratio * height));
-    imshow        (ok_ratio_str.c_str(), debug_img);
-    cvMoveWindow  (ok_ratio_str.c_str(), 10, 300);
+    int show_width = 250;
+    float show_ratio = show_width / template_img.cols;
+    cv::resize   (template_img, template_img, cv::Size(show_ratio * template_img.cols, show_ratio * template_img.rows));
+    imshow       ("template_img", template_img);
+    cvMoveWindow ("template_img", 10, 300);
+    cv::resize   (debug_img, debug_img, cv::Size(show_ratio * debug_img.cols, show_ratio * debug_img.rows));
+    imshow       (ok_ratio_str.c_str(), debug_img);
+    cvMoveWindow (ok_ratio_str.c_str(), 280, 300);
+    cv::resize   (src_img, src_img, cv::Size(show_ratio * src_img.cols, show_ratio * src_img.rows));
+    imshow       ("src_img", src_img);
+    cvMoveWindow ("src_img", 650, 300);
+
+    cout << "debug_img   .cols:" << debug_img   .cols << endl;
+    cout << "template_img.cols:" << template_img.cols << endl;
     waitKey(0);
     destroyWindow (ok_ratio_str.c_str());
 }
