@@ -71,7 +71,7 @@ static void matchTemplate2black(Mat src_img, Mat template_test, Mat& result){
 // matchTemplate2 的視覺化版本, 把有完全對上的pixel標上色
 void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
     Mat debug_img;
-    cvtColor(src_img, debug_img,CV_GRAY2BGR);
+    cvtColor(src_img, debug_img, CV_GRAY2BGR);
     int right = left + template_img.cols - 1;
     int down  = top  + template_img.rows - 1;
     // 防呆
@@ -140,7 +140,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
         MaybeHead_draw_w_color(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
         cv::imshow("debug_img", debug_img);
         cvMoveWindow("debug_img", 10, 80);
-        cv::waitKey(0);
     }
     // 會用到的變數先宣告
     Mat template_recheck ;
@@ -151,12 +150,12 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
         maybe_head_y = maybe_head[1][go_head];
 
         // 測試很多次, 信心0.75以上就是辨識成功了, 不用再recheck了直接指定信心100%
-        if(maybe_head[2][go_head] >=0.75) {
-            maybe_head[2][go_head] = 1.0;
+        if( maybe_head[2][go_head] >= 0.75) {
+            maybe_head[2][go_head]  = 1.0;
             if(debuging){
-                rectangle(debug_img, Point(maybe_head_x, maybe_head_y) , Point(maybe_head_x + template_recheck.cols, maybe_head_y + template_recheck.rows), Scalar(255, 0, 0), 1);
-                cv::imshow("debug_img", debug_img);
-                cv::waitKey(0);
+                rectangle(debug_img, Point(maybe_head_x, maybe_head_y) , Point(maybe_head_x + template_recheck.cols, maybe_head_y + template_recheck.rows), Scalar(255, 0, 0), 2);
+                cv::imshow  ("debug_img", debug_img);
+                cvMoveWindow("debug_img", 10, 80);
             }
         }
         // 如果 信心沒有達到 0.75 就要 recheck
@@ -554,6 +553,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     int recheck_result_col = recheck_width  - template_recheck.cols +1;
                     Mat recheck_result(recheck_result_row,recheck_result_col, CV_32FC1);
                     matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                    
 
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
