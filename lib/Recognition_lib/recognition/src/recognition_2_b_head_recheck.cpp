@@ -14,6 +14,7 @@ using namespace std;
 #include "recognition_2_b_head_recheck.h"
 
 #include "string_tools.h"
+#include <iomanip>
 
 
 static void matchTemplate2(Mat src_img, Mat template_test, Mat& result){
@@ -65,6 +66,58 @@ static void matchTemplate2black(Mat src_img, Mat template_test, Mat& result){
     }
     // imshow("template_test",result);
     // waitKey(0);
+}
+
+// matchTemplate2 的視覺化版本, 把有完全對上的pixel標上色
+void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
+    Mat debug_img;
+    cvtColor(src_img, debug_img,CV_GRAY2BGR);
+    int right = left + template_img.cols - 1;
+    int down  = top  + template_img.rows - 1;
+    // 防呆
+    if(left  < 0              ) left  = 0;
+    if(right > src_img.cols -1) right = src_img.cols -1;
+    if(top   < 0              ) top   = 0;
+    if(down  > src_img.rows -1) down  = src_img.rows -1;
+    int width  = right - left + 1;
+    int height = down - top + 1;
+
+    float total_pix = height * width;
+    float similar = 0;
+    float no_sim  = 0;
+    float ok_ratio  = 0;
+    // 完全匹配的地方, 白色標淺綠, 黑色標深綠
+    // 不全匹配的地方, 白色標紅色, 黑色標深紅
+    for(int go_y = 0 ; go_y < height; go_y++){
+        for(int go_x = 0 ; go_x < width; go_x++){
+            if( src_img.at<uchar>(go_y + top, go_x + left) == template_img.at<uchar>(go_y, go_x)){
+                similar++;
+                if     (template_img.at<uchar>(go_y, go_x) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0, 255, 170), 1);
+                else                                               circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 36, 135,   0), 1);
+            }
+            else{
+                no_sim++;
+                if     (template_img.at<uchar>(go_y, go_x) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0,   0, 255), 1);
+                else                                               circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 10,   0, 105), 1);
+                
+            }
+        }
+    }
+    ok_ratio = similar / total_pix;
+
+    // ok_ratio 轉 string
+    stringstream ss;
+    ss << setw(2) <<setfill('0') <<ok_ratio;
+    string ok_ratio_str = ss.str();
+
+    // 放大顯示
+    int show_width = 300;
+    float show_ratio = show_width / width;
+    cv::resize(debug_img, debug_img, cv::Size(show_ratio * width, show_ratio * height));
+    imshow        (ok_ratio_str.c_str(), debug_img);
+    cvMoveWindow  (ok_ratio_str.c_str(), 10, 300);
+    waitKey(0);
+    destroyWindow (ok_ratio_str.c_str());
 }
 
 
@@ -503,29 +556,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                     // 如果在某個size 有信心直超過0.80 就當作過關
                     if(maxVal >= 0.800){
-                        /*
-                        // matchTemplate2 的視覺化版本, 把有完全隊上的pixel標上色
-                        Mat debug_img2 = reduce_line.clone();
-                        cvtColor(reduce_line,debug_img2,CV_GRAY2BGR);
-
-                        rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d) ,Scalar(255, 0, 0), 2);
-                        for(int debug_y = 0 ; debug_y < template_recheck.rows ; debug_y++){
-                            for(int debug_x = 0 ; debug_x < template_recheck.cols ; debug_x++){
-                                if(   reduce_line     .at<uchar>(debug_y + recheck_t + maxLoc.y , debug_x + recheck_l + maxLoc.x)
-                                   == template_recheck.at<uchar>(debug_y                        , debug_x)){
-                                    line(debug_img2,Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),
-                                                    Point(debug_x + recheck_l + maxLoc.x,debug_y + recheck_t + maxLoc.y),Scalar(0, 255, 0), 1);
-                                }
-                            }
-                        }
-
-                        imshow("recheck_debug", debug_img2);
-                        waitKey(0);
-                        */
-                        // ***************************
-                        // imshow("recheck", debug_img);
-                        // waitKey(0);
-
                         recheck_sucess = true;
                         maybe_head[0][go_head] = recheck_l + maxLoc.x;
                         maybe_head[1][go_head] = recheck_t + maxLoc.y;
