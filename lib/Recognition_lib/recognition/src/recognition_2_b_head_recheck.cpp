@@ -506,7 +506,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     // waitKey(0);
                 }
             }
-            else if(head_type == 5 or head_type == 9){
+            else if(head_type == 5 || head_type == 9){
                 // 四分休止符 和 高音譜記號
                 if(head_type == 5) template_recheck = imread("Resource/note/4-rest/4-rest-white-both-1.bmp", 0);
                 if(head_type == 9) template_recheck = imread("Resource/note/9/9-bin.bmp", 0);
@@ -530,7 +530,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
                 }
             }
-            else if(head_type == 0 or head_type == 4){{
+            else if(head_type == 0 || head_type == 4){
                 // 全音符, 四分音符
                 // 不同size 做樣本比對
                 for(int size = 14 ; size <= 16 ; size++ ){
