@@ -471,10 +471,10 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
-                minMaxLoc( recheck_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
 
-                cout <<  "ord maxVal:" << maxVal << endl;
-                if( maxVal > 0.15 ){
+                if(debuging) cout << "32 rest maxVal:" << maxVal << endl;
+                if( maxVal > 0.45 ){
                     recheck_sucess = true;
                     maybe_head[0][go_head] = recheck_l + maxLoc.x;
                     maybe_head[1][go_head] = recheck_t + maxLoc.y;
