@@ -71,8 +71,8 @@ static void matchTemplate2black(Mat src_img, Mat template_test, Mat& result){
 
 // matchTemplate2 的視覺化版本, 把有完全對上的pixel標上色
 void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
-    Mat debug_img;
-    cvtColor(src_img, debug_img, CV_GRAY2BGR);
+    Mat src_img_draw;
+    cvtColor(src_img, src_img_draw, CV_GRAY2BGR);
     int right = left + template_img.cols - 1;
     int down  = top  + template_img.rows - 1;
     // 防呆
@@ -93,13 +93,13 @@ void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
         for(int go_x = 0 ; go_x < width; go_x++){
             if( src_img.at<uchar>(go_y + top, go_x + left) == template_img.at<uchar>(go_y, go_x)){
                 similar++;
-                if     (src_img.at<uchar>(go_y + top, go_x + left) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0, 255, 170), 1);
-                else                                                       circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 36, 135,   0), 1);
+                if     (src_img.at<uchar>(go_y + top, go_x + left) == 255) circle(src_img_draw, Point(go_x + left, go_y + top), 1, Scalar(  0, 255, 170), 1);
+                else                                                       circle(src_img_draw, Point(go_x + left, go_y + top), 1, Scalar( 36, 135,   0), 1);
             }
             else{
                 no_sim++;
-                if     (src_img.at<uchar>(go_y + top, go_x + left) == 255) circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar(  0,   0, 255), 1);
-                else                                                       circle(debug_img, Point(go_x + left, go_y + top), 1, Scalar( 10,   0, 105), 1);
+                if     (src_img.at<uchar>(go_y + top, go_x + left) == 255) circle(src_img_draw, Point(go_x + left, go_y + top), 1, Scalar(  0,   0, 255), 1);
+                else                                                       circle(src_img_draw, Point(go_x + left, go_y + top), 1, Scalar( 10,   0, 105), 1);
                 
             }
         }
@@ -112,22 +112,23 @@ void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
     string ok_ratio_str = ss.str();
 
     // 放大顯示
-    int show_width = 250;
+    int show_width = 150;
     float show_ratio = show_width / template_img.cols;
     cv::resize   (template_img, template_img, cv::Size(show_ratio * template_img.cols, show_ratio * template_img.rows));
     imshow       ("template_img", template_img);
     cvMoveWindow ("template_img", 10, 300);
-    cv::resize   (debug_img, debug_img, cv::Size(show_ratio * debug_img.cols, show_ratio * debug_img.rows));
-    imshow       (ok_ratio_str.c_str(), debug_img);
-    cvMoveWindow (ok_ratio_str.c_str(), 280, 300);
+    cv::resize   (src_img_draw, src_img_draw, cv::Size(show_ratio * src_img_draw.cols, show_ratio * src_img_draw.rows));
+    imshow       (ok_ratio_str.c_str(), src_img_draw);
+    cvMoveWindow (ok_ratio_str.c_str(), 180, 300);
     cv::resize   (src_img, src_img, cv::Size(show_ratio * src_img.cols, show_ratio * src_img.rows));
     imshow       ("src_img", src_img);
-    cvMoveWindow ("src_img", 650, 300);
+    cvMoveWindow ("src_img", 450, 300);
 
-    cout << "debug_img   .cols:" << debug_img   .cols << endl;
+    cout << "src_img_draw.cols:" << src_img_draw.cols << endl;
     cout << "template_img.cols:" << template_img.cols << endl;
     waitKey(0);
     destroyWindow (ok_ratio_str.c_str());
+    destroyWindow ("src_img");
 }
 
 
