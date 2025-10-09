@@ -137,7 +137,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
     // 先看一下 recheck 之前的 maybe_head 狀況
     if(debuging){
         cv::imshow("template_img", MaybeHead_final_template);
-        MaybeHead_draw_w_color(debug_img, Mat(13, 15, CV_8UC1), maybe_head_count, maybe_head);
+        MaybeHead_draw_w_color(debug_img, MaybeHead_final_template, maybe_head_count, maybe_head);
         cv::imshow("debug_img", debug_img);
         cvMoveWindow("debug_img", 10, 80);
     }
