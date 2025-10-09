@@ -124,8 +124,6 @@ void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
     imshow       ("src_img", src_img);
     cvMoveWindow ("src_img", 450, 300);
 
-    cout << "src_img_draw.cols:" << src_img_draw.cols << endl;
-    cout << "template_img.cols:" << template_img.cols << endl;
     waitKey(0);
     destroyWindow (ok_ratio_str.c_str());
     destroyWindow ("src_img");
