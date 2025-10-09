@@ -45,6 +45,7 @@ static void matchTemplate2(Mat src_img, Mat template_test, Mat& result){
     // waitKey(0);
 }
 
+// 有些音符黑色部分太少白色背景太多容易被拉走到背景多的地方相似度高, 所以就寫了此funtion只看黑色部分正確才similar++
 static void matchTemplate2black(Mat src_img, Mat template_test, Mat& result){
     // copy matchTemplate 只有在最中間的if 多加 template_test.at<uchar>(go_t_row, go_t_col) == 0 這個條件
     float total_pix = template_test.rows * template_test.cols;
@@ -142,9 +143,21 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
         cvMoveWindow("debug_img", 10, 80);
     }
     // 會用到的變數先宣告
-    Mat template_recheck ;
+    Mat template_recheck;
     int maybe_head_x;
     int maybe_head_y;
+
+    Mat recheck_region;
+    int extend;
+    int recheck_l;
+    int recheck_r;
+    int recheck_t;
+    int recheck_d;
+    int recheck_width;
+    int recheck_height;
+    bool recheck_sucess;
+    Mat acc_result;  // 疊加樣本比對結果的容器
+
     for(int go_head = 0 ; go_head < maybe_head_count ; go_head ++){
         maybe_head_x = maybe_head[0][go_head];
         maybe_head_y = maybe_head[1][go_head];
@@ -161,29 +174,31 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
         // 如果 信心沒有達到 0.75 就要 recheck
         else if(maybe_head[2][go_head] < 0.75 ){ //  如果太不像了~~recheck~~
             // 定出 recheck範圍: maybe_head 本身範圍 往左右上下 延伸 extend 個 pixel
-            int extend = 6;
-            int recheck_l = maybe_head[0][go_head] - extend;
-            int recheck_r = recheck_l + MaybeHead_final_template.cols + extend*2;
-            int recheck_t = maybe_head[1][go_head] - extend;
-            int recheck_d = recheck_t + MaybeHead_final_template.rows + extend*2;
+            extend = 6;
+            recheck_l = maybe_head[0][go_head] - extend;
+            recheck_r = recheck_l + MaybeHead_final_template.cols + extend*2;
+            recheck_t = maybe_head[1][go_head] - extend;
+            recheck_d = recheck_t + MaybeHead_final_template.rows + extend*2;
             if(recheck_l < 0                  ) recheck_l = 0;
             if(recheck_r > reduce_line.cols -1) recheck_r = reduce_line.cols -1;
             if(recheck_t < 0                  ) recheck_t = 0;
             if(recheck_d > reduce_line.rows -1) recheck_d = reduce_line.rows -1;
 
-            int recheck_width  = recheck_r - recheck_l;
-            int recheck_height = recheck_d - recheck_t;
+            recheck_width  = recheck_r - recheck_l;
+            recheck_height = recheck_d - recheck_t;
             // recheck範圍 看一下有沒有圈對
             if(debuging){
                 cout << "recheck_l=" << recheck_l << " , recheck_r=" << recheck_r << ", recheck_t=" << recheck_t << " , recheck_d=" << recheck_d << endl;
                 rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 2);
                 imshow("debug_img", debug_img);
             }
+            // recheck的region 實際拉出來
+            recheck_region = reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  );
             // *********************************************************
 
-            bool recheck_sucess = false;
+            recheck_sucess = false;
             // 疊加樣本比對結果的容器
-            Mat acc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
+            acc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
             
             // 八分休止 recheck,
             // 先用原本有白色外框的 8-rest-white-both-2-2.bmp 把原本的基礎定出來,
@@ -197,7 +212,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 int recheck_result_row = recheck_height - template_recheck.rows +1;
                 int recheck_result_col = recheck_width  - template_recheck.cols +1;
                 Mat recheck_result;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 
                 // 八分休止最具特色的上半部分 做樣本比對
@@ -206,7 +221,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 // 有外邊框的八分休止  疊加上 八分休止最具特色的上半部分 做樣本比對的結果
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 // 取平均
@@ -235,7 +250,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                 Mat recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1.bmp", 0);   // 上下不要留白，留白會抓到八分的休止符
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
@@ -243,98 +258,98 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-01.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-02.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-03.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-04.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-05.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-06.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-07.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-08.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-09.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-10.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-11.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-12.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-13.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/6-rest/6-rest-hard-14.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
@@ -353,7 +368,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
                 Mat recheck_result2(recheck_result_row,recheck_result_col, CV_32FC1);
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result2, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result2, CV_TM_CCOEFF_NORMED);
 
                 double minVal2; double maxVal2; Point minLoc2; Point maxLoc2;
                 Point matchLoc2;
@@ -382,9 +397,9 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 
                 template_recheck = imread("Resource/note/32-rest/7-2-up15w.bmp", 0);
@@ -392,63 +407,63 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/32-rest/7-3-up15w.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/32-rest/7-4-up15w.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/32-rest/7-5-up15w.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/32-rest/7-6-up15w.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/32-rest/7-7-up15w.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 template_recheck = imread("Resource/note/32-rest/7-8-up15w.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 recheck_result_row = recheck_height - template_recheck.rows +1;
                 recheck_result_col = recheck_width  - template_recheck.cols +1;
-                matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
-                matchTemplate2black(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2black(recheck_region, template_recheck, recheck_result);
                 acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                 
                 acc_result /= 14;
@@ -476,19 +491,19 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     int recheck_result_row = recheck_height - template_recheck.rows +1;
                     int recheck_result_col = recheck_width  - template_recheck.cols +1;
 
-                    matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                    matchTemplate2(recheck_region, template_recheck, recheck_result);
 
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                    debug_matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, maxLoc.x, maxLoc.y);
+                    debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
                     cout << "kong2=" << maxVal << endl;
                     
                     acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                     
 
                     // CV_TM_CCOEFF_NORMED 有助於 把八分音符符尾 的 similarity 壓低, 所以 * 2
-                    matchTemplate(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                    matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                     minMaxLoc( recheck_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                     cout << "cv2=" << maxVal << endl;
                     
@@ -522,7 +537,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 int recheck_result_row = recheck_height - template_recheck.rows +1;
                 int recheck_result_col = recheck_width  - template_recheck.cols +1;
                 Mat recheck_result(recheck_result_row,recheck_result_col, CV_32FC1);
-                matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                matchTemplate2(recheck_region, template_recheck, recheck_result);
     
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
@@ -552,13 +567,13 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     int recheck_result_row = recheck_height - template_recheck.rows +1;
                     int recheck_result_col = recheck_width  - template_recheck.cols +1;
                     Mat recheck_result(recheck_result_row,recheck_result_col, CV_32FC1);
-                    matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, recheck_result);
+                    matchTemplate2(recheck_region, template_recheck, recheck_result);
                     
 
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                    debug_matchTemplate2(reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  ), template_recheck, maxLoc.x, maxLoc.y);
+                    debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
 
                     if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
