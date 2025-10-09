@@ -187,7 +187,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
             recheck_height = recheck_d - recheck_t;
             // recheck範圍 看一下有沒有圈對
             if(debuging){
-                cout << "recheck_l=" << recheck_l << " , recheck_r=" << recheck_r << ", recheck_t=" << recheck_t << " , recheck_d=" << recheck_d << endl;
                 rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 2);
                 imshow("debug_img", debug_img);
             }
@@ -206,7 +205,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
             if(head_type == 8){
                 // 原本的 有外邊框的八分休止 做樣本比對
                 template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp", 0);   // 上下要留白，八分辨識度 & 區別度較高
-                if(debuging) cout << "template_recheck.cols = " << template_recheck.cols << endl;
 
                 int recheck_result_row = recheck_height - template_recheck.rows +1;
                 int recheck_result_col = recheck_width  - template_recheck.cols +1;
@@ -226,21 +224,23 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 // 取平均
                 acc_result /= 2;
 
-                // 觀察後覺得 超過0.60 就是八分休止
+                // 最高位置的 相似度超過0.50 就當作過關
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                // cout << "8 rest maxVal=" << maxVal << endl;
-                // cv::imshow("debug_img", debug_img);
-                // cv::imshow("acc_result", acc_result);
-                // cv::waitKey(0);
                 if(maxVal > 0.50){
                     recheck_sucess = true;
                     maybe_head[0][go_head] = recheck_l + maxLoc.x;
                     maybe_head[1][go_head] = recheck_t + maxLoc.y;
                     maybe_head[2][go_head] = maxVal;
-                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                    if(debuging) rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
                 } 
+                // *****************************
+                if(debuging){
+                    cout << "8 rest maxVal=" << maxVal << endl;
+                    imshow("debug_img", debug_img);
+                    waitKey(0);
+                }
             }
             else if(head_type == 6){
                 // 原本的 有外邊框的十六分休止 做樣本比對
@@ -360,7 +360,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
 
 
-                // 十六分休止 下面是白色的 做樣本比對
+                // 6-rest-white-both-1-1_down_white.bmp 是八分休止符, 是為了以防把 八分休止符誤判成十六分休止符, 太像八分音符的也會被剔除掉
                 template_recheck = imread("Resource/note/6-rest/6-rest-white-both-1-1_down_white.bmp", 0);
                 if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                 if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
@@ -373,17 +373,20 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 Point matchLoc2;
                 minMaxLoc( recheck_result2 , &minVal2, &maxVal2, &minLoc2, &maxLoc2, Mat() );
 
-                cout <<  "ord maxVal:" << maxVal << ", down white maxVal:" << maxVal2 << endl;
+                // maxVal > 0.40 意思是 要夠像十六分休止符, maxVal2 < 0.65 意思是 太像八分休止符的要被剔除
                 if( maxVal > 0.40 and maxVal2 < 0.65){
-                    cout << "OK" << endl;
                     recheck_sucess = true;
                     maybe_head[0][go_head] = recheck_l + maxLoc.x;
                     maybe_head[1][go_head] = recheck_t + maxLoc.y;
                     maybe_head[2][go_head] = maxVal;
-                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                    if(debuging) rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
                 }
-                // cv::imshow("debug_img", debug_img);
-                // cv::waitKey(0);
+                // *****************************
+                if(debuging){
+                    cout <<  "16 rest maxVal:" << maxVal << ", 16 rest down white(8 rest) maxVal:" << maxVal2 << endl;
+                    imshow("debug_img", debug_img);
+                    waitKey(0);
+                }
             }
             else if(head_type == 7){
                 // 原本的 有外邊框的三十二分休止 做樣本比對
@@ -471,19 +474,24 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 Point matchLoc;
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
 
-                if(debuging) cout << "32 rest maxVal:" << maxVal << endl;
+                // 最高位置的 相似度超過0.45 就當作過關
                 if( maxVal > 0.45 ){
                     recheck_sucess = true;
                     maybe_head[0][go_head] = recheck_l + maxLoc.x;
                     maybe_head[1][go_head] = recheck_t + maxLoc.y;
                     maybe_head[2][go_head] = maxVal;
-                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                    if(debuging) rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
                 }
-                // cv::imshow("debug_img", debug_img);
-                // cv::waitKey(0);
+                // *****************************
+                if(debuging){
+                    cout << "32 rest maxVal:" << maxVal << endl;
+                    imshow("debug_img", debug_img);
+                    waitKey(0);
+                }
             }
             else if(head_type == 2){
                 // 二分音符
+                if(debuging) cout << "half_note" << endl;
                 for(int size = 14 ; size <= 15 ; size++ ){
                     template_recheck = imread("Resource/note/2/2-" + IntToString(size) +"-white-both-2.bmp", 0);
                     Mat recheck_result;
@@ -495,8 +503,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
                     Point matchLoc;
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                    debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
-                    cout << "kong2=" << maxVal << endl;
+                    if(debuging) debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
+                    if(debuging) cout << ", kong2=" << maxVal;
                     
                     acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                     
@@ -504,7 +512,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     // CV_TM_CCOEFF_NORMED 有助於 把八分音符符尾 的 similarity 壓低, 所以 * 2
                     matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
                     minMaxLoc( recheck_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                    cout << "cv2=" << maxVal << endl;
+                    if(debuging) cout << ", cv2=" << maxVal << endl;
                     
                     acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result * 2;
                 }
@@ -512,9 +520,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                // cout << "old_value = " << maybe_head[2][go_head] <<  " , max_value_mean = " << maxVal << endl;
-                // cv::imshow("recheck_result", reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )));
                 
+                // 最高位置的 相似度超過0.49 就當作過關
                 if(maxVal >= 0.49){
                     recheck_sucess = true;
                     // cout註解 recheck成功的話標記一下
@@ -522,10 +529,13 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     maybe_head[0][go_head] = recheck_l + maxLoc.x;
                     maybe_head[1][go_head] = recheck_t + maxLoc.y;
                     maybe_head[2][go_head] = maxVal;
-                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
-                    // *****************************
-                    // imshow("recheck", debug_img);
-                    // waitKey(0);
+                    if(debuging) rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
+                }
+                // *****************************
+                if(debuging){
+                    cout << "old_value = " << maybe_head[2][go_head] <<  ", max_value_mean = " << maxVal << endl;
+                    imshow("debug_img", debug_img);
+                    waitKey(0);
                 }
             }
             else if(head_type == 5 || head_type == 9){
@@ -541,15 +551,21 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
                 Point matchLoc;
                 minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                if(debuging) debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
 
-                // 如果在某個size 有信心直超過0.80 就當作過關
-                if(maxVal >= 0.800){
+                // 最高位置的 相似度超過0.80 就當作過關
+                if(maxVal >= 0.80){
                     recheck_sucess = true;
                     // cout << "recheck_sucess";
                     maybe_head[0][go_head] = recheck_l + maxLoc.x;
                     maybe_head[1][go_head] = recheck_t + maxLoc.y;
                     maybe_head[2][go_head] = maxVal;
-                    rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 1);
+                    if(debuging) rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
+                }
+                // *****************************
+                if(debuging){
+                    imshow("debug_img", debug_img);
+                    waitKey(0);
                 }
             }
             else if(head_type == 0 || head_type == 4){
@@ -578,44 +594,39 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
                     if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
 
-                    // 如果在某個size 有信心直超過0.80 就當作過關
+                    // 最高位置的 相似度超過0.80 就當作過關
                     if(maxVal >= 0.800){
                         recheck_sucess = true;
                         maybe_head[0][go_head] = recheck_l + maxLoc.x;
                         maybe_head[1][go_head] = recheck_t + maxLoc.y;
                         maybe_head[2][go_head] = maxVal;
-                        rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
-                        // *****************************
-                        // imshow("recheck", debug_img);
-                        // waitKey(0);
+                        if(debuging) rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
+                    }
+                    // *****************************
+                    if(debuging){
+                        imshow("debug_img", debug_img);
+                        waitKey(0);
                     }
                     if(recheck_sucess == true) break;
                 }
             }
             // head_type == 1(全休止符), 3(二分休止符) 前面的step已經做得很好了 不用recheck 所以這邊就沒有寫了
 
+            // recheck 失敗 的話 就把 此顆頭刪除
             if(recheck_sucess == false){
-                // recheck失敗也標記一下
-                if(debuging) cout << "recheck fail" << endl;
-                rectangle(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 1);
-                // **************************
-                // imshow("recheck", debug_img);
-                // waitKey(0);
                 position_erase(maybe_head_count, maybe_head, go_head);
                 go_head--;
+                // **************************
+                // recheck失敗也標記一下, 左上到右下畫一條線槓掉
+                line(debug_img, Point(recheck_l, recheck_t), Point(recheck_r, recheck_d), Scalar(0, 0, 255), 2);
+                imshow("debug_img", debug_img);
+                waitKey(0);
             }
-            // cout << endl;
         }
     }
     // **************************
-    // imshow("recheck", debug_img);
 
-    //  debug整合
-    // imshow("debug",debug_img);
-    // waitKey(0);
-    // destroyWindow("recheck");
-    if(debuging){
-        cv::destroyAllWindows();
-    }
+    if(debuging) cv::destroyAllWindows();
+    
 
 }
