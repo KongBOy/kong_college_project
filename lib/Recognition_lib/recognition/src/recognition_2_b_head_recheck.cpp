@@ -569,7 +569,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 }
             }
             else if(head_type == 0){
-                // 全音符, 夠大顆 算簡單case 只需用 不同size 做樣本比對, 如果超過 threshold 就過關即可
+                // 全音符, 夠大顆 算簡單case 只需用 不同size 做樣本比對, 但中間音位是中空的 在五線譜外 有可能會有一條橫槓, 所以樣本比對要多一個 有橫槓的 然後取平均, 如果超過 threshold 就過關即可
                 for(int size = 14 ; size <= 16 ; size++ ){
                     // 疊加樣本比對結果的容器
                     acc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
@@ -583,7 +583,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     matchTemplate2(recheck_region, template_recheck, recheck_result);
                     acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
                     
-                    template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp", 0);
+                    template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2-staff.bmp", 0);
                     if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                     if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
                     recheck_result_row = recheck_height - template_recheck.rows +1;
