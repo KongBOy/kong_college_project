@@ -201,7 +201,7 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
             // 八分休止 recheck,
             // 先用原本有白色外框的 8-rest-white-both-2-2.bmp 把原本的基礎定出來,
             // 再疊加上 八分休止 最具特色的上半部分 8_up_very_fit2.bmp, 
-            // 綜合兩層的結果 取平均, 信心高於 0.60 就OK囉
+            // 綜合兩層的結果 取平均, 信心高於 0.50 就OK囉
             if(head_type == 8){
                 // 原本的 有外邊框的八分休止 做樣本比對
                 template_recheck = imread("Resource/note/8-rest/8-rest-white-both-2-2.bmp", 0);   // 上下要留白，八分辨識度 & 區別度較高
@@ -657,8 +657,5 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
         }
     }
     // **************************
-
     if(debuging) cv::destroyAllWindows();
-    
-
 }
