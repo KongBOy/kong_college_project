@@ -112,7 +112,7 @@ void debug_matchTemplate2(Mat src_img, Mat template_img, int left, int top){
     string ok_ratio_str = ss.str();
 
     // 放大顯示
-    int show_width = 155;
+    int show_width = 175;
     float show_ratio = show_width / template_img.cols;
     cv::resize   (template_img, template_img, cv::Size(show_ratio * template_img.cols, show_ratio * template_img.rows));
     imshow       ("template_img", template_img);
