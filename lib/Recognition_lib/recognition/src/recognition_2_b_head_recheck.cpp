@@ -568,9 +568,53 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     waitKey(0);
                 }
             }
-            else if(head_type == 0 || head_type == 4){
-                // 全音符, 四分音符
-                // 不同size 做樣本比對
+            else if(head_type == 0){
+                // 全音符, 夠大顆 算簡單case 只需用 不同size 做樣本比對, 如果超過 threshold 就過關即可
+                for(int size = 14 ; size <= 16 ; size++ ){
+                    // 疊加樣本比對結果的容器
+                    acc_result = Mat(recheck_height, recheck_width, CV_32FC1, Scalar(0));
+
+                    template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2-white.bmp", 0);
+                    if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
+                    if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
+                    int recheck_result_row = recheck_height - template_recheck.rows +1;
+                    int recheck_result_col = recheck_width  - template_recheck.cols +1;
+                    Mat recheck_result(recheck_result_row,recheck_result_col, CV_32FC1);
+                    matchTemplate2(recheck_region, template_recheck, recheck_result);
+                    acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                    
+                    template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp", 0);
+                    if(template_recheck.rows > recheck_height) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
+                    if(template_recheck.cols > recheck_width ) continue;  // 有時在太邊緣被切太多 切到比template小的話 這顆頭就跳過吧
+                    recheck_result_row = recheck_height - template_recheck.rows +1;
+                    recheck_result_col = recheck_width  - template_recheck.cols +1;
+                    matchTemplate(recheck_region, template_recheck, recheck_result, CV_TM_CCOEFF_NORMED);
+                    acc_result(  Rect(0, 0, recheck_result_col, recheck_result_row) ) += recheck_result;
+                    
+                    acc_result /= 2;
+                    
+                    double minVal; double maxVal; Point minLoc; Point maxLoc;
+                    minMaxLoc( acc_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
+                    // if(debuging) debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
+
+
+                    // 最高位置的 相似度超過0.80 就當作過關
+                    if(maxVal >= 0.68){
+                        recheck_sucess = true;
+                        maybe_head[0][go_head] = recheck_l + maxLoc.x;
+                        maybe_head[1][go_head] = recheck_t + maxLoc.y;
+                        maybe_head[2][go_head] = maxVal;
+                        if(debuging) rectangle(debug_img, Point(maybe_head[0][go_head], maybe_head[1][go_head]) , Point(maybe_head[0][go_head] + template_recheck.cols, maybe_head[1][go_head] + template_recheck.rows), Scalar(255, 0, 0), 2);
+                    }
+                    // *****************************
+                    if(debuging){
+                        cout << "full note maxVal:" << maxVal << endl;
+                        imshow("debug_img", debug_img);
+                        waitKey(0);
+                    }
+                    if(recheck_sucess == true) break;
+                }
+            }
                 for(int size = 14 ; size <= 16 ; size++ ){
                     // cout << "go_head = " << go_head << " , ";
                     if(head_type == 4) template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp", 0);
