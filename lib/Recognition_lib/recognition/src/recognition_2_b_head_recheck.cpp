@@ -226,7 +226,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
 
                 // 最高位置的 相似度超過0.50 就當作過關
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
-                Point matchLoc;
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                 if(maxVal > 0.50){
                     recheck_sucess = true;
@@ -356,7 +355,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 acc_result /= 15;
 
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
-                Point matchLoc;
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
 
 
@@ -471,7 +469,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 acc_result /= 14;
 
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
-                Point matchLoc;
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
 
                 // 最高位置的 相似度超過0.45 就當作過關
@@ -501,7 +498,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     matchTemplate2(recheck_region, template_recheck, recheck_result);
 
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
-                    Point matchLoc;
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                     if(debuging) debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
                     if(debuging) cout << ", kong2=" << maxVal;
@@ -518,7 +514,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 }
                 acc_result /= 6;
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
-                Point matchLoc;
                 minMaxLoc( acc_result, &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                 
                 // 最高位置的 相似度超過0.49 就當作過關
@@ -549,7 +544,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                 matchTemplate2(recheck_region, template_recheck, recheck_result);
     
                 double minVal; double maxVal; Point minLoc; Point maxLoc;
-                Point matchLoc;
                 minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
                 if(debuging) debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
 
