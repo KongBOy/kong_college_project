@@ -615,13 +615,10 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     if(recheck_sucess == true) break;
                 }
             }
+            else if(head_type == 4){
+                // 四分音符, 全黑的一坨外面包一圈白色很明顯 算簡單case 只需用 不同size 做樣本比對, 如果超過 threshold 就過關即可
                 for(int size = 14 ; size <= 16 ; size++ ){
-                    // cout << "go_head = " << go_head << " , ";
-                    if(head_type == 4) template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp", 0);
-                    if(head_type == 0) template_recheck = imread("Resource/note/0/0-" + IntToString(size) +"-white-both-2.bmp", 0);
-                    // imshow("template_recheck", template_recheck);
-                    // waitKey(0);
-                    // destroyWindow("template_recheck");
+                    template_recheck = imread("Resource/note/4/4-" + IntToString(size) +"-white-both-2.bmp", 0);
 
                     int recheck_result_row = recheck_height - template_recheck.rows +1;
                     int recheck_result_col = recheck_width  - template_recheck.cols +1;
@@ -630,13 +627,8 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
                     
 
                     double minVal; double maxVal; Point minLoc; Point maxLoc;
-                    Point matchLoc;
                     minMaxLoc( recheck_result , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                    debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
-
-                    if(head_type == 0 && (size == 14)) maxVal += (float)32/(float)(template_recheck.rows*template_recheck.cols);
-                    if(head_type == 0 && (size == 15)) maxVal += (float)46/(float)(template_recheck.rows*template_recheck.cols);
-                    if(head_type == 0 && (size == 16)) maxVal += (float)59/(float)(template_recheck.rows*template_recheck.cols);
+                    if(debuging) debug_matchTemplate2(recheck_region, template_recheck, maxLoc.x, maxLoc.y);
 
                     // 最高位置的 相似度超過0.80 就當作過關
                     if(maxVal >= 0.800){
