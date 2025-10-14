@@ -203,8 +203,6 @@ void recognition_2_b_head_recheck(int head_type, Mat MaybeHead_final_template, M
             }
             // recheck的region 實際拉出來
             recheck_region = reduce_line(Rect( recheck_l, recheck_t, recheck_width, recheck_height )  );
-            cout << "recheck_region.rows:" << recheck_region.rows << endl;
-            cout << "recheck_height     :" << recheck_height << endl;
             // *********************************************************
             // 還沒開始 recheck, recheck_sucess 初始設 false
             recheck_sucess = false;
