@@ -27,7 +27,7 @@ static int go_col = 0; //在Mat裡面跑的座標
 const int exp_color = 40;  //自己測試了很多圖大概估測note的顏色大概在30左右
 
 
-// 嘗試找拐點, 但效果不好, 也是都寫了就保留也許未來有機會用到
+// 目前沒有用這個, 嘗試找拐點, 但效果不好, 也是都寫了就保留也許未來有機會用到
 void Calculate_gradient(Mat src){
     int color_value[256];
     int color_count[256];
@@ -101,8 +101,8 @@ void Calculate_gradient(Mat src){
     */
 }
 
-
-unsigned char Binary(Mat & dst){  //src：原圖的copy ； dst：會改掉原來傳進來的圖片~~
+// 目前用的是這個
+unsigned char Binary(Mat& dst){  
     // 統計 dst 裡面的 灰階 顏色數量
     // 初始化容器
     int color_count[256];
@@ -157,7 +157,7 @@ unsigned char Binary(Mat & dst){  //src：原圖的copy ； dst：會改掉原�
 
     threshold -= shift;
 	if(threshold < 0) threshold = 0;
-	//cout<<"threshold = "<<threshold<<endl;
+	// cout<<"threshold = "<< threshold << endl;
 
     // 二值化
 	for(int row = 0 ; row < dst.rows; row++){
@@ -170,7 +170,8 @@ unsigned char Binary(Mat & dst){  //src：原圖的copy ； dst：會改掉原�
 	return threshold;
 }
 
-void Binary_by_patch(Mat& dst , const int div_row, const int div_col){
+// 目前用的是這個
+void Binary_by_patch(Mat& dst, const int div_row, const int div_col, bool debuging){
     Mat patch_img;
 	threshold_map.create(div_row, div_col, CV_8UC1);  // debug用的, 觀察每個patch用什麼threshold
     // 切塊來做 二值化
@@ -183,11 +184,11 @@ void Binary_by_patch(Mat& dst , const int div_row, const int div_col){
 	// const int div_col = 160;
 	const int div_width = width / div_col;
 	const int mod_width = width % div_col;
-	/*
-	cout << "    width = " <<     width << "     height = " <<     height << endl;
-	cout << "mod_width = " << mod_width << " mod_height = " << mod_height << endl;
-	cout << endl;
-	*/
+	if(debuging){
+		cout << "    width=" <<     width << ",     height=" <<     height << endl;
+		cout << "mod_width=" << mod_width << ", mod_height=" << mod_height << endl;
+		cout << endl;
+	}
 
 	int height_frame_acc = mod_height;
 	int height_acc = 0;
@@ -206,17 +207,17 @@ void Binary_by_patch(Mat& dst , const int div_row, const int div_col){
 		for(go_col = 0 ; go_col < div_col ; go_col++){
 			//推出 下一格 width
 			int width_acc_next = width_acc + div_width - 1;
-			if(width_frame_acc/div_col){
+			if(width_frame_acc / div_col){
 				width_acc_next++;
 				width_frame_acc %= div_col;
 			}
-			/*
-			cout<< "colRange = "<<width_acc  <<" ~ "<< width_acc_next  << ", " <<
-				   "rowRange = "<<height_acc <<" ~ "<< height_acc_next << endl;
-			*/
+			if(debuging){
+				cout<< "colRange="<< width_acc  <<" ~ "<< width_acc_next  << ", " <<
+					   "rowRange="<< height_acc <<" ~ "<< height_acc_next << endl;
+			}
 
-			patch_img = dst.rowRange(height_acc,height_acc_next+1)
-					       .colRange( width_acc, width_acc_next+1);
+			patch_img = dst.rowRange(height_acc, height_acc_next+1)
+					       .colRange( width_acc,  width_acc_next+1);
 			threshold_map.at<uchar>(go_row,go_col) = Binary(patch_img);
 
 			//更新 width
@@ -231,18 +232,23 @@ void Binary_by_patch(Mat& dst , const int div_row, const int div_col){
 		width_acc = 0;
 		width_frame_acc = mod_width;
 	}
-	// cout<<endl;
-	// imshow("threshold_map",threshold_map);
-    // imshow("dst", dst);
-    // waitKey(0);
-	// cout<< threshold_map <<' '<<endl;
+	if(debuging){
+		cout << endl;
+		imshow("threshold_map",threshold_map);
+		cvMoveWindow("threshold_map", 10, 10);
+		imshow("dst", dst);
+		cvMoveWindow("dst", 10, 80);
+		cout<< threshold_map << ' ' << endl;
+		waitKey(0);
 
-    imwrite("debug_img/pre2-Binarize.bmp", dst);
+		imwrite("debug_img/pre2-Binarize.bmp", dst);
+	}
+
 }
 
 
 
-
+// 目前沒有用這個
 // 想法：
 // 我認為的"做二值化的目的"：區分"符號"和"背景"
 
