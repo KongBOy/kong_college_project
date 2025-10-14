@@ -234,13 +234,15 @@ void Binary_by_patch(Mat& dst, const int div_row, const int div_col, bool debugi
 	}
 	if(debuging){
 		cout << endl;
-		imshow("threshold_map",threshold_map);
+		imshow("threshold_map", threshold_map);
 		cvMoveWindow("threshold_map", 10, 10);
 		imshow("dst", dst);
 		cvMoveWindow("dst", 10, 80);
 		cout<< threshold_map << ' ' << endl;
 		waitKey(0);
-
+		
+		cv::destroyWindow("threshold_map");
+		cv::destroyWindow("dst");
 		imwrite("debug_img/pre2-Binarize.bmp", dst);
 	}
 
