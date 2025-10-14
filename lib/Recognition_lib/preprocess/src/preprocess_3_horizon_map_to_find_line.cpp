@@ -101,11 +101,11 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
     const int mountain_area_min = STAFF_LINE_WIDTH_MIN * ERROR_RATE * width; //一條五線譜線 占的面積
     const int mountain_area_max = STAFF_LINE_WIDTH_MAX * ERROR_RATE * width + (TAIL + NOTE + CIRCLE_LINE + WORD + ELSE) * width; //一組五線譜 + 16分的尾巴 + 一堆NOTE + 圓滑線 + 字 + 其他雜訊
     if(debuging){
-        cout<<"src_img.cols = "<<src_img.cols<<endl;
-        cout<<"width = "<<width<<endl;
-        cout<<"distance_range_min = "<<distance_range_min<<endl;
-        cout<<"mountain_area_min = "<<mountain_area_min<<endl;
-        cout<<"mountain_area_max = "<<mountain_area_max<<endl;
+        cout << "src_img.cols=" << src_img.cols << endl;
+        cout << "width=" << width << endl;
+        cout << "distance_range_min=" << distance_range_min << endl;
+        cout << "mountain_area_min=" << mountain_area_min << endl;
+        cout << "mountain_area_max=" << mountain_area_max << endl;
     }
 
     // 建立容器
@@ -150,9 +150,13 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
                 // 保險一點 取 l_edge + 1 和 r_edge -1 的範圍來算面積
                 for(int i = l_edge[e_count] +1 ; i < r_edge[e_count] ; i++) mountain_area[e_count] += w_count[i];
 
-                // Mat proc_img = src_img(Rect(THRESH_HOLD, l_edge[e_count],  width, distance[e_count]));
-                // imshow("test",proc_img);
-                // waitKey(0);
+                if(debuging){
+                    imshow      ("all_mountain", src_img);
+                    cvMoveWindow("all_mountain",  10, 10);
+                    imshow      ("mountain"    , src_img(Rect(THRESH_HOLD, l_edge[e_count],  width, distance[e_count])));
+                    cvMoveWindow("mountain"    , 200, 10);
+                    waitKey(0);
+                }
                 e_count++;
             }
         }
@@ -229,6 +233,9 @@ void Horizon_map_to_find_line(Mat src_img, vector<Vec2f> & mountain_lines2, Mat 
 
     // 找到所有線 對 rho 做排序
     bubbleSort_H_rho(mountain_lines2);
-    if(debuging) Watch_Hough_Line(mountain_lines2, src_img, "", (string)"debug_img/" + "pre3_HorizL_2_2_All_line");
-
+    if(debuging) {
+        Watch_Hough_Line(mountain_lines2, src_img, "", (string)"debug_img/" + "pre3_HorizL_2_2_All_line");
+        cv::destroyWindow("all_mountain");
+        cv::destroyWindow("mountain");
+    }
 }
