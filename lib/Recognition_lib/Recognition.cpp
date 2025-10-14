@@ -96,86 +96,14 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
                 string Title,Mat UI2_5,
                 bool debuging)
 {
-    // camera();
+    bool developing_debuging = false;
+    Mat src_img = ord_img.clone();
+    Mat src_bin = src_img.clone();
 
-    /*
-    Mat test_roi(100,100,CV_8UC1,Scalar(0));
-    for(int go_row = 0  ; go_row < test_roi.rows ; go_row++)
-        for(int go_col = 0 ; go_col < test_roi.cols ; go_col++)
-            test_roi.at<uchar>(go_row,go_col) = 10*(go_col/10) + 10*(go_row/10);
-
-    cout<<test_roi(Rect(0,0,13,10))<<" "<<endl;
-    double minVal; double maxVal; Point minLoc; Point maxLoc;
-                Point matchLoc;
-
-                minMaxLoc( test_roi , &minVal, &maxVal, &minLoc, &maxLoc, Mat() );
-                cout<<maxLoc.x<<endl; ///琌ノROI┮璶簿タ絋竚
-                cout<<maxLoc.y<<endl;
-                cout<<maxVal<<endl;
-    imshow("test_roi",test_roi);
-    waitKey(0);
-    */
-    /*
-    Mat find_template(12,15,CV_8UC1,Scalar(125));
-    for(int i = 1 ; i < 70 ; i++)
-    {
-        string file_name = "note/find_template/1 ("+IntToString(i)+").bmp";
-        Mat read_template = imread(file_name,0);
-
-        // imshow("read_template",read_template);
-        // waitKey(0);
-        for(int i = 0 ; i < read_template.rows ; i++)
-            for(int j = 0 ; j < read_template.cols ; j++)
-                if(read_template.at<uchar>(i,j) == 0) find_template.at<uchar>(i,j)--;
-    }
-    imshow("find_template",find_template);
-    imwrite("note/err_pic.bmp",find_template);
-    // imshow("find_template",find_template( Rect(0,6,14,12) ));
-    // imwrite("note/err_pic.bmp",find_template( Rect(0,6,14,12) ) );
-    cout<<find_template<<' '<<endl;
-    waitKey(0);
-
-    */
-
-    // Mat ord_img = imread("test_img/big_template.jpg",0);
-
-
-
-
-
-    /*cout<<"load_ord_img.depth(GRAY) = "<<load_ord_img.depth()<<endl;
-    cout<<"load_ord_img.channels(GRAY) = "<<load_ord_img.channels()<<endl;
-    cout<<"load_ord_img.elemSize(GRAY) = "<<load_ord_img.elemSize()<<endl;
-    cout<<"load_ord_img.dims(GRAY) = "<<load_ord_img.dims<<endl;
-    cout<<"load_ord_img.step(GRAY) = "<<load_ord_img.step<<endl;
-    cout<<endl;
-
-    cout<<"color_load_img.depth(CV_GRAY2BGR) = "<<color_load_img.depth()<<endl;
-    cout<<"color_load_img.channels(CV_GRAY2BGR) = "<<color_load_img.channels()<<endl;
-    cout<<"color_load_img.elemSize(CV_GRAY2BGR) = "<<color_load_img.elemSize()<<endl;
-    cout<<"color_load_img.dims(GRAY) = "<<color_load_img.dims<<endl;
-    cout<<"color_load_img.step(GRAY) = "<<color_load_img.step<<endl;
-    cout<<endl;
-
-    cout<<"screen.depth(CV_8UC3) = "<<screen.depth()<<endl;
-    cout<<"screen.channels(CV_8UC3) = "<<screen.channels()<<endl;
-    cout<<"screen.elemSize(CV_8UC3) = "<<screen.elemSize()<<endl;
-    cout<<"screen.dims(GRAY) = "<<screen.dims<<endl;
-    cout<<"screen.step(GRAY) = "<<screen.step<<endl;
-    */
-
-    Mat src_img     = ord_img.clone();
-    Mat src_bin     = src_img.clone();
-
-    ///*****************************************************
-    /// for iphone~~~~
-    ///    Wrap_Straight(src_img,360);
-
-
-    ///********************** 轉正 *************************
+    // ************************* pre1 轉正 *************************
     try{
-        double warp_angle = Find_Angle(src_img, debuging);
-        Wrap_Straight(src_img, warp_angle, debuging);
+        double warp_angle = Find_Angle(src_img, developing_debuging);
+        Wrap_Straight(src_img, warp_angle, developing_debuging);
     }
     catch (exception e){
         imshow(Title,UI2_5);
@@ -183,49 +111,52 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         // NextStep=0;
         return -1;
     }
-    // *******************************************************************
     
-    ///********************** 二值化 *************************
+    // ************************* pre2 二值化 *************************
     src_bin = src_img.clone();
     Binary_by_patch(src_bin, 15, 40);
     // test_Binary_by_Canny(src_img);
-    // *******************************************************************
     
-
-
+    
+    
+    // ************************* pre3 取影像正中間 *************************
 	string file_name;
     file_name = (string)"test_bin_";
     Mat src_bin_roi = ~src_bin;
-    Center_ROI_by_slider(src_bin_roi, (string)ROI_DIR + "do_roi", debuging);
+    Center_ROI_by_slider(src_bin_roi, (string)ROI_DIR + "do_roi", developing_debuging);
     // imshow("test_roi",src_bin_roi);
     // waitKey(0);
     
-    
+    // 水平投影 找山 和 找線
     vector<Vec2f> lines;
 	vector<Vec4i> lines_p;
     Mat horizontal_img(src_bin_roi.rows ,src_bin_roi.cols, CV_8UC1, Scalar(0));
-    Horizon_map_to_find_line(src_bin_roi, lines, horizontal_img, debuging);
-
+    Horizon_map_to_find_line(src_bin_roi, lines, horizontal_img, developing_debuging);
+    
+    // ************************* pre4 線的 距離階層 找出來 *************************
     // 把線的 距離階層 找出來, 以目前抓出來的階層有三種：
     // dist_level[0]= 3    一條粗線裡面可能有 找到多條細線 之間的距離
     // dist_level[1]= 17   五線譜內五條線大概的距離
     // dist_level[2]= 241  五線譜之間大概的距離
     int * dist_level;
-    dist_level = Distance_detect(lines, debuging);
+    
+    dist_level = Distance_detect(lines, developing_debuging);
     // cout<<"distance_detect end"<<endl;
 
 
-    // 利用 dist_level 找出五線譜
-    staff_count = find_Staff2(lines, dist_level[0], dist_level[1], debuging);
-    Watch_Hough_Line(lines, src_bin    , "",(string)"debug_img/" + "pre5_staff_line"    , 1066);
-    Watch_Hough_Line(lines, src_bin_roi, "",(string)"debug_img/" + "pre5_staff_line_roi"      );
+    // ************************* pre5 利用 dist_level 找出五線譜線組成群組 *************************
+    staff_count = find_Staff2(lines, dist_level[0], dist_level[1], developing_debuging);
+    if(developing_debuging){
+        Watch_Hough_Line(lines, src_bin    , "",(string)"debug_img/" + "pre5_staff_line"    , 1066);
+        Watch_Hough_Line(lines, src_bin_roi, "",(string)"debug_img/" + "pre5_staff_line_roi"      );
+    }
     // waitKey(0);
     cout<<"find_staff_sucess"<<endl;
 
 
 
 
-    // *************************** 找頭 *********************************
+    // ************************* pre6 每組五線譜群組 的線找頭 *************************
     Mat color_src_img;  // debug用
     Mat src_bin_erase_line = src_bin.clone();
     cvtColor(src_img, color_src_img, CV_GRAY2BGR);
@@ -233,7 +164,7 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
     int*** left_point ;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
     int*** right_point;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
     try{
-        Find_Head_and_Erase_Line_Interface(src_bin, lines, staff_count, left_point, right_point, color_src_img, src_bin_erase_line, debuging);
+        Find_Head_and_Erase_Line_Interface(src_bin, lines, staff_count, left_point, right_point, color_src_img, src_bin_erase_line, developing_debuging);
         cout<<"find_head_end~"<<endl;
     }
     catch (exception e){
@@ -243,13 +174,12 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         // NextStep=0;
         // break;
     }
-    // *******************************************************************
-    // *******************************************************************
-
-    UI_loading_preprocess(src_img, src_bin, staff_count, left_point, right_point, UI_bass, UI_WINDOW_NAME);
-
+    
+    // ************************* 在 UI 上顯示 *************************
+    UI_loading_preprocess(src_img, src_bin, staff_count, left_point, right_point, UI_bass, UI_WINDOW_NAME, developing_debuging);
 
 
+    // ************************* pre7 每組五線譜群組 找到的頭 的四個角 來透射切出每組五線譜  *************************
     // Mat staff_img_erase_line[40]; 寫出去主程式用參數傳
     // Mat staff_img   [40]; 寫出去主程式用參數傳
     // double trans_start_point_x[40]; 寫出去主程式用參數傳
@@ -267,12 +197,9 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         return -3;
     }
     // cout<<"cut_staff_end~~"<<endl;
-
-
-    // *****************************************************************************************
-    // *****************************************************************************************
-    // *****************************************************************************************
-
+    // ****************************************************************************************************
+    // ****************************************************************************************************
+    // ****************************************************************************************************
     //  寫出去主程式用參數傳
     // 自己設的資料結構 note ~~~~~~~ 存整張譜所有的row的note~~~~~~~~~
     /*
