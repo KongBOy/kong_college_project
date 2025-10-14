@@ -27,13 +27,13 @@ using namespace std;
 
 
 double Find_Angle(Mat image, bool debuging){
-	if(debuging) cout<<endl<<"in Find_Angle"<<endl;
+	if(debuging) cout << endl << "in Find_Angle" << endl;
 
 	// 抓影像中間的小區域, 用該部分的五線譜轉動的角度 來找 影像被轉了幾度
 	Mat imgROI = image(Rect( (image.cols / 2) - (image.cols / 16), (image.rows / 2) - (image.rows / 16), (image.cols / 8), (image.rows) / 8) ); // 抓中間小區域
-	Mat bin_imgROI = imgROI.clone();    // copy一份保留原始影像
+	Mat bin_imgROI = imgROI.clone();     // copy一份保留原始影像
 	Binary_by_patch(bin_imgROI, 15, 50); // 影像二值化
-    bin_imgROI = ~bin_imgROI; 		    // 五線譜、音符的地方 由黑轉白變前景, 其他背景由白轉黑變背景
+    bin_imgROI = ~bin_imgROI; 		     // 五線譜、音符的地方 由黑轉白變前景, 其他背景由白轉黑變背景
 	if(debuging){
 		imwrite("debug_img/pre1_1_Find_Angle_1-ROI.bmp"            , imgROI);
 		imwrite("debug_img/pre1_1_Find_Angle_2-ROI_bin_inverse.bmp", bin_imgROI);
@@ -46,7 +46,7 @@ double Find_Angle(Mat image, bool debuging){
 	do_HoughLine(bin_imgROI, lines, 0.5);
 	if(debuging){
 		Watch_Hough_Line(lines, imgROI, "","debug_img/pre1_1_Find_Angle_3-ROI_bin_inverse_line");
-		cout<<"lines.size() = "<<lines.size()<<endl;
+		cout << "lines.size()=" << lines.size() << endl;
 		// waitKey(0);
 	}
 
@@ -70,7 +70,7 @@ double Find_Angle(Mat image, bool debuging){
 		angle_cluster_count [0] = 1;           // 初始化 第一條線
 		// 第二條線以後, 回頭看跟前一條線的角度相不相同, 相同代表在同一群就在同一群的位置 count 就+1, 不同代表換下一群了 就 更新成下群 並 在下群位置的 count+1
 		for(int i = 1 ; i < lines.size(); i++){
-			cout<<"lines[" << i << "][1] = " << (lines[i][1] / PI) * 180 << endl;  // debug, 看線的角度
+			if(debuging) cout << "lines[" << i << "][1]=" << (lines[i][1] / PI) * 180 << endl;  // debug, 看線的角度
 
 			// 回頭看跟前一條線的角度相不相同
 			if(lines[i][1] - lines[i-1][1] != 0){
@@ -89,10 +89,9 @@ double Find_Angle(Mat image, bool debuging){
 		for(int go_count = 0 ; go_count <= posi; go_count++){
 			if(max_count < angle_cluster_count[go_count]){
 				max_count = angle_cluster_count[go_count];
-
 			}		
 		}
-		cout<<"max_count = "<<max_count<<endl;
+		if(debuging) cout << "max_count=" << max_count << endl;
 
 		// 找最多的位置對應的是誰
 		double max_angle = 0.0;
@@ -103,8 +102,9 @@ double Find_Angle(Mat image, bool debuging){
 			}
 		}
 		
+		// 把屬於 max_angle 的線畫出來看看
 		if(debuging){
-			cout<<"max_angle  = "<<max_angle<<endl;
+			cout << "max_angle=" << max_angle << endl;
 			vector<Vec2f> max_angle_lines;
 			for(int go_line = 0; go_line < lines.size(); go_line++){
 				if(max_angle == lines[go_line][1]){
@@ -112,9 +112,8 @@ double Find_Angle(Mat image, bool debuging){
 				}
 			}
 			Watch_Hough_Line(max_angle_lines, imgROI, "","debug_img/pre1_1_Find_Angle_4-ROI_bin_inverse_max_angle_lines");
-			cout<<"max_angle_lines.size() = "<<max_angle_lines.size()<<endl;
+			cout << "max_angle_lines.size()=" << max_angle_lines.size() << endl;
 		}
-
 
 		delete [] angle_cluster		 ;
 		delete [] angle_cluster_count;
@@ -127,11 +126,10 @@ double Find_Angle(Mat image, bool debuging){
 }
 
 void Wrap_Straight(Mat & image , double angle, bool debuging ){
-	if(debuging) cout<<endl<<"in Wrap_Straight"<<endl;
+	if(debuging) cout << endl<<"in Wrap_Straight" << endl;
 
 	double rotate_angle = angle - 90;
-	if(debuging)
-		cout<<"rotate_angle = "<<rotate_angle<<endl;
+	if(debuging) cout << "rotate_angle=" << rotate_angle << endl;
 	
 	Point center = Point(image.cols/2,image.rows/2); // the center of the picture
 	Mat rot(2,3,CV_64FC1);
@@ -141,7 +139,7 @@ void Wrap_Straight(Mat & image , double angle, bool debuging ){
 		imwrite("debug_img/pre1_2_Warp_Straight_1-before_warp.bmp",image);
 		// imshow("before_warp",image);
 		// waitKey(0);
-		cout<<"before_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
+		cout << "before_img.cols=" << image.cols <<" , rows=" << image.rows << endl;
 	}
 
 	Mat proc_img = image.clone();
@@ -153,7 +151,7 @@ void Wrap_Straight(Mat & image , double angle, bool debuging ){
 		imwrite("debug_img/pre1_2_Warp_Straight_2-after_warp.bmp",image);
 		// imshow("after_warp",image);
 		// waitKey(0);
-		cout<<"after_img.cols = "<<image.cols<<" , rows = "<<image.rows<<endl;
+		cout << "after_img.cols=" << image.cols <<" , rows=" << image.rows << endl;
 	}
 }
 
