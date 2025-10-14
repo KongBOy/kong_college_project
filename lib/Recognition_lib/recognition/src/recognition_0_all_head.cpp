@@ -58,8 +58,7 @@ void Overlap_Erase_or_Assing8Note(const int head_type, const Mat head_template, 
     // 以高音譜記號為例, 如果遇到高音譜記號, 只要距離 高低音譜記號 夠近 的頭 就消掉
     for(int go_special_index = 0 ; go_special_index < note_count ; go_special_index++){
         // 第一層走訪所有的note, 如果遇到 高音譜記號的話, 就走第二層走訪所有note 如果不是高音譜記號 距離高音譜記號夠近就刪除
-        if(note[2][go_special_index] == head_type)
-        {
+        if(note[2][go_special_index] == head_type){
             // 一、先訂出高低音譜記號的位置
             special_note_index = go_special_index;
             special_note_x = note[0][special_note_index];
@@ -125,7 +124,7 @@ void recognition_0_all_head( int head_type,
                              int& note_count,
                              int note[][1000],
                              bool debuging){
-    // 自己設資料結構 head, 0是左上角x, 1是左上角y, 2是similarity
+    // 自己設資料結構 head, 0是左上角x, 1是左上角y, 2是similarity, 200是我目前還沒看過一組五線譜裡面有超過200顆音的所以隨便設一個大大的數字200
     int maybe_head_count = 0;
     float maybe_head[3][200];
     for(int i = 0 ; i < 3 ; i++)
@@ -133,7 +132,7 @@ void recognition_0_all_head( int head_type,
             maybe_head[i][j] = 0;
 
 
-    // 自己設資料結構 line
+    // 自己設資料結構 line, 200是我目前還沒看過一組五線譜裡面有超過200顆音的所以隨便設一個大大的數字200
     short bars    [3][200];  //[0]頂點x [1]頂點y [2]長度
     bool  bars_dir   [200];  //[0]左(下, TOPTODOWN) [1]右(上, DOWNTOTOP), 需要方向的原因是需要找 8, 16, 32, 64, ... 分音符的橫線, 所以 標記往哪個方向走 來找 會輕鬆很多
 
@@ -158,18 +157,19 @@ void recognition_0_all_head( int head_type,
             note[i][j] = 0;
     */
 
-    // ● 0 全音符
-    // 1 全休止符
-    // ● 2 二分 音符
-    // 3 二分 休止符
-    // ● 4 四分 音符
-    // ● 5 四分 休止符
+    // head_type
+    //  0 全音符
+    //  1 全休止符
+    //  2 二分 音符
+    //  3 二分 休止符
+    //  4 四分 音符
+    //  5 四分 休止符
+    //  6 十六分 音符
+    //  7 三十二分 音符
+    //  8 八分休止符
+    //  9 高音譜記號
+    // 10 八分音符符桿
 
-
-    /// note 可以在：
-    /// recognition_2_b_recheck 存全音符，四分休止符 只有他一個，所以寫在下面~~~
-    /// recognition_2_c_merge_head_and_time 存 二分音符 和 四分音符，因為兩個重複所以寫進去recognition_2_c裡面~~
-    
     Mat staff_result_map;
     switch(head_type){
         // 0 全音
@@ -179,6 +179,7 @@ void recognition_0_all_head( int head_type,
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.38, debuging);
 
             recognition_2_b_head_recheck(0, template_img, staff_img_erase_line, maybe_head_count, maybe_head);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -215,7 +216,7 @@ void recognition_0_all_head( int head_type,
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
             recognition_2_b_head_recheck      (2, template_img, staff_img_erase_line,            maybe_head_count, maybe_head);
             recognition_2_a_head_charactristic(2, template_img, staff_img_erase_line, staff_img, maybe_head_count, maybe_head);
-
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -240,7 +241,7 @@ void recognition_0_all_head( int head_type,
 
             // MaybeHead_list_infos(maybe_head_count,maybe_head);
             // list_Bars_infos(bars_count,bars,bars_dir);
-
+            // 裡面有把 候選maybe_head 存進note裡 的程式碼, 所以 這邊就不用寫囉
             recognition_4_merge_head_and_time(4,template_img,staff_img_erase_line,maybe_head_count,maybe_head,bars_count,bars,bars_dir,bars_time,note_count,note);
         }
         break;
@@ -250,8 +251,9 @@ void recognition_0_all_head( int head_type,
             Mat template_img = imread("Resource/note/4-rest/4-rest.bmp",0);
             recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.38, debuging);
-
+            
             recognition_2_b_head_recheck(5, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -267,7 +269,7 @@ void recognition_0_all_head( int head_type,
             Mat template_img = imread("Resource/note/0-rest/0_rest_w_line.bmp",0);
             recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img, e_count, l_edge, distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img, template_img, 0.80, debuging);
-
+            // find_all_MaybeHead就已經找得很好了 不用 recheck 就存進note裡囉
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -283,7 +285,7 @@ void recognition_0_all_head( int head_type,
             Mat template_img = imread("Resource/note/2-rest/2_rest_w_line.bmp",0);
             recognition_1_find_all_MaybeHead(staff_result_map, template_img, staff_img, e_count, l_edge, distance, "method1", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img, template_img, 0.80, debuging);
-
+            // find_all_MaybeHead就已經找得很好了 不用 recheck 就存進note裡囉
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -302,6 +304,7 @@ void recognition_0_all_head( int head_type,
 
             recognition_2_a_head_charactristic(6,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
             recognition_2_b_head_recheck(6, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -322,6 +325,7 @@ void recognition_0_all_head( int head_type,
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.3, debuging);
             
             recognition_2_b_head_recheck(7, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -343,9 +347,8 @@ void recognition_0_all_head( int head_type,
             
             recognition_2_a_head_charactristic(8,template_img,staff_img_erase_line,staff_img,maybe_head_count,maybe_head);
             recognition_2_b_head_recheck(8, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
-
-            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++)
-            {
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
                 note[1][note_count] = maybe_head[1][go_head];
@@ -363,6 +366,7 @@ void recognition_0_all_head( int head_type,
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.38, debuging);
 
             recognition_2_b_head_recheck(9, template_img, staff_img_erase_line,maybe_head_count,maybe_head);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
@@ -383,7 +387,7 @@ void recognition_0_all_head( int head_type,
             Mat template_img = imread("Resource/note/10/10-1.bmp", 0);
             recognition_1_find_all_MaybeHead(staff_result_map, template_img,staff_img_erase_line,e_count,l_edge,distance, "method2", debuging);
             Grab_MaybeHead_from_ResultMap   (staff_result_map, maybe_head_count, maybe_head, pitch_base_y, staff_img_erase_line, template_img, 0.85, debuging);
-            
+            // find_all_MaybeHead就已經找得很好了 不用 recheck 就存進note裡囉
             for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
