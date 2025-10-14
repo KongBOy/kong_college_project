@@ -28,7 +28,7 @@ using namespace std;
 using namespace cv;
 
 static Mat proc_img;
-static bool debuging_roi;
+static bool debuging_roi;  // 給 Center_ROI 用的
 
 int roi_r_slider = ROI_R_SLIDER_DEFAULT;
 int roi_c_slider = ROI_C_SLIDER_DEFAULT;
@@ -38,7 +38,7 @@ void Center_ROI(int, void * data){
 	Mat* dst_img_ptr = static_cast<Mat*>(data);
 	Mat& dst_img     = *dst_img_ptr;
 
-	// 
+	// 中間為基準, 左右 與 上下 延伸 幾% 來取影像
 	if ((roi_c_slider != 0) && (roi_r_slider != 0) ) {
 		Point2f center(dst_img.cols / 2, dst_img.rows / 2);
 		float roi_width = dst_img.cols * roi_c_slider / 100;
@@ -60,7 +60,7 @@ void Center_ROI(int, void * data){
 }
 
 void Center_ROI_by_slider(Mat & dst_img , string window_name, bool debuging){
-	debuging_roi = debuging;
+	debuging_roi = debuging;  // 給 Center_ROI 用的
 
 	if(debuging_roi){
 		Mat debug_img = dst_img.clone();
