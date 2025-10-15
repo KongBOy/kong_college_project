@@ -7,9 +7,10 @@ using namespace std;
 
 
 void Cut_staff(Mat src_bin, Mat src_bin_erase_line,
-               int& staff_count,int*** left_point, int*** right_point,
-               Mat staff_img_erase_line[],Mat staff_img[],
-               double trans_start_point_x[],double trans_start_point_y[]);
+               int& staff_count, int*** left_point, int*** right_point,
+               Mat staff_img_erase_line[], Mat staff_img[],
+               double trans_start_point_x[], double trans_start_point_y[],
+               bool debuging=false);
 
 #ifndef CUT_ACCORDING_STAFF_H_INCLUDED
 #define CUT_ACCORDING_STAFF_H_INCLUDED
