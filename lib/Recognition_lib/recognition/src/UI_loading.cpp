@@ -225,13 +225,13 @@ void UI_loading_preprocess(Mat src_img,
     
     // 把 resize_ord_img 從 gray 轉成 RGB 後 貼在 定好的位置
     cvtColor(resize_ord_img, resize_ord_img, CV_GRAY2BGR);
-    resize_ord_img.copyTo(  show_bin_roi  );
+    resize_ord_img.copyTo( show_bin_roi );
     imshow(UI_WINDOW_NAME, UI_bass);
     waitKey(500);
     
     // 把 resize_bin_img 從 gray 轉成 RGB 後 貼在 定好的位置
     cvtColor(resize_bin_img, resize_bin_img, CV_GRAY2BGR);
-    resize_bin_img.copyTo(  show_bin_roi  );
+    resize_bin_img.copyTo( show_bin_roi );
     imshow(UI_WINDOW_NAME, UI_bass);
     waitKey(500);
 
@@ -247,7 +247,7 @@ void UI_loading_preprocess(Mat src_img,
             double trans_right_y = right_point[go_staff][go_line][1] * resize_ratio;
             trans_right_x += resize_bin_left;
 
-            line(UI_bass, Point(trans_left_x, trans_left_y ), 
+            line(UI_bass, Point(trans_left_x , trans_left_y ), 
                           Point(trans_right_x, trans_right_y), 
                           Scalar(0, 0, 255), 1);
 
@@ -321,8 +321,8 @@ void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_cou
         loading_bar++;
         width_frame_acc %= staff_count;
     }
-
     if(debuging) cout<<"loading_bar = " << loading_bar << ", width_frame_acc = " << width_frame_acc << endl;
+
     // 更新一組五線譜組的進度條
     Show_loading_bar(UI_bass, UI_WINDOW_NAME, old_loading_bar, loading_bar);
     waitKey(100);
