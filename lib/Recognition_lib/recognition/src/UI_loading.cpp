@@ -196,9 +196,8 @@ void UI_loading_preprocess(Mat ord_img,
     UI_bass = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);  // 空的進度條圖片
     imshow(UI_WINDOW_NAME, UI_bass);
 
-    // 計算 UI畫面正中心
-    int UI_center_x = UI2_img.cols / 2.;
-    int UI_center_y = UI2_img.rows / 2.;
+    // 計算 UI畫面正中心x
+    int UI_center_x = UI_bass.cols / 2.;
     
     // ord_img 縮放成 show_bin_windows 的 ratio
     int show_bin_window_height = 500;
@@ -217,7 +216,6 @@ void UI_loading_preprocess(Mat ord_img,
 
     // 計算 縮放後的 ord_img, bin_img 左邊界, 上邊界
     int resize_bin_left = UI_center_x - resize_width  / 2;
-    int resize_bin_top  = UI_center_y - resize_height / 2;
 
     // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
     Mat show_bin_roi = UI_bass( Rect(resize_bin_left, 0, resize_ord_img.cols, resize_ord_img.rows) );
