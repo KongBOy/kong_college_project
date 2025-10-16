@@ -14,9 +14,9 @@ using namespace cv;
 
 Mat UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);
 
+
+// 進度條
 int loading_bar = 0;
-
-
 int shift_x = -80;
 Point loading_item_position[17] ={
     Point(shift_x +  200, 527), // 00 treble_clef
@@ -50,6 +50,7 @@ Mat loading_bar_item_finish     = imread("Resource/UI_all_picture/UI PIC/UI/load
 Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish_green.bmp", 1);  // 16
 */
 
+// 進度條
 ///讀灰階~~
 Mat loading_bar_item_4          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4.bmp"     , 0);  // 04, 11, 15
 Mat loading_bar_item_8          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8.bmp"     , 0);  // 01, 07
@@ -60,7 +61,7 @@ Mat loading_bar_item_sharp      = imread("Resource/UI_all_picture/UI PIC/UI/load
 Mat loading_bar_item_finish     = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp", 0);  // 16
 Mat loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp", 0);  // 16
 
-
+// 進度條
 // 252 577 staff_line
 // 1224 593 loading
 
@@ -112,6 +113,7 @@ void set_item_img(int position, Mat& setted_img){
         break;
     }
 }
+// 進度條
 int set_item_position(int in_num){
          if (in_num >=   0 && in_num <=  5) return  0;
     else if (in_num >=   6 && in_num <= 12) return  1;
@@ -131,6 +133,7 @@ int set_item_position(int in_num){
     else if (in_num >= 100 && in_num <=100) return 15;
 }
 
+// 進度條
 void Show_loading_bar(Mat UI_bass, string UI_WINDOW_NAME, int start_num, int end_num){
     Mat color_load_img;
     Mat gray_load_img;
