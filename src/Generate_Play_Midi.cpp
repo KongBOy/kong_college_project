@@ -340,7 +340,7 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
             }
             Mat template_img;
             Scalar color;
-            set_formate(note_infos -> note[2][note_infos -> go_note],note_infos -> note[3][note_infos -> go_note],color,template_img);
+            get_note_color_and_img(note_infos -> note[2][note_infos -> go_note],note_infos -> note[3][note_infos -> go_note],color,template_img);
             rectangle(row_proc_img[row_index],Point(note_infos -> note[0][note_infos -> go_note]                  , note_infos -> note[1][note_infos -> go_note]),
                                               Point(note_infos -> note[0][note_infos -> go_note]+template_img.cols, note_infos -> note[1][note_infos -> go_note]+template_img.rows),color,2);
 

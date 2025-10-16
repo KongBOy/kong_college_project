@@ -12,11 +12,7 @@
 using namespace std;
 using namespace cv;
 
-Mat screen(500, 1270, CV_8UC3, Scalar(255, 255, 255));
 Mat UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);
-
-int screen_center_x = screen.cols/2;
-int screen_center_y = screen.rows/2;
 
 int loading_bar = 0;
 
@@ -267,100 +263,65 @@ void UI_loading_preprocess(Mat ord_img,
 
 
 
-int width_frame_acc = 0;///mod_width;
+int width_frame_acc = 0;  // mod_width;
 
 void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_count, int row_note[][1000], 
                                 Mat UI_bass, string UI_WINDOW_NAME){
-    int div_width = 70 / staff_count;
-    int mod_width = 70 % staff_count;
-
-    int old_loading_bar = loading_bar;
-
     UI_bass = UI2_img.clone();
     imshow(UI_WINDOW_NAME, UI_bass);
 
-    Mat color_load_img = staff_img.clone();
-    cvtColor(staff_img.clone(), color_load_img, CV_GRAY2BGR);
+    // 計算 UI畫面上方正白色區域中心
+    int UI_center_x = UI_bass.cols / 2.;
+    int UI_center_y = 500 / 2.;
+    
+    // staff_img 轉成 RGB
+    Mat staff_img_color;
+    cvtColor(staff_img.clone(), staff_img_color, CV_GRAY2BGR);
 
-    int color_load_img_top  = screen_center_y - color_load_img.rows/2;
-    int color_load_img_left = screen_center_x - color_load_img.cols/2;
-    for(int go_row = 0 ; go_row < color_load_img.rows ; go_row++)
-        for(int go_col = 0 ; go_col < color_load_img.cols ; go_col++)
-            // screen.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-            UI_bass.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
+    int color_load_img_top  = UI_center_y - staff_img_color.rows / 2;
+    int color_load_img_left = UI_center_x - staff_img_color.cols / 2;
 
+
+    // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
+    Mat show_staff_roi = UI_bass( Rect(color_load_img_left, color_load_img_top, staff_img_color.cols, staff_img_color.rows) );
+    staff_img_color.copyTo(show_staff_roi);
+    imshow(UI_WINDOW_NAME, UI_bass);
+
+    // 標出辨識完的note
+    int head_type;
+    int time_bar;
+    int note_x;
+    int note_y;
+    Mat template_img;
+    Scalar color;
+    for(int go_row_note = 0; go_row_note < row_note_count; go_row_note++){
+        note_x    = row_note[0][go_row_note];
+        note_y    = row_note[1][go_row_note];
+        head_type = row_note[2][go_row_note];
+        time_bar  = row_note[3][go_row_note];
+        get_note_color_and_img(head_type, time_bar, color, template_img);
+        rectangle(UI_bass, Point(note_x + color_load_img_left                    , note_y + color_load_img_top), 
+                           Point(note_x + color_load_img_left + template_img.cols, note_y + color_load_img_top + template_img.rows), color, 2);
         imshow(UI_WINDOW_NAME, UI_bass);
-        // imshow("screen", screen);
-
-
-    for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){
-        // cout<<"go_note = " << go_note<<endl;
-        Mat template_img;
-        Scalar color;
-        set_formate(row_note[2][go_row_note], row_note[3][go_row_note], color, template_img);
-        // rectangle(screen, Point(row_note[0][go_row_note]+color_load_img_left, row_note[1][go_row_note]+color_load_img_top), 
-        rectangle(UI_bass, Point(row_note[0][go_row_note] + color_load_img_left                  , row_note[1][go_row_note] + color_load_img_top), 
-                           Point(row_note[0][go_row_note] + template_img.cols+color_load_img_left, row_note[1][go_row_note] + template_img.rows + color_load_img_top), color, 2);
-        imshow(UI_WINDOW_NAME, UI_bass);
-        // imshow("screen", screen);
         waitKey(10);
-
     }
 
+    
+    // 計算 一組五線譜 相當於 進度條 幾%
+    int div_width = 70 / staff_count;
+    int mod_width = 70 % staff_count;
+    
+    // 上次的進度先存一份下來
+    int old_loading_bar = loading_bar;
+    // 更新進度
     loading_bar     += div_width;
     width_frame_acc += mod_width;
-    if(width_frame_acc/staff_count){
+    if(width_frame_acc / staff_count){
         loading_bar++;
         width_frame_acc %= staff_count;
     }
 
-    cout<<"loading_bar = " << loading_bar<<", frame_acc = " << width_frame_acc<<endl;
+    // 更新一組五線譜組的進度條
     Show_loading_bar(UI_bass, UI_WINDOW_NAME, old_loading_bar, loading_bar);
     waitKey(100);
 }
-
-
-
-/*
-void UI_loading_recognition(int staff_count, Mat staff_img[], int note_count, int note[][1000], int row_note_count_array[], 
-                            Mat UI_bass, string UI_WINDOW_NAME){
-    UI_bass = UI2_img.clone();
-    imshow(UI_WINDOW_NAME, UI_bass);
-
-
-    int go_note = 0;
-    for(int go_staff = 0 ; go_staff < staff_count ; go_staff++){
-        Mat color_load_img = staff_img[go_staff].clone();
-        cvtColor(staff_img[go_staff].clone(), color_load_img, CV_GRAY2BGR);
-
-        int color_load_img_top  = screen_center_y - color_load_img.rows/2;
-        int color_load_img_left = screen_center_x - color_load_img.cols/2;
-        for(int go_row = 0 ; go_row < color_load_img.rows ; go_row++)
-            for(int go_col = 0 ; go_col < color_load_img.cols ; go_col++)
-                // screen.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-                UI_bass.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-
-        imshow(UI_WINDOW_NAME, UI_bass);
-        // imshow("screen", screen);
-
-        // cout<<"row_note_count_array[" << go_staff<<"] = " << row_note_count_array[go_staff]<<endl;
-
-
-        for(int go_row_note = 0 ; go_row_note < row_note_count_array[go_staff] ; go_row_note++){
-            // cout<<"go_note = " << go_note<<endl;
-            Mat template_img;
-            Scalar color;
-            set_formate(note[2][go_note], note[3][go_note], color, template_img);
-            // rectangle(screen, Point(note[0][go_note]+color_load_img_left, note[1][go_note]+color_load_img_top), 
-            rectangle(UI_bass, Point(note[0][go_note]+color_load_img_left, note[1][go_note]+color_load_img_top), 
-                             Point(note[0][go_note]+template_img.cols+color_load_img_left, note[1][go_note]+template_img.rows+color_load_img_top), color, 2);
-
-            imshow(UI_WINDOW_NAME, UI_bass);
-            ///imshow("screen", screen);
-            waitKey(10);
-            go_note++;
-        }
-        waitKey(500);
-    }
-}
-*/

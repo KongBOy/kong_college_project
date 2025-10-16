@@ -26,7 +26,7 @@ struct Note_infos {
 
 using namespace cv;
 
-void set_formate(int head_type,int time_bar,Scalar & color , Mat & template_img);
+void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & template_img);
 
 
 void list_note_info(int note_count,int note[][1000]);

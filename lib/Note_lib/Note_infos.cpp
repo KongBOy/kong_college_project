@@ -18,7 +18,7 @@ using namespace std;
 using namespace cv;
 
 
-void set_formate(int head_type,int time_bar,Scalar & color , Mat & template_img)
+void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & template_img)
 {
     Mat template_img_4 = imread("Resource/note/4/4.bmp",0);
     Mat template_img_5 = imread("Resource/note/4-rest/4-rest.bmp",0);
@@ -132,7 +132,7 @@ void watch_row_note(Mat debug_img , int row_note_count, int row_note[][1000]){
     for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){
         Scalar color;
         Mat template_img;
-        set_formate(row_note[2][go_row_note],row_note[3][go_row_note],color,template_img);
+        get_note_color_and_img(row_note[2][go_row_note],row_note[3][go_row_note],color,template_img);
 
         rectangle(debug_img,Point(row_note[0][go_row_note],row_note[1][go_row_note]),
                             Point(row_note[0][go_row_note]+template_img.cols,row_note[1][go_row_note]+template_img.rows),color,2);
@@ -144,7 +144,7 @@ void draw_row_note(Mat debug_img , int row_note_count, int row_note[][1000]){
     for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){
         Scalar color;
         Mat template_img;
-        set_formate(row_note[2][go_row_note],row_note[3][go_row_note],color,template_img);
+        get_note_color_and_img(row_note[2][go_row_note],row_note[3][go_row_note],color,template_img);
         rectangle(debug_img,Point(row_note[0][go_row_note],row_note[1][go_row_note]),
                             Point(row_note[0][go_row_note]+template_img.cols,row_note[1][go_row_note]+template_img.rows),color,2);
         // imshow("debug",debug_img);
@@ -174,7 +174,7 @@ void watch_note(Mat debug_img , int note_count, int note[][1000]){
     for(int go_note = 0 ; go_note < note_count ; go_note++){
         Scalar color;
         Mat template_img;
-        set_formate(note[2][go_note],note[3][go_note],color,template_img);
+        get_note_color_and_img(note[2][go_note],note[3][go_note],color,template_img);
 
         rectangle(debug_img,Point(note[0][go_note],note[1][go_note]),
                             Point(note[0][go_note]+template_img.cols,note[1][go_note]+template_img.rows),color,2);
@@ -187,7 +187,7 @@ void draw_note(Mat debug_img , int note_count, int note[][1000]){
     for(int go_note = 0 ; go_note < note_count ; go_note++){
         Scalar color;
         Mat template_img;
-        set_formate(note[2][go_note],note[3][go_note],color,template_img);
+        get_note_color_and_img(note[2][go_note],note[3][go_note],color,template_img);
 
         rectangle(debug_img,Point(note[0][go_note],note[1][go_note]),
                             Point(note[0][go_note]+template_img.cols,note[1][go_note]+template_img.rows),color,2);
