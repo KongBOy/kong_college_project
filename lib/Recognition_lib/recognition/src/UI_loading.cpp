@@ -267,7 +267,7 @@ void UI_loading_preprocess(Mat src_img,
 int width_frame_acc = 0;  // mod_width;
 
 void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_count, int row_note[][1000], 
-                                Mat UI_bass, string UI_WINDOW_NAME){
+                                Mat UI_bass, string UI_WINDOW_NAME, bool debuging){
     UI_bass = UI2_img.clone();
     imshow(UI_WINDOW_NAME, UI_bass);
 
@@ -279,12 +279,12 @@ void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_cou
     Mat staff_img_color;
     cvtColor(staff_img.clone(), staff_img_color, CV_GRAY2BGR);
 
-    int color_load_img_top  = UI_center_y - staff_img_color.rows / 2;
-    int color_load_img_left = UI_center_x - staff_img_color.cols / 2;
+    int show_staff_top  = UI_center_y - staff_img_color.rows / 2;
+    int show_staff_left = UI_center_x - staff_img_color.cols / 2;
 
 
     // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
-    Mat show_staff_roi = UI_bass( Rect(color_load_img_left, color_load_img_top, staff_img_color.cols, staff_img_color.rows) );
+    Mat show_staff_roi = UI_bass( Rect(show_staff_left, show_staff_top, staff_img_color.cols, staff_img_color.rows) );
     staff_img_color.copyTo(show_staff_roi);
     imshow(UI_WINDOW_NAME, UI_bass);
 
@@ -301,8 +301,8 @@ void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_cou
         head_type = row_note[2][go_row_note];
         time_bar  = row_note[3][go_row_note];
         get_note_color_and_img(head_type, time_bar, color, template_img);
-        rectangle(UI_bass, Point(note_x + color_load_img_left                    , note_y + color_load_img_top), 
-                           Point(note_x + color_load_img_left + template_img.cols, note_y + color_load_img_top + template_img.rows), color, 2);
+        rectangle(UI_bass, Point(note_x + show_staff_left                    , note_y + show_staff_top), 
+                           Point(note_x + show_staff_left + template_img.cols, note_y + show_staff_top + template_img.rows), color, 2);
         imshow(UI_WINDOW_NAME, UI_bass);
         waitKey(10);
     }
@@ -322,6 +322,7 @@ void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_cou
         width_frame_acc %= staff_count;
     }
 
+    if(debuging) cout<<"loading_bar = " << loading_bar << ", width_frame_acc = " << width_frame_acc << endl;
     // 更新一組五線譜組的進度條
     Show_loading_bar(UI_bass, UI_WINDOW_NAME, old_loading_bar, loading_bar);
     waitKey(100);

@@ -18,5 +18,5 @@ void UI_loading_preprocess(Mat src_img,
                            bool debuging=false);
 
 void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_count, int row_note[][1000],
-                                Mat UI_bass, string UI_WINDOW_NAME);
+                                Mat UI_bass, string UI_WINDOW_NAME, bool debuging=false);
 
