@@ -13,38 +13,12 @@ using namespace std;
 using namespace cv;
 
 Mat screen(500, 1270, CV_8UC3, Scalar(255, 255, 255));
-Mat UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.png", 1);
+Mat UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);
 
 int screen_center_x = screen.cols/2;
 int screen_center_y = screen.rows/2;
 
 int loading_bar = 0;
-
-
-
-
-static void Perspective_trans(double x, double y, Mat warp_matrix, double & result_x, double& result_y, bool debuging){
-    float trans_proc_1[3];
-
-    trans_proc_1[0] = x;
-    trans_proc_1[1] = y;
-    trans_proc_1[2] = 1;
-    if(debuging) cout<<"_1[0]=" << trans_proc_1[0]<<", _1[1]=" << trans_proc_1[1]<<", _1[2]=" << trans_proc_1[2]<<endl;
-
-    float trans_proc_2[3];
-    for(int j = 0 ; j < 3 ; j++){
-        trans_proc_2[j]  = trans_proc_1[0]*warp_matrix.at<double>(j, 0);
-        trans_proc_2[j] += trans_proc_1[1]*warp_matrix.at<double>(j, 1);
-        trans_proc_2[j] += trans_proc_1[2]*warp_matrix.at<double>(j, 2);
-    }
-    if(debuging) cout<<"_2[0]=" << trans_proc_2[0]<<", _2[1]=" << trans_proc_2[1]<<", _2[2]=" << trans_proc_2[2]<<endl;
-
-    result_x = (trans_proc_2[0]/trans_proc_2[2]);
-    result_y = (trans_proc_2[1]/trans_proc_2[2]);
-
-    if(debuging) cout<< "result_x=" << result_x << ", result_y=" << result_y<<endl;
-
-}
 
 
 int shift_x = -80;
@@ -215,91 +189,77 @@ void Show_loading_bar(Mat UI_bass, string UI_WINDOW_NAME, int start_num, int end
 
 
 void UI_loading_preprocess(Mat ord_img, 
-                Mat test_bin, 
-                int staff_count, int*** left_point, int*** right_point, 
-                Mat UI_bass, string UI_WINDOW_NAME, 
-                bool debuging){
-    loading_bar = 0;
-    UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);  // 空的進度條
-    UI_bass = UI2_img.clone();
+                           Mat bin_img, 
+                           int staff_count, int*** left_point, int*** right_point, 
+                           Mat UI_bass, string UI_WINDOW_NAME, 
+                           bool debuging){
+    // 進度條預設0
+    loading_bar = 0;  
+
+    // 讀出 UI圖片
+    UI_bass = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);  // 空的進度條圖片
     imshow(UI_WINDOW_NAME, UI_bass);
 
-    int resize_img_height = screen.rows;
-    int resize_img_width  = ord_img.cols * (screen.rows/(double)ord_img.rows);
+    // 計算 UI畫面正中心
+    int UI_center_x = UI2_img.cols / 2.;
+    int UI_center_y = UI2_img.rows / 2.;
+    
+    // ord_img 縮放成 show_bin_windows 的 ratio
+    int show_bin_window_height = 500;
+    double resize_ratio = show_bin_window_height / (double)ord_img.rows;
+    // 縮放後的 width, height 計算
+    int resize_height = show_bin_window_height;
+    int resize_width  = ord_img.cols * resize_ratio;
 
-    Point2f srcTri[4];
-    srcTri[0] = Point2f(0, 0);
-    srcTri[1] = Point2f(0, ord_img.rows-1);
-    srcTri[2] = Point2f(ord_img.cols-1, 0);
-    srcTri[3] = Point2f(ord_img.cols-1, ord_img.rows-1);
-
-    Point2f dstTri[4];
-    dstTri[0] = Point2f( 0, 0);
-    dstTri[1] = Point2f( 0, resize_img_height-1 );
-    dstTri[2] = Point2f( resize_img_width-1, 0);
-    dstTri[3] = Point2f( resize_img_width-1, resize_img_height-1);
-
-    Mat warp_matrix = getPerspectiveTransform(srcTri, dstTri);
-
-    Mat resize_ord_img(resize_img_height, resize_img_width, ord_img.depth());
-    warpPerspective(ord_img, resize_ord_img, warp_matrix, resize_ord_img.size(), 0, 0, 255);
-
-    Mat resize_bin_img = resize_ord_img.clone();
-    warpPerspective(test_bin, resize_bin_img, warp_matrix, resize_ord_img.size(), 0, 0, 255);
+    // ord_img, bin_img 做縮放 成 resize_ord_img, 
+    Mat resize_ord_img;
+    cv::resize(ord_img, resize_ord_img, cv::Size(resize_width, resize_height));
+    
+    Mat resize_bin_img;
+    cv::resize(bin_img, resize_bin_img, cv::Size(resize_width, resize_height));
 
 
+    // 計算 縮放後的 ord_img, bin_img 左邊界, 上邊界
+    int resize_bin_left = UI_center_x - resize_width  / 2;
+    int resize_bin_top  = UI_center_y - resize_height / 2;
 
-    Mat color_load_img = resize_ord_img.clone();
-    int color_load_img_left = screen_center_x - color_load_img.cols/2;
-    int color_load_img_top  = screen_center_y - color_load_img.rows/2;
-
-    // screen(Rect(screen_center_x - load_ord_img.cols/2, 0, load_ord_img.cols, load_ord_img.rows)) = color_load_img.clone();
-
-
-    cvtColor(resize_ord_img, color_load_img, CV_GRAY2BGR);
-    for(int go_row = 0 ; go_row < color_load_img.rows ; go_row++)
-        for(int go_col = 0 ; go_col < color_load_img.cols ; go_col++)
-            // screen.at<Vec3b>(go_row, go_col + color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-            UI_bass.at<Vec3b>(go_row, go_col + color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
+    // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
+    Mat show_bin_roi = UI_bass( Rect(resize_bin_left, 0, resize_ord_img.cols, resize_ord_img.rows) );
+    
+    // 把 resize_ord_img 從 gray 轉成 RGB 後 貼在 定好的位置
+    cvtColor(resize_ord_img, resize_ord_img, CV_GRAY2BGR);
+    resize_ord_img.copyTo(  show_bin_roi  );
     imshow(UI_WINDOW_NAME, UI_bass);
-    // imshow("screen", screen);
+    waitKey(500);
+    
+    // 把 resize_bin_img 從 gray 轉成 RGB 後 貼在 定好的位置
+    cvtColor(resize_bin_img, resize_bin_img, CV_GRAY2BGR);
+    resize_bin_img.copyTo(  show_bin_roi  );
+    imshow(UI_WINDOW_NAME, UI_bass);
     waitKey(500);
 
-
-    cvtColor(resize_bin_img, color_load_img, CV_GRAY2BGR);
-    for(int go_row = 0 ; go_row < color_load_img.rows ; go_row++)
-        for(int go_col = 0 ; go_col < color_load_img.cols ; go_col++)
-            // screen.at<Vec3b>(go_row, go_col + color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-            UI_bass.at<Vec3b>(go_row, go_col + color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-
-    imshow(UI_WINDOW_NAME, UI_bass);
-    // imshow("screen", screen);
-    waitKey(500);
-
-
+    // 把 五線譜的頭 也做 縮放 和 平移 後 顯示出來
     for(int go_staff = 0 ; go_staff < staff_count ; go_staff++){
         for(int go_line = 0 ; go_line < 5 ; go_line++){
-            double trans_left_x = left_point[go_staff][go_line][0];
-            double trans_left_y = left_point[go_staff][go_line][1];
-            Perspective_trans(trans_left_x, trans_left_y, warp_matrix, trans_left_x, trans_left_y, debuging);
-            trans_left_x += color_load_img_left;
+            double trans_left_x = left_point[go_staff][go_line][0] * resize_ratio;
+            double trans_left_y = left_point[go_staff][go_line][1] * resize_ratio;
+            trans_left_x += resize_bin_left;
 
 
-            double trans_right_x = right_point[go_staff][go_line][0];
-            double trans_right_y = right_point[go_staff][go_line][1];
-            Perspective_trans(trans_right_x, trans_right_y, warp_matrix, trans_right_x, trans_right_y, debuging);
-            trans_right_x += color_load_img_left;
+            double trans_right_x = right_point[go_staff][go_line][0] * resize_ratio;
+            double trans_right_y = right_point[go_staff][go_line][1] * resize_ratio;
+            trans_right_x += resize_bin_left;
 
-            // line(screen, Point(trans_left_x, trans_left_y ), 
             line(UI_bass, Point(trans_left_x, trans_left_y ), 
-                         Point(trans_right_x, trans_right_y), 
-                         Scalar(0, 0, 255), 1);
+                          Point(trans_right_x, trans_right_y), 
+                          Scalar(0, 0, 255), 1);
 
             imshow(UI_WINDOW_NAME, UI_bass);
-            // imshow("screen", screen);
             waitKey(20);
         }
     }
+
+    // 進度條 30%
     loading_bar +=30;
     Show_loading_bar(UI_bass, UI_WINDOW_NAME, 0, loading_bar);
 }
