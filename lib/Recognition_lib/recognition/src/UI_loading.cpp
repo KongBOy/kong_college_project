@@ -187,7 +187,7 @@ void Show_loading_bar(Mat UI_bass, string UI_WINDOW_NAME, int start_num, int end
 }
 
 
-void UI_loading_preprocess(Mat ord_img, 
+void UI_loading_preprocess(Mat src_img, 
                            Mat bin_img, 
                            int staff_count, int*** left_point, int*** right_point, 
                            Mat UI_bass, string UI_WINDOW_NAME, 
@@ -202,22 +202,22 @@ void UI_loading_preprocess(Mat ord_img,
     // 計算 UI畫面正中心x
     int UI_center_x = UI_bass.cols / 2.;
     
-    // ord_img 縮放成 show_bin_windows 的 ratio
+    // src_img 縮放成 show_bin_windows 的 ratio
     int show_bin_window_height = 500;
-    double resize_ratio = show_bin_window_height / (double)ord_img.rows;
+    double resize_ratio = show_bin_window_height / (double)src_img.rows;
     // 縮放後的 width, height 計算
     int resize_height = show_bin_window_height;
-    int resize_width  = ord_img.cols * resize_ratio;
+    int resize_width  = src_img.cols * resize_ratio;
 
-    // ord_img, bin_img 做縮放 成 resize_ord_img, 
+    // src_img, bin_img 做縮放 成 resize_ord_img, 
     Mat resize_ord_img;
-    cv::resize(ord_img, resize_ord_img, cv::Size(resize_width, resize_height));
+    cv::resize(src_img, resize_ord_img, cv::Size(resize_width, resize_height));
     
     Mat resize_bin_img;
     cv::resize(bin_img, resize_bin_img, cv::Size(resize_width, resize_height));
 
 
-    // 計算 縮放後的 ord_img, bin_img 左邊界, 上邊界
+    // 計算 縮放後的 src_img, bin_img 左邊界, 上邊界
     int resize_bin_left = UI_center_x - resize_width  / 2;
 
     // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
