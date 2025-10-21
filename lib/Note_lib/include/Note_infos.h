@@ -31,7 +31,7 @@ void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & te
 
 void list_note_info(int note_count,int note[][1000]);
 void watch_note(Mat debug_img , int note_count, int note[][1000]);
-void draw_note(Mat debug_img , int note_count, int note[][1000]);
+void Draw_note(string WINDOW_NAME, Mat base_img, int note_count, int note[][1000], int x_shift, int y_shift);
 
 void list_row_note_info(int row_note_count,int row_note[][1000]);
 void watch_row_note(Mat debug_img , int row_note_count, int row_note[][1000]);

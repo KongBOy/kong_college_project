@@ -183,16 +183,24 @@ void watch_note(Mat debug_img , int note_count, int note[][1000]){
     }
 }
 
-void draw_note(Mat debug_img , int note_count, int note[][1000]){
+void Draw_note(string WINDOW_NAME, Mat base_img, int note_count, int note[][1000], int x_shift, int y_shift){
+    int head_type;
+    int time_bar;
+    int note_x;
+    int note_y;
+    Scalar color;
+    Mat template_img;
     for(int go_note = 0 ; go_note < note_count ; go_note++){
-        Scalar color;
-        Mat template_img;
-        get_note_color_and_img(note[2][go_note],note[3][go_note],color,template_img);
+        note_x    = note[0][go_note];
+        note_y    = note[1][go_note];
+        head_type = note[2][go_note];
+        time_bar  = note[3][go_note];
 
-        rectangle(debug_img,Point(note[0][go_note],note[1][go_note]),
-                            Point(note[0][go_note]+template_img.cols,note[1][go_note]+template_img.rows),color,2);
-        // imshow("debug",debug_img);
-        // waitKey(0);
+        get_note_color_and_img(head_type, time_bar, color, template_img);
+        rectangle(base_img,Point(note_x + x_shift                    , note_y + y_shift),
+                            Point(note_x + x_shift + template_img.cols, note_y + y_shift + template_img.rows), color, 2);
+        imshow(WINDOW_NAME, base_img);
+        waitKey(10);
     }
 
 }

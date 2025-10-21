@@ -289,25 +289,8 @@ void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_cou
     imshow(UI_WINDOW_NAME, UI_bass);
 
     // 標出辨識完的note
-    int head_type;
-    int time_bar;
-    int note_x;
-    int note_y;
-    Mat template_img;
-    Scalar color;
-    for(int go_row_note = 0; go_row_note < row_note_count; go_row_note++){
-        note_x    = row_note[0][go_row_note];
-        note_y    = row_note[1][go_row_note];
-        head_type = row_note[2][go_row_note];
-        time_bar  = row_note[3][go_row_note];
-        get_note_color_and_img(head_type, time_bar, color, template_img);
-        rectangle(UI_bass, Point(note_x + show_staff_left                    , note_y + show_staff_top), 
-                           Point(note_x + show_staff_left + template_img.cols, note_y + show_staff_top + template_img.rows), color, 2);
-        imshow(UI_WINDOW_NAME, UI_bass);
-        waitKey(10);
-    }
+    Draw_note(UI_WINDOW_NAME, UI_bass, row_note_count, row_note, show_staff_left, show_staff_top);
 
-    
     // 計算 一組五線譜 相當於 進度條 幾%
     int div_width = 70 / staff_count;
     int mod_width = 70 % staff_count;
