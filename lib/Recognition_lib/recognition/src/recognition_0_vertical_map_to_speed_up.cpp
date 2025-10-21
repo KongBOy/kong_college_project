@@ -17,7 +17,7 @@
 using namespace cv;
 using namespace std;
 
-void Show_mountain(Mat staff_img_erase_line, Mat staff_img_erase_line_color, Mat vertical_map, int e_count, int l_edge[200], int r_edge[200], int distance[200], int b_count[], Scalar color, int thickness){
+void Show_mountain(Mat staff_img_erase_line, Mat staff_img_erase_line_color, Mat vertical_map, int& e_count, int l_edge[200], int r_edge[200], int distance[200], int b_count[], Scalar color, int thickness){
     for(int i = 0 ; i < e_count ; i++){
         cout<<"e_count = "<<e_count<<endl;
         cout<<"l_edge["<<i<<"]="<<l_edge[i]<<endl;
@@ -56,17 +56,18 @@ void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, int& e_cou
     int * b_count = new int[staff_img_erase_line.cols];  //black count
     for(int i = 0 ; i < staff_img_erase_line.cols ; i++) b_count[i] = 0;
     
-    // vertical_map 是debug用, 這邊是視覺化 垂直投影長什麼樣子
+    // vertical_map 是debug用, 用來視覺化 b_count 垂直投影長什麼樣子
     Mat vertical_map;
-    if(debuging){
-        // 垂直投影, 主要更新 b_count, vertical_map 是 debug用的, 視覺化來看 THRESH_HOLD 取多少比較好
-        vertical_map = Mat(staff_img_erase_line.rows, staff_img_erase_line.cols, CV_8UC1, Scalar(255));
-        for(int go_row = 0 ; go_row < staff_img_erase_line.rows; go_row++){
-            for(int go_col = 0 ; go_col < staff_img_erase_line.cols ; go_col++){
-                if(staff_img_erase_line.at<uchar>(go_row,go_col) == BLACK) vertical_map.at<uchar>(b_count[go_col]++, go_col) = 0;
-            }
+    // 計算 b_count 垂直投影, 順便把視覺畫圖 vertical_map 畫出來, 這樣比較好看 THRESH_HOLD 取多少比較好
+    vertical_map = Mat(staff_img_erase_line.rows, staff_img_erase_line.cols, CV_8UC1, Scalar(255));
+    for(int go_row = 0 ; go_row < staff_img_erase_line.rows; go_row++){
+        for(int go_col = 0 ; go_col < staff_img_erase_line.cols ; go_col++){
+            if(staff_img_erase_line.at<uchar>(go_row,go_col) == BLACK) vertical_map.at<uchar>(b_count[go_col]++, go_col) = 0;
         }
+    }
 
+    // 視覺化 b_count (vertical_map)
+    if(debuging){
         // 灰階轉彩色
         cv::cvtColor(vertical_map, vertical_map, COLOR_GRAY2BGR);
         // THRESH_HOLD的紅線
