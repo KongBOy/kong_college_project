@@ -97,23 +97,23 @@ int main(){
         // NextStep 0: 進入程式的前導動畫
         case 0:
 
-            imshow(Title,UI0);
+            imshow(Title, UI0);
             waitKey(0);
-            imshow(Title,UI0_enter);
+            imshow(Title, UI0_enter);
             waitKey(200);
-            FadeInOut(Title, UI0_enter,UI0_1,50);
+            FadeInOut(Title, UI0_enter, UI0_1,50);
             waitKey(2000);
-            FadeInOut(Title, UI0_1,UI0_2,50);
+            FadeInOut(Title, UI0_1, UI0_2,50);
             waitKey(2000);
-            FadeInOut(Title, UI0_2,UI0_3,50);
+            FadeInOut(Title, UI0_2, UI0_3,50);
             waitKey(800);
-            FadeInOut(Title, UI0_3,UI0_4,50);
+            FadeInOut(Title, UI0_3, UI0_4,50);
             waitKey(2000);
-            FadeInOut(Title, UI0_4,UI0_5,50);
+            FadeInOut(Title, UI0_4, UI0_5,50);
             waitKey(2000);
-            FadeInOut(Title, UI0_5,UI0_6,50);
+            FadeInOut(Title, UI0_5, UI0_6,50);
             //waitKey(0);
-            imshow(Title,UI0_6_enter);
+            imshow(Title, UI0_6_enter);
             waitKey(2000);
 
             NextStep=1;
@@ -122,7 +122,7 @@ int main(){
             break;
         // NextStep 1: 等待 user 輸入樂譜
         case 1:{
-            imshow(Title,UI1);
+            imshow(Title, UI1);
             waitKey(100);
 
             // // debug 用, 直接指定想要的樂譜
@@ -164,7 +164,7 @@ int main(){
         // NextStep 2: 開始辨識(切割五線譜區域, 五線譜拉正, 辨識五線譜內音高)
         case 2:
             cout<<"Case 2"<<endl;
-            imshow(Title,UI1_2);
+            imshow(Title, UI1_2);
             // 初始化容器 後 開始辨識
             try{
                 // 初始化 容器, 音符部分
@@ -184,19 +184,20 @@ int main(){
                     note_infos -> row_note_count_array[i] = 0;
                 }
                 // 開始辨識
-                Recognition(SrcMusicSheet,staff_count,staff_img_erase_line,staff_img,trans_start_point_x,trans_start_point_y,
-                            note_infos -> note_count,note_infos -> note,note_infos -> row_note_count_array,
-                            UI2,Title,
-                            Title,UI2_5, 
-                            true);
+                int status = Recognition(SrcMusicSheet, staff_count, staff_img_erase_line, staff_img, trans_start_point_x, trans_start_point_y,
+                                         note_infos -> note_count,note_infos -> note, note_infos -> row_note_count_array,
+                                         UI2,Title,
+                                         Title, UI2_5, 
+                                         true);
+                cout << "Recognition status:" << status << endl;
             }
             catch (exception e){
-                imshow(Title,UI2_5);
+                imshow(Title, UI2_5);
                 waitKey(2000);
                 NextStep=0;
                 break;
             }
-            imshow(Title,UI3);
+            imshow(Title, UI3);
             waitKey(2000);
 
             NextStep=3;
@@ -205,7 +206,7 @@ int main(){
         // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
         case 3:
             cout<<"Case 3"<<endl;
-            imshow(Title,UI3);
+            imshow(Title, UI3);
             waitKey(0);
             GenerateMidiFile(note_infos, staff_img);
             speed = 100;
@@ -217,7 +218,7 @@ int main(){
 
         // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
         case 4:
-            //imshow(Title,UI5);
+            //imshow(Title, UI5);
             cout<<"Case 4"<<endl;
             Output=background.clone();
 
@@ -235,15 +236,12 @@ int main(){
                     break;
 
             }
-            resize(UI4_0,UI4_0,Size(1600,900),0,0, INTER_CUBIC);
-            resize(UI4_1,UI4_1,Size(1600,900),0,0, INTER_CUBIC);
-            resize(UI5_0,UI5_0,Size(1600,900),0,0, INTER_CUBIC);
-            imshow(Title,UI4_0);
+            imshow(Title, UI4_0);
             waitKey(2000);
-            FadeInOut(Title, UI4_0,UI4_1,50);
+            FadeInOut(Title, UI4_0, UI4_1,50);
             waitKey(2000);
 
-            FadeInOut(Title, UI4_1,UI5_0,50);
+            FadeInOut(Title, UI4_1, UI5_0,50);
             waitKey(2000);
             break;
 
@@ -254,7 +252,7 @@ int main(){
     /* 
     for(int i = 0;i<=100;i++){
                 rectangle( UI0, Point( i*5, 0 ), Point( (i*5)+5, 5), Scalar( 0, 55, 255 ), CV_FILLED, 4 );
-                imshow("Title",UI0);
+                imshow("Title", UI0);
                 waitKey(100);
             }
 
