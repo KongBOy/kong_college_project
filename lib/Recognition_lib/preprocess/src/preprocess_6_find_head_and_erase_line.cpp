@@ -59,6 +59,7 @@ void Find_Head_and_Erase_Line_Interface(Mat src_bin,vector<Vec2f>staff_lines, in
     cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
 
     // staff = new vector<Vec2f>[staff_count];
+    if(debuging) cout << "staff_count:" << staff_count << endl;
     left_point  = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
     right_point = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
 
@@ -97,9 +98,9 @@ void Find_Head_and_Erase_Line_Interface(Mat src_bin,vector<Vec2f>staff_lines, in
 
 void Erase_line(Mat& src_bin, int x0, int y0, int one_step, int one_step_height, int go_range){
     for(int go = 0 ; go < go_range ; go++){
-        //方法二：定這個點的上面和下面，然後測試之間的距離，如果小於 線寬 就代表是線 就消線~~
+        // 這個點的上面和下面，然後測試之間的距離，如果小於 線寬 就代表是線 就消線~~
         int up = y0 + go*one_step*one_step_height;
-        //定位up~~~如果沒有在線上的話，往上下找五格~~~
+        // 定位, 如果沒有在線上的話，往上下找五格~~~
         if( (src_bin.at<uchar>(up ,x0+go*one_step) != 0) ){
             for(int i = 0 ; i < 5 ; i++){
                 if(src_bin.at<uchar>(up+i  ,x0+go*one_step) == 0){
@@ -115,18 +116,20 @@ void Erase_line(Mat& src_bin, int x0, int y0, int one_step, int one_step_height,
 
         //如果up沒有定位成功，就不做拉~~~因為可能是在 空白處~~~
         if(src_bin.at<uchar>(up  ,x0 + go*one_step) != 0){
+            // cout << "erase line white do nothing" << endl;
             // do nothing~~ 以下是debug訊息
             // cout << "something wrong~~" << endl;
-            // imshow("where",src_bin( Rect(x0 - 80, up - 80, 240, 240) ));
+            // imshow("where", src_bin( Rect(x0 - 80, up - 80, 240, 240) ));
             // waitKey(0);
         }
         else{
-            // imshow("where",src_bin( Rect(x0 - 30, up - 30,  60,  60) ));
+            // cout << "erase line black" << endl;
+            // imshow("where", src_bin( Rect(x0 - 30, up - 30,  60,  60) ));
             // waitKey(0);
             int down = up;
 
-            while(src_bin.at<uchar>(up  , x0 + go*one_step) == 0) up--;
-            while(src_bin.at<uchar>(down, x0 + go*one_step) == 0) down++;
+            while(src_bin.at<uchar>(up  , x0 + go*one_step) == 0 && up   > 0            + 1) up--;
+            while(src_bin.at<uchar>(down, x0 + go*one_step) == 0 && down < src_bin.rows - 1) down++;
             down--;
 
             int distance = down - up;
@@ -247,7 +250,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
             // ..._go 是會隨著找頭的進行而變動的, ..._th 是初始值不變的, 在找頭的一開始 都事先指定 初始值, 之後再隨著找頭來變動
             float  theta_go = theta;
             double cos_go = cos_th, sin_go = sin_th;
-            double cot_go = cos_go / sin_go; 
+            double cot_go = cos_go / (sin_go + 0.000000001); 
             double one_step_height_go = -1 * cot_go;
             // 方向
             switch(direction){
@@ -282,7 +285,9 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                 
                 // 順著線走 如果現在是黑點, 代表在線上, 繼續走下一格
                 if(src_bin.at<uchar>(next_y, next_x) == 0){
-                    Debug_draw_dot(next_x, next_y, Scalar(0, 242, 255), 1);  // 黃色
+                    if(debuging){
+                        Debug_draw_dot(next_x, next_y, Scalar(0, 242, 255), 1);  // 黃色
+                    }
                     Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
                     continue;
                 }
@@ -316,7 +321,10 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                                 
                                 // 畫一下現在位置
                                 pt2.x = next_x, pt2.y = next_y;
-                                Debug_draw_line(pt1, pt2, Scalar(255, 0, 0), 1);  // 藍色
+                                if(debuging){
+                                    cout << "  Forward found case" << endl;
+                                    Debug_draw_line(pt1, pt2, Scalar(255, 0, 0), 1);  // 藍色
+                                }
                                 break;
                             }
                         }
@@ -350,20 +358,26 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             
                             // 畫一下現在位置
                             pt2.x = next_x, pt2.y = next_y;
-                            Debug_draw_line(pt1, pt2, Scalar(0, 255, 0), 1);  // 綠色
+                            if(debuging){
+                                Debug_draw_line(pt1, pt2, Scalar(0, 255, 0), 1);  // 綠色
+                            }
 
                             Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
-
-                            // cout<< "UP before" << endl;
-                            // cout<< "theta_go: " << theta_go << endl;
-                            // cout<< "one_step_height_go: " << one_step_height_go <<endl;
+                            
+                            if(debuging){
+                                cout<< "  UP before" << endl;
+                                cout<< "    theta_go: " << theta_go << endl;
+                                cout<< "    one_step_height_go: " << one_step_height_go <<endl;
+                            }
                             theta_go -= (PI / 180.0) * 0.05; // -0.05 度
                             cos_go = cos(theta_go), sin_go = sin(theta_go);
-                            cot_go = cos_go / sin_go; 
+                            cot_go = cos_go / (sin_go + 0.000000001); 
                             one_step_height_go = -1 * cot_go;
-                            // cout<< "UP after" << endl;
-                            // cout<< "theta_go: " << theta_go << endl;
-                            // cout<< "one_step_height_go: " << one_step_height_go <<endl<<endl;
+                            if(debuging){
+                                cout<< "  UP after" << endl;
+                                cout<< "    theta_go: " << theta_go << endl;
+                                cout<< "    one_step_height_go: " << one_step_height_go <<endl<<endl;
+                            }
                         }
                         // 往線方向走 的 正上一格 如果看起來比 正下一格 更像線 且 該格是黑點, 移動到那一格(往線的方向移動 和 往正上方偏移一格)
                         else if(cmp_down > cmp_up && cmp_down != CHECK_FAILED && src_bin.at<uchar>(next_y +go_jump*one_step*one_step_height_go +1 ,next_x+go_jump*one_step) == 0 ){ //if( cmp_up != CHECK_FAILED && cmp_down == CHECK_FAILED)                                
@@ -381,20 +395,26 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             
                             // 畫一下現在位置
                             pt2.x = next_x, pt2.y = next_y;
-                            Debug_draw_line(pt1, pt2, Scalar(0, 0, 255), 1);  // 紅色
+                            if(debuging){
+                                Debug_draw_line(pt1, pt2, Scalar(0, 0, 255), 1);  // 紅色
+                            }
 
                             Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
-
-                            // cout<< "DOWN before" << endl;
-                            // cout<< "theta_go: " << theta_go << endl;
-                            // cout<< "one_step_height_go: " << one_step_height_go <<endl;
+                            
+                            if(debuging){
+                                cout<< "  DOWN before" << endl;
+                                cout<< "    theta_go: " << theta_go << endl;
+                                cout<< "    one_step_height_go: " << one_step_height_go <<endl;
+                            }
                             theta_go += (PI / 180.0) * 0.05; // +0.05 度
                             cos_go = cos(theta_go), sin_go = sin(theta_go);
-                            cot_go = cos_go / sin_go; 
+                            cot_go = cos_go / (sin_go + 0.000000001); 
                             one_step_height_go = -1 * cot_go;
-                            // cout<< "DOWN after" << endl;
-                            // cout<< "theta_go: " << theta_go << endl;
-                            // cout<< "one_step_height_go: " << one_step_height_go <<endl<<endl;
+                            if(debuging){
+                                cout<< "  DOWN after" << endl;
+                                cout<< "    theta_go: " << theta_go << endl;
+                                cout<< "    one_step_height_go: " << one_step_height_go <<endl<<endl;
+                            }
                         }
                         
                     }
@@ -436,8 +456,10 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             
                             // 畫一下現在位置
                             pt2.x = next_x, pt2.y = next_y;
-                            Debug_draw_line(pt1, pt2, Scalar(  0,  22, 165), 5);  // 深灰色
-                            if(debuging) cout << "bend detected up" << endl;
+                            if(debuging){
+                                Debug_draw_line(pt1, pt2, Scalar(  0,  22, 165), 5);  // 深灰色
+                                cout << "  bend detected up" << endl;
+                            }
 
                             Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
@@ -451,8 +473,10 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                             
                             // 畫一下現在位置
                             pt2.x = next_x, pt2.y = next_y;
-                            Debug_draw_line(pt1, pt2, Scalar(127,  0, 255), 5);  // 淺灰色
-                            if(debuging) cout << "bend detected down" << endl;
+                            if(debuging){
+                                Debug_draw_line(pt1, pt2, Scalar(127,  0, 255), 5);  // 淺灰色
+                                cout << "  bend detected down" << endl;
+                            }
 
                             Erase_line(src_bin_erase_line, next_x, next_y, one_step, one_step_height, 5);
 
@@ -465,10 +489,17 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
                 if(src_bin.at<uchar>(next_y,next_x) != 0 && Check_shift(src_bin, next_x,next_y,one_step,one_step_height_go) ==  CHECK_FAILED){// && error >= ok_error2)
                     break;
                 }
+                // 做一段 show 一次
+                // if(debuging){
+                //     cv::imshow("src_bin_debug", src_bin_debug);
+                //     cv::waitKey(0);
+                // }
 		    }
 
             // 把找到的頭畫出來
-            Debug_draw_dot(next_x, next_y, Scalar(0, 0, 255), 10);  // 紅色
+            if(debuging){
+                Debug_draw_dot(next_x, next_y, Scalar(0, 0, 255), 10);  // 紅色
+            }
             
             // 把找到的頭根據方向存進 right_point[][] 或 left_point[][]
             if(direction == 0){
@@ -481,11 +512,18 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
             }
             if(debuging) cout << "line_ " << go_line << " find head, " << "next_x=" << next_x << " , next_y=" << next_y << endl;
         }
+
+        // 一條線做完 show一次
+        if(debuging){
+            cv::imshow("src_bin_debug", src_bin_debug);
+            cv::waitKey(0);
+        }
 	}
 
-    // /******************************************************
-	// imshow(window_name,drew_img);
-	imwrite(window_name + "3.bmp"     , drew_img_debug);
-	imwrite(window_name + "_g_img.bmp", src_bin_debug );
-	imwrite(window_name + "_g_img_reduce_line.bmp", src_bin_erase_line );
+    // ******************************************************
+    if(debuging){
+        imwrite(window_name + "3.bmp"     , drew_img_debug);
+        imwrite(window_name + "_g_img.bmp", src_bin_debug );
+        imwrite(window_name + "_g_img_reduce_line.bmp", src_bin_erase_line );
+    }
 }
