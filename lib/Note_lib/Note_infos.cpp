@@ -136,9 +136,10 @@ void watch_row_note(Mat debug_img , int row_note_count, int row_note[][1000]){
 
         rectangle(debug_img,Point(row_note[0][go_row_note],row_note[1][go_row_note]),
                             Point(row_note[0][go_row_note]+template_img.cols,row_note[1][go_row_note]+template_img.rows),color,2);
-        imshow("debug",debug_img);
-        waitKey(0);
     }
+    imshow("debug",debug_img);
+    waitKey(0);
+    destroyWindow("debug");
 }
 void draw_row_note(Mat debug_img , int row_note_count, int row_note[][1000]){
     for(int go_row_note = 0 ; go_row_note < row_note_count ; go_row_note++){

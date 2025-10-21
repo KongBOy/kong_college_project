@@ -306,16 +306,14 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         // 把row為單位的note 存進去所有的note的array~~~
         note_count += row_note_count;
         row_note_count_array[go_staff] = row_note_count;
-        // play();
-
-
-        Mat debug_img2 = staff_img[go_staff].clone();
-        cvtColor(staff_img[go_staff],debug_img2,CV_GRAY2BGR);
-
-        list_row_note_info(row_note_count,row_note);
-        // **************************************************************
-        // watch_row_note(debug_img2,row_note_count,row_note);
-        UI_loading_recognition_row(staff_count,staff_img[go_staff],row_note_count,row_note,UI_bass,UI_WINDOW_NAME);
+        // *****************************************************************
+        // 看一下辨識結果
+        if(developing_debuging){
+            Mat debug_img2;
+            cvtColor(staff_img[go_staff], debug_img2, CV_GRAY2BGR);
+            list_row_note_info(            row_note_count, row_note);
+            watch_row_note    (debug_img2, row_note_count, row_note);
+        }
     }
 
     //UI_loading_recognition(staff_count,staff_img,note_count,note,row_note_count_array);
