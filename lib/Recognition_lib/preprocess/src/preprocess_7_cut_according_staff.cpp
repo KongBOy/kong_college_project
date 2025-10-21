@@ -55,8 +55,8 @@ void Perspective_trans(double x, double y, Mat warp_matrix, double& result_x, do
 // 根據 每組staff 的 第一條和第五條的線頭 assign srdTri
 void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
                int& staff_count, int*** left_point, int*** right_point,
-               Mat staff_img_erase_line[],Mat staff_img[],
-               double trans_start_point_x[],double trans_start_point_y[], 
+               Mat staff_img_erase_line[], Mat staff_img[],
+               double trans_start_point_x[], double trans_start_point_y[], 
                bool debuging)
                // trans_start_point的意思是 五線譜最左上角的那一點
 {
