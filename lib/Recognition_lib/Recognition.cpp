@@ -214,9 +214,6 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
 
 
     for(int go_staff = 0 ; go_staff < staff_count ; go_staff++){
-        // vertical_map 是debug用
-        Mat vertical_map(staff_img_erase_line[go_staff].rows,
-                         staff_img_erase_line[go_staff].cols,CV_8UC1,Scalar(255));
         // 主要用這些
         int e_count = 0;  // edge_count
         int l_edge       [200];
@@ -225,9 +222,8 @@ int Recognition(Mat ord_img,int& staff_count, Mat staff_img_erase_line[],Mat sta
         int mountain_area[200];
         int* note_type;
         recognition_0_vertical_map_to_speed_up(staff_img_erase_line[go_staff],
-                                               vertical_map,
-                                               e_count,l_edge,r_edge,distance,mountain_area,note_type);
-
+                                               e_count, l_edge, r_edge, distance, mountain_area,
+                                               note_type);
 
         ///~~~~~~~ 自己設的資料結構 用row為單位來存note~~~~~~~~~
         int row_note[5][1000]; /// 0 = x , 1 = y , 2 = type , 3 = time_bar , 4 = 音高
