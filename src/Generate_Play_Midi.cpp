@@ -39,25 +39,24 @@ Mat background       = imread("Resource/UI_all_picture/UI PIC/UI/Background.png"
 Mat bar              = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 1);
 
 
-HANDLE     gSThread = NULL;
+HANDLE     gSThread = NULL;  // 播放聲音的執行緒
 
 
 typedef struct _soundtype{
-  double  Freq;
-  int     Dura;
-  int     Vol;
-  int     Voice;
-  double  Tempo;
-  int     sndTid;
+  double  Freq;   // 頻率（Hz），代表音高
+  int     Dura;   // 持續時間（毫秒）
+  int     Vol;    // 音量
+  int     Voice;  // 音色或聲部種類
+  double  Tempo;  // 節奏速度
+  int     sndTid; // 內部使用的識別 ID
 } soundtype, *LPSOUNDTYPE;
 
-static soundtype  SndPmtr[SNDQUE+1];
-static int        gTenter;
-static int        gTwait;
-static int        gTexit;
-static int        gTarray;
-static BOOL       gTsig;
-
+static soundtype  SndPmtr[SNDQUE + 1];
+static int        gTenter;  // 佇列寫入位置（enter index）
+static int        gTwait;   // 等待狀態位置
+static int        gTexit;   // 佇列取出位置（exit index）
+static int        gTarray;  // 當前可用的陣列索引
+static BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
 
 
 
@@ -97,7 +96,7 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
     // *************************************************
     list_note_info(note_infos -> note_count, note_infos -> note);
 
-    speed=60;
+    speed = 60;  // bpm
     cout << "step1" << endl;
     /*
     for(int i = 0 ; i < 40 ; i++){
@@ -306,7 +305,7 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     row_index=0;
     note_infos -> go_note=0;
     HMIDIOUT hMidi;
-    midiOutOpen(&hMidi, (UINT)-1, 0, 0, CALLBACK_NULL);
+    midiOutOpen    (&hMidi, (UINT)-1, 0, 0, CALLBACK_NULL);
     midiOutShortMsg(hMidi, (256*LocSndPar.Voice)+192);
     while(gTenter > gTexit && gTsig == FALSE){
         if(MusicPlayback){
@@ -324,9 +323,9 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
             Phrase=0;
 
             // convert frequency to midi note
-            Note = (int)Round((log(LocSndPar.Freq)-log(440.0))/log(2.0)*12+69, 0);
-            //Phrase = (LocSndPar.Vol*256+Note)*256+144;//Noteon.
-            Phrase = (volume*256+Note)*256+144;//Noteon
+            Note = (int)Round( ( log(LocSndPar.Freq) -log(440.0)) / log(2.0) * 12 + 69, 0);
+            //Phrase = (LocSndPar.Vol * 256 + Note) * 256 + 144;  // Noteon.
+            Phrase = (volume * 256 + Note ) * 256 + 144;  //Noteon
             midiOutShortMsg(hMidi, Phrase);
 
             //  ~~~~~~~~~~~加這邊邊邊邊邊~~~~~~~~~~~~
@@ -370,8 +369,8 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
             // circle(row_proc_img[row_index], pt2, 15, randomColor(rng), -1, 1, 0);
             int movetocenter=10;
 
-            pt2.x = pt2.x-movetocenter;
-            pt2.y = pt2.y+movetocenter;
+            pt2.x = pt2.x - movetocenter;
+            pt2.y = pt2.y + movetocenter;
 
             int nodePitch=note_infos -> note[4][note_infos -> go_note]%12;
             switch(nodePitch){
