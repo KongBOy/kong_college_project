@@ -18,8 +18,7 @@ using namespace std;
 using namespace cv;
 
 
-void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & template_img)
-{
+void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & template_img){
     Mat template_img_4 = imread("Resource/note/4/4.bmp",0);
     Mat template_img_5 = imread("Resource/note/4-rest/4-rest.bmp",0);
     Mat template_img_2 = imread("Resource/note/2/2.bmp",0);
