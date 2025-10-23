@@ -221,7 +221,7 @@ void recognition_0_all_head( int head_type,
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
                 note[1][note_count] = maybe_head[1][go_head];
-                note[2][note_count] = 2;
+                note[2][note_count] = head_type;
                 note_count++;
             }
         }
@@ -371,7 +371,7 @@ void recognition_0_all_head( int head_type,
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
                 note[1][note_count] = maybe_head[1][go_head];
-                note[2][note_count] = 9;
+                note[2][note_count] = head_type;
                 note_count++;
             }
 
@@ -392,7 +392,7 @@ void recognition_0_all_head( int head_type,
                 int go_note = note_count;
                 note[0][note_count] = maybe_head[0][go_head];
                 note[1][note_count] = maybe_head[1][go_head];
-                note[2][note_count] = 10;
+                note[2][note_count] = head_type;
                 note_count++;
             }
             Overlap_Erase_or_Assing8Note(10, template_img, note, note_count, staff_img_erase_line, 10, ERASE, 0);
