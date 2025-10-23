@@ -29,7 +29,7 @@ Mat T8=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\8.jpg",1);
 Mat T9=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\9.jpg",1);
 Mat T10=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\10.jpg",1);
 Mat T11=imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\11.jpg",1);
-Mat background1=imread("Resource\\UI_all_picture/UI PIC/UI/Background.png",1);
+Mat background1=imread("Resource\\UI_all_picture/UI PIC/UI/Background_kong.png",1);
 
 bool detectAndDisplay( Mat frame,float *facex,float *facey,float *facewidth,float *faceheight );
 void SamplePicInitial();
@@ -132,6 +132,7 @@ int HandShaking(string Title){
     int talktime=0;
     Mat talk;
     Mat Output2;
+    Mat frame_show;
 	///偵測手環是否進入範圍內
 	if(capture)
 	{
@@ -238,10 +239,11 @@ int HandShaking(string Title){
                 line( newimg, Point(orbitX[i],orbitY[i]), Point(orbitX[(i+1)%8],orbitY[(i+1)%8]),Scalar(44,250,3), 1, 8 );
 				//circle(newimg,cvPoint(orbitX[i],orbitY[i]),2,Scalar(44,250,3), 2, 8,0);
 			}
-            resize(newimg, newimg, Size(frame.cols*4/5, frame.rows*4/5), 0, 0, INTER_CUBIC);
+            resize(newimg, newimg, Size(frame.cols*0.537, frame.rows*0.537), 0, 0, INTER_CUBIC);
             //imshow("ReducePic",ReducePicShow);
             if(!Output.empty()){
-                DrawMat(newimg,Output,78,65);
+                frame_show = Output(Rect(16, 77, newimg.cols, newimg.rows));
+                newimg.copyTo(frame_show);
                 //resize(row_proc_img[row_index], row_proc_img[row_index], Size(1211, 227), 0, 0, INTER_CUBIC);
                 if(row_proc_img[row_index].rows>227)
                     DrawMat(row_proc_img[row_index](Rect(0,0,1166,227)),Output,530,62);
@@ -294,7 +296,7 @@ int HandShaking(string Title){
                 //cout<<"clock()"<<clock()<<endl;
             }
 
-            DrawTalk(talk,Output2,130,633);
+            DrawTalk(talk,Output2,130,700);
 
             imshow(Title,Output2);
 		}
