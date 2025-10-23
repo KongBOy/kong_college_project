@@ -21,5 +21,3 @@ void Find_Head_and_Erase_Line (vector<Vec2f> lines, string window_name, Mat test
 
 //不要用vector<Vec2f>*& staff，原因寫在find_staff.cpp
 void Find_Head_and_Erase_Line_Interface(Mat test_bin,vector<Vec2f> staff_lines , int staff_count, int***& left_point , int***& right_point , Mat color_ord_img, Mat& src_bin_erase_line, bool debuging);
-
-string Int2str(int in_num); // int Тр string
