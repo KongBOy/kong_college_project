@@ -117,7 +117,7 @@ void Cut_staff(Mat src_bin,Mat src_bin_erase_line,
         int staff_height =   43;
         int padding_L   =    5;
         int padding_R   =    5;
-        int padding_U   =    (1.5 + 0.2) * staff_height;  // 超出五線譜外都可能還有音喔, 所以保險起見多留1.5組五線譜的空間這樣子, 高音的部分還要放辨識出來的音高圈圈, 所以多留 0.2 組五線譜
+        int padding_U   =    (1.5 + 0.4) * staff_height;  // 超出五線譜外都可能還有音喔, 所以保險起見多留1.5組五線譜的空間這樣子, 高音的部分還要放辨識出來的音高圈圈, 所以多留 0.4 組五線譜
         int padding_D   =     1.5        * staff_height;  // 超出五線譜外都可能還有音喔, 所以保險起見多留1.5組五線譜的空間這樣子,
         dst4P[0] = Point2f(       0     + padding_L, padding_U                );
         dst4P[1] = Point2f(       0     + padding_L, padding_U + staff_height );
