@@ -17,27 +17,28 @@
 using namespace std;
 using namespace cv;
 
-int speed=60;
-int volume=80;
+int speed  = 60;
+int volume = 80;
 bool MusicPlayback=false;
 Mat Output;
 int row_index = 0;
 Mat row_proc_img[40];
 
-int MinValue=713;
-int MaxValue=989;
-int speed_row=400;
-int volume_row=290;
+int MinValue=863;
+int MaxValue=1244;
+int speed_row=390;
+int volume_row=275;
 
 RNG rng( 0xFFFFFFFF );
 
 double changespeed=1;
 
 
-Mat Speed_Volume_Bar = imread("Resource/UI_all_picture/UI PIC/UI/Speed_Volume_Bar.png", 1);
-Mat background       = imread("Resource/UI_all_picture/UI PIC/UI/Background.png", 1);
-Mat bar              = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 1);
-
+Mat background            = imread("Resource/UI_all_picture/UI PIC/UI/Background_kong.png", 1);
+Mat Speed_Volume_Bar      = background(Rect(800, 245, 495, 233)).clone();
+Mat Speed_Volume_Bar_roi;
+Mat bar                   = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 1);
+//800 245 495 233
 
 HANDLE     gSThread = NULL;  // 播放聲音的執行緒
 
@@ -59,15 +60,68 @@ static int        gTarray;  // 當前可用的陣列索引
 static BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
 
 
+int Sound (float Freq, int Dura , int Vol , int Voice , float Tempo){
+    cout << "gTexit:" << gTexit << endl;
+    // cout << "Sound" << Freq << " " << Dura << " " << Vol << " " << Voice << " " << Tempo << endl;
+    DWORD  dwThreadId;
+
+    if (Freq == 0 && Dura < 1) return gTenter - gTexit;  // 回傳排隊中的數量
+    // silence
+    if (Freq == 0) Vol  = 0;  // 無聲音時音量歸零
+    if (Dura <  5) Dura = 5;  // 時間太短的話強制最小值
+    gTenter++;
+    gTsig = FALSE;
+    if (gTenter >= SNDQUE){
+        gTarray = gTenter % SNDQUE + 1;
+    }
+    else{
+        gTarray = gTenter;
+    }
+    SndPmtr[gTarray].Freq   = Freq;
+    SndPmtr[gTarray].Dura   = Dura;
+    SndPmtr[gTarray].Vol    = Vol;
+    SndPmtr[gTarray].Voice  = Voice;
+    SndPmtr[gTarray].Tempo  = Tempo;
+    SndPmtr[gTarray].sndTid = gTenter;
+
+    // if (gSThread == NULL && (Freq == Abs(Freq) || Freq == 0)){
+    //     // "PlaySnd" needs casting (void *)
+    //     gSThread = CreateThread(NULL, 0, PlaySnd, (void *)"PlaySnd", 0, &dwThreadId);
+    //     //Sleep(1);
+    //     cout << "thread---------------" << gSThread << endl;
+    //     return 0;
+    // }
+
+    // 目前的程式Freq沒有設負的過用不到
+    // if (Freq != Abs(Freq)){
+    //     cout << "here~~~~~~~~~~~~~~~~~~" << endl;
+    //     if (Freq == -1){
+    //         Freq = 0;
+    //         SndPmtr[gTarray].Vol = 0;
+    //     }
+    //     SndPmtr[gTarray].Freq = Abs(Freq);
+    //     gTsig=TRUE;
+    //     while(gSThread != NULL){
+    //         Sleep(10);
+    //     }
+    //     gTexit = gTenter-1;
+    //     gTwait = gTenter-1;
+    //     gTsig = FALSE;
+    //     return PlaySnd(NULL);  // needs some kind of argument
+    // }
+    return 0;
+}
+
 
 
 double Round (double n, int d){
     return (floor((n)*pow(10.0, (d))+0.5)/pow(10.0, (d)));
 }
-double Abs (double a){
-    if (a < 0)  return -a;
-    return  a;
-}
+// 都被註解掉了用不到
+// double Abs (double a){
+//     if (a < 0)  return -a;
+//     return  a;
+// }
 
 
 
@@ -96,109 +150,75 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
     // *************************************************
     list_note_info(note_infos -> note_count, note_infos -> note);
 
-    speed = 60;  // bpm
     cout << "step1" << endl;
-    /*
-    for(int i = 0 ; i < 40 ; i++){
-        row_src_img[i] = staff_img[i].clone();
-        row_proc_img[i] = row_src_img[i].clone();
-        cvtColor(row_src_img[i], row_proc_img[i], CV_GRAY2BGR);
-        note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
-    }
-
-    note_infos -> note_count = in_note_count;
-    for(int i = 0 ; i < 5 ; i++)
-        for(int j = 0 ; j < note_infos -> note_count ; j++)
-            note_infos -> note[i][j] = in_note[i][j];
-
-
-    list_note_info(note_infos -> note_count, note_infos -> note);*/
+    
+    
     // **************************************************************
     // **************************************************************
+    int head_type;
+    int time_bar;
+    int pitch;
+    int base_4note_duration;
+    speed = 60;  // 速度單位 bpm, 代表 每分鐘均等的打幾下, 舉例: 132bmp 代表 60秒 打 132下
     for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++){
-        switch(note_infos -> note[2][go_note]){
-            case 0:{
-                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12], 
-                    (60/speed)*1000* 4, 
-                    127, 
-                    0);
-            }
-            break;
+        head_type = note_infos -> note[2][go_note];
+        time_bar  = note_infos -> note[3][go_note];
+        pitch     = note_infos -> note[4][go_note];
 
-            case 2:{
-                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12], 
-                    (60/speed)*1000* 2, 
-                    127, 
-                    0);
-            }
-            break;
+        // speed bpm 代表 60秒 打speed下, 所以打一下是 60/speed 秒, 然後因為是給 Sleep()用 單位是毫秒 所以 * 1000
+        // 音樂上通常以 四分音符 的 bpm 來當基礎, 所以設定 四分音符 打一下幾秒 當基礎
+        base_4note_duration = (60 / speed) * 1000;
+        switch(head_type){
+            // 全音符
+            case 0:
+                Sound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 4, 127, 0);
+                break;
+            
+            // 二分音符
+            case 2:
+                Sound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 2,  127,  0);
+                break;
+            
+            // 四 八 十六 ... 分音符(分別time_bar = 0, 1, 2, ...)
+            case 4:
+                Sound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * pow(2, - 1 * time_bar ),  127,  0);
+                break;
 
-            case 4:{
-                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12], 
-                    (60/speed)*1000*pow(0.5, note_infos -> note[3][go_note]), 
-                    127, 
-                    0);
-            }
-            break;
+            // 四分休止符
+            case 5:
+                Sound(0, base_4note_duration * 1, 0, 0);
+                break;
 
-            case 5:{
-                Sound(0, 
-                    (60/speed)*1000* 1, 
-                    0, 
-                    0);
-            }
-            break;
+            // 全休止符
+            case 1:
+                Sound(0, base_4note_duration * 4, 0, 0);
+                break;
 
-            case 1:{
-                Sound(0, 
-                    (60/speed)*1000* 4, 
-                    0, 
-                    0);
-            }
-            break;
+            // 二分休止符
+            case 3:
+                Sound(0, base_4note_duration * 2, 0, 0);
+                break;
 
-            case 3:{
-                Sound(0, 
-                    (60/speed)*1000* 2, 
-                    0, 
-                    0);
-            }
-            break;
-
-            case 6:{
-                Sound(freqTable[note_infos -> note[4][go_note]/12 -1][note_infos -> note[4][go_note]%12], 
-                    (60/speed)*1000* 0.25, 
-                    0, 
-                    0);
-            }
-            break;
-
-            case 7:{
-                Sound(0, 
-                    (60/speed)*1000* 0.125, 
-                    0, 
-                    0);
-            }
-            break;
-
-            case 8:{
-                Sound(0, 
-                    (60/speed)*1000* 0.5, 
-                    0, 
-                    0);
-            }
-            break;
-    /*
-            case 9:{
-                Sound(0, 
-                    0, 
-                    0, 
-                    0);
-            }
-            break;
-    */
+            // 十六分休止符
+            case 6:
+                Sound(0, base_4note_duration * 0.25, 0, 0);
+                break;
+            
+            // 三十二分休止符
+            case 7:
+                Sound(0, base_4note_duration * 0.125, 0, 0);
+                break;
+            
+            // 八分休止符
+            case 8:
+                Sound(0, base_4note_duration * 0.5, 0, 0);
+                break;
+            
+            // 高音譜記號
+            // case 9:
+            //     Sound(0, 0, 0, 0);
+            //     break;
         }
-
     }
     return 0;
     // cout << "speed" << speed << endl;
@@ -244,52 +264,7 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
     */
 }
 
-int Sound (float Freq, int Dura , int Vol , int Voice , float Tempo){
-    // cout << "Sound" << Freq << " " << Dura << " " << Vol << " " << Voice << " " << Tempo << endl;
-    DWORD  dwThreadId;
 
-    if (Freq == 0 && Dura < 1) return gTenter - gTexit;
-    // silence
-    if (Freq == 0) Vol  = 0;
-    if (Dura <  5) Dura = 5;
-    gTenter++;
-    gTsig = FALSE;
-    if (gTenter >= SNDQUE){
-        gTarray = gTenter % SNDQUE+1;
-    }
-    else{
-        gTarray=gTenter;
-    }
-    SndPmtr[gTarray].Freq   = Freq;
-    SndPmtr[gTarray].Dura   = Dura;
-    SndPmtr[gTarray].Tempo  = Tempo;
-    SndPmtr[gTarray].Vol    = Vol;
-    SndPmtr[gTarray].Voice  = Voice;
-    SndPmtr[gTarray].sndTid = gTenter;
-    /*if (gSThread == NULL && (Freq == Abs(Freq) || Freq == 0)){
-        // "PlaySnd" needs casting (void *)
-        gSThread = CreateThread(NULL, 0, PlaySnd, (void *)"PlaySnd", 0, &dwThreadId);
-        //Sleep(1);
-        cout << "thread---------------" << gSThread << endl;
-        return 0;
-    }*/
-    if (Freq != Abs(Freq)){
-        if (Freq == -1){
-            Freq = 0;
-            SndPmtr[gTarray].Vol=0;
-        }
-        SndPmtr[gTarray].Freq=Abs(Freq);
-        gTsig=TRUE;
-        while(gSThread!=NULL){
-            Sleep(10);
-        }
-        gTexit = gTenter-1;
-        gTwait = gTenter-1;
-        gTsig = FALSE;
-        return PlaySnd(NULL);  // needs some kind of argument
-    }
-    return 0;
-}
 
 DWORD WINAPI PlaySnd (LPVOID lpParameter){
     /*
@@ -302,77 +277,88 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     int  lTarray;
     int Note = 0;
     int Phrase = 0;
-    row_index=0;
+    row_index = 0;
     note_infos -> go_note=0;
     HMIDIOUT hMidi;
     midiOutOpen    (&hMidi, (UINT)-1, 0, 0, CALLBACK_NULL);
-    midiOutShortMsg(hMidi, (256*LocSndPar.Voice)+192);
+    midiOutShortMsg(hMidi, (256 * LocSndPar.Voice ) + 192);
+
+    int note_x;
+    int note_y;
+    int head_type;
+    int time_bar;
+    int pitch;
+    Mat template_img;
+    Scalar color;
+    Point pitch_word_posi;
     while(gTenter > gTexit && gTsig == FALSE){
         if(MusicPlayback){
-            gTwait++;
-            if (gTwait >= SNDQUE)
-                lTarray = gTwait % SNDQUE+1;
-            else
-                lTarray = gTwait;
-
-            LocSndPar = SndPmtr[lTarray];
-            // cout << "lTarray " << lTarray << endl;
-            // cout << "gTenter " << gTenter << endl;
-            // cout << "gTexit " << gTexit << endl;
-            Note=0;
-            Phrase=0;
-
-            // convert frequency to midi note
-            Note = (int)Round( ( log(LocSndPar.Freq) -log(440.0)) / log(2.0) * 12 + 69, 0);
-            //Phrase = (LocSndPar.Vol * 256 + Note) * 256 + 144;  // Noteon.
-            Phrase = (volume * 256 + Note ) * 256 + 144;  //Noteon
-            midiOutShortMsg(hMidi, Phrase);
-
-            //  ~~~~~~~~~~~加這邊邊邊邊邊~~~~~~~~~~~~
-            //  ******************************************************************************************************
-            //  ******************************************************************************************************
-            //  ******************************************************************************************************
-            if(note_infos -> note[2][note_infos -> go_note] == 9 or note_infos -> note[2][note_infos -> go_note] == 10){
+            // ******************************************************************************************************
+            // 先畫圖顯示音高 再 播音樂, 才不會 每一row影像 的最後一顆音播完音樂 還沒顯示完 就 換下一row的影像了
+            note_x    = note_infos -> note[0][note_infos -> go_note];
+            note_y    = note_infos -> note[1][note_infos -> go_note];
+            head_type = note_infos -> note[2][note_infos -> go_note];
+            time_bar  = note_infos -> note[3][note_infos -> go_note];
+            pitch     = note_infos -> note[4][note_infos -> go_note];
+            // 遇到 高音譜記號 或 八分符桿 就跳過不顯示音高
+            while(head_type == 9 || head_type == 10){
                 note_infos -> go_note++;
                 note_infos -> go_row_note++;
+                if( note_infos -> go_row_note >= note_infos -> row_note_count_array[row_index]){
+                    note_infos -> go_row_note = 0;
+                    row_index++;
+                }
+                note_x    = note_infos -> note[0][note_infos -> go_note];
+                note_y    = note_infos -> note[1][note_infos -> go_note];
+                head_type = note_infos -> note[2][note_infos -> go_note];
+                time_bar  = note_infos -> note[3][note_infos -> go_note];
+                pitch     = note_infos -> note[4][note_infos -> go_note];
             }
-            Mat template_img;
-            Scalar color;
-            get_note_color_and_img(note_infos -> note[2][note_infos -> go_note], note_infos -> note[3][note_infos -> go_note], color, template_img);
-            rectangle(row_proc_img[row_index], Point(note_infos -> note[0][note_infos -> go_note]                  , note_infos -> note[1][note_infos -> go_note]), 
-                                              Point(note_infos -> note[0][note_infos -> go_note]+template_img.cols, note_infos -> note[1][note_infos -> go_note]+template_img.rows), color, 2);
+            // 取出 template_img 和 head_type顏色
+            get_note_color_and_img(head_type, time_bar, color, template_img);
+            // 畫出 note框框
+            rectangle(row_proc_img[row_index], Point(note_x                    , note_y), 
+                                               Point(note_x + template_img.cols, note_y + template_img.rows), color, 2);
 
-            Point pt2;
-            pt2.x = note_infos -> note[0][note_infos -> go_note]+8;
-            pt2.y = 20;
+            // 定位 音高文字的位置
+            pitch_word_posi.x = note_x + 8;
+            pitch_word_posi.y = note_y - 30;
+            // pitch_word_posi.y = 20;
             Scalar circle_background(0, 0, 0);
-
-            switch( (note_infos -> note[4][note_infos -> go_note]/12) ){
-                case 4:  // 低音c
-                    circle_background = Scalar(100, 120, 125);// 灰色
+            // 定出 各八度的顏色
+            switch( (pitch / 12) ){
+                case 4:  // 低音c 八度音
+                    circle_background = Scalar(100, 120, 125);  // 灰色
                     break;
 
-                case 5:  // 中央C
-                    circle_background = Scalar(255, 143, 218);// 粉紅色
+                case 5:  // 中央C 八度音
+                    circle_background = Scalar(255, 143, 218);  // 粉紅色
                     break;
 
-                case 6:  // 高音C
-                    circle_background = Scalar(255, 180, 100);// 蛋藍色
+                case 6:  // 高音C 八度音
+                    circle_background = Scalar(255, 180, 100);  // 蛋藍色
                     break;
 
-                case 7:  // 高高音c
-                    circle_background = Scalar(100, 120, 125);// 灰色
+                case 7:  // 高高音c 八度音
+                    circle_background = Scalar(100, 120, 125);  // 灰色
                     break;
+                }
+            // 休止符系列
+            if(head_type == 1 || head_type == 3 || head_type == 5 || head_type == 6 || head_type == 7 || head_type == 8)
+                circle_background = Scalar(0, 99, 185);  // 淡黃色
 
-            }
-            circle(row_proc_img[row_index], pt2, 15, circle_background, -1, 1, 0);
-            // circle(row_proc_img[row_index], pt2, 15, randomColor(rng), -1, 1, 0);
-            int movetocenter=10;
-
-            pt2.x = pt2.x - movetocenter;
-            pt2.y = pt2.y + movetocenter;
-
-            int nodePitch=note_infos -> note[4][note_infos -> go_note]%12;
+            // 畫出 音高文字圈圈
+            circle(row_proc_img[row_index], pitch_word_posi, 15, circle_background, -1, 1, 0);
+            // circle(row_proc_img[row_index], pitch_word_posi, 15, randomColor(rng), -1, 1, 0);
+            
+            // 畫出 音高文字圈圈
+            int movetocenter = 10;
+            pitch_word_posi.x = pitch_word_posi.x - movetocenter;
+            pitch_word_posi.y = pitch_word_posi.y + movetocenter;
+            
+            // 計算音高
+            int    nodePitch = pitch % 12;
+            string nodePitch_str;
             switch(nodePitch){
                 case 0:
                     nodePitch=1;
@@ -395,14 +381,19 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
                 case 11:
                     nodePitch=7;
                     break;
-
-
             }
+            
             // Int2str(nodePitch)
-            string s;
             stringstream ss;
             ss << nodePitch;
-            putText(row_proc_img[row_index], ss.str(), pt2, FONT_HERSHEY_PLAIN, 2, Scalar(255, 255, 255), 2, 1, false);
+            // 休止符系列 顯示 "R"
+            if(head_type == 1 || head_type == 3 || head_type == 5 || head_type == 6 || head_type == 7 || head_type == 8)
+                putText(row_proc_img[row_index], "R"     , pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
+            // 剩下顯示 簡譜數字
+            else 
+                putText(row_proc_img[row_index], ss.str(), pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
+
+
             //  dst.rowRange(height_acc, height_acc_next+1)
             //     .colRange( width_acc, width_acc_next+1) = temp_bin.clone();
             //     Mat temp = UI4_3.clone();
@@ -420,9 +411,11 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
 
 
             Drawing_Random_Circles(Output, rng);
-            DrawMat(Speed_Volume_Bar, Output, 260, 598);
-            DrawMat(bar, Output, speed_row, (speed-20)*(MaxValue-MinValue)/(300-20)+MinValue);
-            DrawMat(bar, Output, volume_row, (volume-80)*(MaxValue-MinValue)/(127-80)+MinValue);
+            // DrawMat(Speed_Volume_Bar, Output, 800, 245);
+            Speed_Volume_Bar_roi = Output(Rect(800, 245, 495, 233));
+            Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);
+            DrawMat(bar, Output, speed_row , (speed  - 20) * (MaxValue - MinValue) / (300 - 20) + MinValue);
+            DrawMat(bar, Output, volume_row, (volume - 80) * (MaxValue - MinValue) / (127 - 80) + MinValue);
             //     imshow(Title, Output);
             //     imshow("debug3", row_proc_img[row_index]);
             /*
@@ -432,37 +425,66 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
                 .colRange(0, row_proc_img[row_index].cols+1) = staff_img[row_index].clone();
             imshow("debug4", temp);
             */
+            
+            //  ******************************************************************************************************
+            //  ******************************************************************************************************
+            //  ******************************************************************************************************
+            //  ******************************************************************************************************
 
-            waitKey(1);
+            gTwait++;
+            if (gTwait >= SNDQUE)
+                lTarray = gTwait % SNDQUE+1;
+            else
+                lTarray = gTwait;
+
+            LocSndPar = SndPmtr[lTarray];
+            // cout << "lTarray " << lTarray << endl;
+            // cout << "gTenter " << gTenter << endl;
+            // cout << "gTexit " << gTexit << endl;
+            Note   = 0;
+            Phrase = 0;
+            // Msg 共32bit, 從 左2^31 ~ 右2^0 共分成四個區塊
+            //  0 ~  7 (2^31~2^24): 未使用
+            //  8 ~ 15 (2^23~2^16): 音量
+            // 16 ~ 23 (2^15~2^08): 音色
+            // 24 ~ 31 (2^07~2^00): 狀態
+            //   狀態:
+            //      0x80(128) : 關閉音符
+            //      0x90(144) : 播放音符
+            //      0xA0(160) : 鍵盤壓力感應
+            //      0xB0(176) : 控制器訊號（像音量、踏板）
+            //      0xC0(192) : 切換樂器音色
+            //      0xE0(224) : 音高彎曲（滑音）
+            // 頻率轉MIDI的公式: 69 + 12 * log_2(頻率 / 440), 69是 A(440hz) 在 MIDI表內面的數字, 每升高一個八度就多 12
+            Note = (int)Round( ( 69 + 12 * log2(LocSndPar.Freq / 440) ) , 0);
+            // cout << "Note:" << Note << endl;
+            // Phrase = (LocSndPar.Vol * 256 + Note) * 256 + 144;  // Note on.
+            Phrase = (volume * 256 + Note ) * 256 + 144;  //Note on
+            midiOutShortMsg(hMidi, Phrase);
+            //  ******************************************************************************************************
+            // cout << "Noteon ON " << LocSndPar.Freq << endl;
+            changespeed=(60 / (float)speed);
+
+            // cout << "changespeed" << changespeed << endl;
+            // cout << "LocSndPar.Dura  :" << LocSndPar.Dura << endl;
+            // cout << "LocSndPar.Tempo :" << LocSndPar.Tempo << endl;
+            // cout << "changespeed     :" << changespeed << endl;
+            Sleep((int) (LocSndPar.Dura * (1 / LocSndPar.Tempo + 0.0001 ) * changespeed ) );
+            // cout << "Noteoff END " << LocSndPar.Freq << endl;
+            // Sleep((int)LocSndPar.Dura);
+            Phrase = (0 * 256 + Note ) * 256 + 128 ;  //Note off
+            midiOutShortMsg(hMidi, Phrase);
+
+            gTexit++;
+
+
+
             note_infos -> go_note++;
             note_infos -> go_row_note++;
             if( note_infos -> go_row_note >= note_infos -> row_note_count_array[row_index]){
                 note_infos -> go_row_note = 0;
                 row_index++;
             }
-
-            //  ******************************************************************************************************
-            //  ******************************************************************************************************
-
-
-            //  ******************************************************************************************************
-
-
-
-            // cout << "Noteon ON " << LocSndPar.Freq << endl;
-            changespeed=(60/(float)speed);
-
-            // cout << "changespeed" << changespeed << endl;
-            cout << "LocSndPar.Dura " << LocSndPar.Dura << endl;
-            cout << "LocSndPar.Tempo " << LocSndPar.Tempo << endl;
-            cout << "changespeed " << changespeed << endl;
-            Sleep((int)(LocSndPar.Dura*(1/LocSndPar.Tempo+0.0001)*changespeed));
-            // cout << "Noteoff END " << LocSndPar.Freq << endl;
-            //Sleep((int)LocSndPar.Dura);
-            Phrase = (LocSndPar.Vol*256+Note)*256+128;//Noteoff
-            midiOutShortMsg(hMidi, Phrase);
-
-            gTexit++;
         }
         else{
             break;
