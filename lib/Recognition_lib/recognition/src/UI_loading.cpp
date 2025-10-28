@@ -144,7 +144,7 @@ void Show_loading_bar(Mat UI_bass, string UI_WINDOW_NAME, int start_num, int end
     end_num   = set_item_position(end_num);
 
 
-    for(int go_item = start_num ; go_item <= end_num ; go_item++){
+    for(int go_item = start_num; go_item <= end_num; go_item++){
         set_item_img(go_item, gray_load_img);
         cvtColor(gray_load_img, color_load_img, CV_GRAY2BGR);
         // set_item_img(go_item, color_load_img);
