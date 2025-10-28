@@ -14,9 +14,9 @@ using namespace cv;
 void UI_loading_preprocess(Mat src_img,
                            Mat bin_img,
                            int staff_count, int*** left_point, int*** right_point,
-                           Mat UI_bass,string UI_WINDOW_NAME,
+                           Mat& UI_bass,string UI_WINDOW_NAME,
                            bool debuging=false);
 
 void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_count, int row_note[][1000],
-                                Mat UI_bass, string UI_WINDOW_NAME, bool debuging=false);
+                                Mat& UI_bass, string UI_WINDOW_NAME, bool debuging=true);
 

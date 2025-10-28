@@ -12,8 +12,6 @@
 using namespace std;
 using namespace cv;
 
-Mat UI2_img = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);
-
 
 // 進度條
 int loading_bar = 0;
@@ -157,7 +155,6 @@ void Show_loading_bar(Mat UI_bass, string UI_WINDOW_NAME, int start_num, int end
                 if  (gray_load_img.at<uchar>(go_row, go_col) == 255) continue;
                 else{
                     UI_bass.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-                    UI2_img.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
                 }
             }
         }
@@ -178,7 +175,6 @@ void Show_loading_bar(Mat UI_bass, string UI_WINDOW_NAME, int start_num, int end
             for(int go_col = 0 ; go_col < color_load_img.cols ; go_col++){
                 if(gray_load_img.at<uchar>(go_row, go_col) == 255) continue;
                 UI_bass.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
-                UI2_img.at<Vec3b>(go_row+color_load_img_top, go_col+color_load_img_left) = color_load_img.at<Vec3b>(go_row, go_col);
             }
         }
         imshow(UI_WINDOW_NAME, UI_bass);
@@ -190,7 +186,7 @@ void Show_loading_bar(Mat UI_bass, string UI_WINDOW_NAME, int start_num, int end
 void UI_loading_preprocess(Mat src_img, 
                            Mat bin_img, 
                            int staff_count, int*** left_point, int*** right_point, 
-                           Mat UI_bass, string UI_WINDOW_NAME, 
+                           Mat& UI_bass, string UI_WINDOW_NAME, 
                            bool debuging){
     // 進度條預設0
     loading_bar = 0;  
@@ -221,17 +217,18 @@ void UI_loading_preprocess(Mat src_img,
     int resize_bin_left = UI_center_x - resize_width  / 2;
 
     // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
-    Mat show_bin_roi = UI_bass( Rect(resize_bin_left, 0, resize_ord_img.cols, resize_ord_img.rows) );
+    Mat show_pre_roi = UI_bass( Rect(resize_bin_left, 0, resize_ord_img.cols, resize_ord_img.rows) );
+    Mat show_pre_roi_back = show_pre_roi.clone();  // 先把這個roi區塊原始狀態存下來, 在結束時 可以把這個區塊 恢復原狀
     
     // 把 resize_ord_img 從 gray 轉成 RGB 後 貼在 定好的位置
     cvtColor(resize_ord_img, resize_ord_img, CV_GRAY2BGR);
-    resize_ord_img.copyTo( show_bin_roi );
+    resize_ord_img.copyTo( show_pre_roi );
     imshow(UI_WINDOW_NAME, UI_bass);
     waitKey(500);
     
     // 把 resize_bin_img 從 gray 轉成 RGB 後 貼在 定好的位置
     cvtColor(resize_bin_img, resize_bin_img, CV_GRAY2BGR);
-    resize_bin_img.copyTo( show_bin_roi );
+    resize_bin_img.copyTo( show_pre_roi );
     imshow(UI_WINDOW_NAME, UI_bass);
     waitKey(500);
 
@@ -259,6 +256,8 @@ void UI_loading_preprocess(Mat src_img,
     // 進度條 30%
     loading_bar +=30;
     Show_loading_bar(UI_bass, UI_WINDOW_NAME, 0, loading_bar);
+    // roi區塊恢復原始狀態
+    show_pre_roi_back.copyTo(show_pre_roi);
 }
 
 
@@ -267,10 +266,7 @@ void UI_loading_preprocess(Mat src_img,
 int width_frame_acc = 0;  // mod_width;
 
 void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_count, int row_note[][1000], 
-                                Mat UI_bass, string UI_WINDOW_NAME, bool debuging){
-    UI_bass = UI2_img.clone();
-    imshow(UI_WINDOW_NAME, UI_bass);
-
+                                Mat& UI_bass, string UI_WINDOW_NAME, bool debuging){
     // 計算 UI畫面上方正白色區域中心
     int UI_center_x = UI_bass.cols / 2.;
     int UI_center_y = 500 / 2.;
@@ -279,11 +275,9 @@ void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_cou
     Mat staff_img_color;
     cvtColor(staff_img.clone(), staff_img_color, CV_GRAY2BGR);
 
+    // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
     int show_staff_top  = UI_center_y - staff_img_color.rows / 2;
     int show_staff_left = UI_center_x - staff_img_color.cols / 2;
-
-
-    // 定位出 resize_ord_img, reisze_bin_img 要顯示在 UI 的哪裡
     Mat show_staff_roi = UI_bass( Rect(show_staff_left, show_staff_top, staff_img_color.cols, staff_img_color.rows) );
     staff_img_color.copyTo(show_staff_roi);
     imshow(UI_WINDOW_NAME, UI_bass);
@@ -304,7 +298,7 @@ void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_cou
         loading_bar++;
         width_frame_acc %= staff_count;
     }
-    if(debuging) cout<<"loading_bar = " << loading_bar << ", width_frame_acc = " << width_frame_acc << endl;
+    if(debuging) cout<<"old_loading_bar:" << old_loading_bar << ", loading_bar:" << loading_bar << ", width_frame_acc:" << width_frame_acc << ", div_width:" << div_width << ", mod_width:" << mod_width << endl;
 
     // 更新一組五線譜組的進度條
     Show_loading_bar(UI_bass, UI_WINDOW_NAME, old_loading_bar, loading_bar);
