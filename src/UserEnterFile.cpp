@@ -356,18 +356,21 @@ bool detectAndDisplay( Mat frame, float* facex, float* facey, float* facewidth, 
 
 
 void SamplePicInitial(){
-    // C:\Users\Dennis\Desktop\新增資料夾\MIDIPlayer
-    // C:\Users\may\Desktop\winter_week2
-    IplImage  * src = cvLoadImage("testmode4.jpg", 1);
+    // 舊版 opencv 寫法, 要搭配 cvShowImage, cvWaitKey 才可以顯示喔
+    // IplImage* src = cvLoadImage("testmode4.jpg", 1);
+    // IplImage* src = cvLoadImage("Resource/hand_color/testmode4.jpg", 1);
+    IplImage* src = cvLoadImage("Resource/hand_color/yellow.jpg", 1);
     cvAvgSdv(src, &MeanScalar, &StandardDeviationScalar);
 
-    // printf("Blue Channel Avg is :  % .f\n", MeanScalar.val[0]);
-    // printf("Blue Channel Standard Deviation is :  % .f\n", StandardDeviationScalar.val[0]);
-    // printf("Green Channel Avg is :  % .f\n", MeanScalar.val[1]);
-    // printf("Green Channel Standard Deviation is :  % .f\n", StandardDeviationScalar.val[1]);
-    // printf("Red Channel Avg is :  % .f\n", MeanScalar.val[2]);
-    // printf("Red Channel Standard Deviation is :  % .f\n", StandardDeviationScalar.val[2]);
-
+    // cout << "src:" << src << endl;
+    // cout << "Blue  Channel MeanScalar.val             :" << MeanScalar.val[0]              << endl;
+    // cout << "Blue  Channel StandardDeviationScalar.val:" << StandardDeviationScalar.val[0] << endl;
+    // cout << "Green Channel MeanScalar.val             :" << MeanScalar.val[1]              << endl;
+    // cout << "Green Channel StandardDeviationScalar.val:" << StandardDeviationScalar.val[1] << endl;
+    // cout << "Red   Channel MeanScalar.val             :" << MeanScalar.val[2]              << endl;
+    // cout << "Red   Channel StandardDeviationScalar.val:" << StandardDeviationScalar.val[2] << endl;
+    // cvShowImage("src", src);
+    // cvWaitKey(0);
 
 }
 
