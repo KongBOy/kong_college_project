@@ -372,10 +372,11 @@ void SamplePicInitial(){
 }
 
 bool DetectHandShakeSpeed(){
-   if(a>5)a = 0;
-   if((nowy-prey)>10){
+   if(a > 5) a = 0;
+   if((nowy - prey) > 10){
         handmoveup = false;
-    }else if((nowy-prey) < -10){
+    }
+    else if((nowy - prey) < -10){
 
         handmoveup = true;
     }
@@ -384,7 +385,7 @@ bool DetectHandShakeSpeed(){
         nowHandBitClock = clock();
 
         // cout << "a " << a << endl;
-        compute_speed_M[a] = nowHandBitClock-preHandBitClock;
+        compute_speed_M[a] = nowHandBitClock - preHandBitClock;
         sum_handY = 0;
         for(int i = 0;i < 6;i ++ ){
             sum_handY = sum_handY + compute_speed_M[i];
@@ -393,7 +394,7 @@ bool DetectHandShakeSpeed(){
         average_speed = sum_handY / 6;
         int dev[6] = {0};
         for(int i = 0;i < 6;i ++ ){
-            dev[i] =  compute_speed_M[i]-average_speed;
+            dev[i] =  compute_speed_M[i] - average_speed;
         }
 
 
@@ -419,30 +420,30 @@ bool DetectHandShakeSpeed(){
 
         preHandBitClock = clock();
         //////////////////////////////////// clock
-    }else if(pre_handmoveup != handmoveup && pre_handmoveup == false){
+    }
+    else if(pre_handmoveup != handmoveup && pre_handmoveup == false){
         shaklowest = nowy;
-        shakrange = abs(shakhighest-shaklowest);
+        shakrange = abs(shakhighest - shaklowest);
         // cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!Hand shakrange" << shakrange << endl;
         compute_volume_M[a] = shakrange;
         sum_volume = 0;
-        for(int i = 0;i < 6;i ++ ){
+        for(int i = 0; i < 6; i ++ ){
             sum_volume = sum_volume + compute_volume_M[i];
         }
 
         average_volume = sum_volume / 6;
         average_volume = 60 + (2 * average_volume);
-        // for(int i = 0;i < 6;i ++ )
+        // for(int i = 0; i < 6; i ++ )
         //     cout << "compute_volume_M[" << i << "] " << compute_volume_M[i] << endl;
         cout << "average_volume " << average_volume << endl;
-        if(average_volume < 127)
-            volume = average_volume;
+        if(average_volume < 127) volume = average_volume;
 
     }
 
     pre_handmoveup = handmoveup;
     int NOWTIME = clock();
     cout << "NOWTIME-preHandBitClock" << NOWTIME-preHandBitClock << endl;
-    // if(abs(NOWTIME-preHandBitClock)>HandStopShankingTime)return false;
+    // if( abs(NOWTIME - preHandBitClock) > HandStopShankingTime ) return false;
 
     return true;
 }
