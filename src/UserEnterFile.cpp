@@ -33,7 +33,7 @@ Mat background1 = imread("Resource\\UI_all_picture/UI PIC/UI/Background_kong.png
 
 bool detectAndDisplay( Mat frame, float* facex, float* facey, float* facewidth, float* faceheight );
 void SamplePicInitial();
-float GaussResult(int a, int b, int c);
+// float GaussResult(int a, int b, int c);  // 沒用到
 bool DetectHandShakeSpeed();
 int DrawMat(Mat Input, Mat& Output, int row, int col);
 int DrawTalk(Mat Input, Mat& Output, int row, int col);
@@ -41,9 +41,11 @@ int DrawTalk(Mat Input, Mat& Output, int row, int col);
 /*  *  Global variables  */
 // -- Note, either copy these two files from opencv/data/haarscascades to your current folder, or change these locations
 // C:\\Users\\may\\Desktop\\龔洲暐\\學校\\專題\\VC2010\\opencv
-String face_cascade_name = "C:\\Users\\may\\Desktop\\龔洲暐\\學校\\專題\\VC2010\\opencv\\data\\haarcascades\\haarcascade_frontalface_alt.xml";
+
+// 用不到
+// String face_cascade_name = "C:\\Users\\may\\Desktop\\龔洲暐\\學校\\專題\\VC2010\\opencv\\data\\haarcascades\\haarcascade_frontalface_alt.xml";
 CascadeClassifier face_cascade;
-string window_name = "Capture - Face detection";
+// string window_name = "Capture - Face detection";
 
 
 static int RedTreshod = 300;
@@ -95,15 +97,15 @@ bool pre_handmoveup = false;
 CvCapture *  capture ;
 
 
-time_t LastTimeFineUser;
-time_t OverTimeUserDisapper;
+// time_t LastTimeFineUser;
+// time_t OverTimeUserDisapper;
 
 time_t preHandBitClock = clock() + 10000;
 time_t nowHandBitClock = clock() + 10000;
 
 int HandShaking(string Title){
-    time_t LastTimeFineUser     = clock();
-    time_t OverTimeUserDisapper = clock()  +  UserGoOutWhenPlayingTime;
+    // time_t LastTimeFineUser     = clock();
+    // time_t OverTimeUserDisapper = clock()  +  UserGoOutWhenPlayingTime;
 
 	IplImage *  vframe ;
 
