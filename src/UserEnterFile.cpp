@@ -239,9 +239,6 @@ int HandShaking(string Title){
                 returnval = 3;
             }
 
-            if(!MusicPlayback){
-                    break;
-            }
             prex = MinCol;
             prey = MinRow;
 
