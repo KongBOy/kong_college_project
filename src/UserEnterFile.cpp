@@ -49,8 +49,8 @@ CascadeClassifier face_cascade;
 
 
 static int RedTreshod = 300;
-static int UserGoOutWhenPlayingTime = 60000;  // 1Min
-static int HandStopShankingTime = 60000;      // 10S
+static int UserGoOutWhenPlayingTime = 60000;  //  1 Min
+static int HandStopShankingTime     = 60000;  // 10 S
 
 ////////////////// 臉部偵測用
 float facex;
@@ -502,7 +502,7 @@ int DrawMat(Mat Input, Mat& Output, int row, int col){
     int InputRow = Input.rows;
     int InputCol = Input.cols;
 
-    if(row<OutputRow && col < OutputCol){
+    if(row < OutputRow && col < OutputCol){
         for(int i = row;i < (row + InputRow);i ++ ){
             for(int j = col;j < (col + InputCol);j ++ ){
                 Output.at<Vec3b>(i, j)[0] = Input.at<Vec3b>(i-row, j-col)[0];
