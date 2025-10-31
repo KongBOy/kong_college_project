@@ -34,7 +34,7 @@ Mat background1 = imread("Resource\\UI_all_picture/UI PIC/UI/Background_kong.png
 bool detectAndDisplay( Mat frame, float* facex, float* facey, float* facewidth, float* faceheight );
 void SamplePicInitial();
 // float GaussResult(int a, int b, int c);  // 沒用到
-bool DetectHandShakeSpeed();
+bool Detect_Speed();
 int DrawMat(Mat Input, Mat& Output, int row, int col);
 int DrawTalk(Mat Input, Mat& Output, int row, int col);
 
@@ -81,12 +81,12 @@ float shakhighest = 0;
 float shaklowest = 0;
 float shakrange = 0;
 
-
+int clock_cost_buffer_acc = 0;
 // int go_buffer = 0;
-int compute_speed_M[6] = {0};
+int clock_cost_buffer [6] = {0};
 // int compute_volume_M[6] = {0};
-int average_speed = 0;
-int sum_handY = 0;
+int clock_cost_avg = 0;
+int clock_cost_sum = 0;
 int average_volume = 0;
 int sum_volume = 0;
 int var = 0;
@@ -233,9 +233,9 @@ int HandShaking(string Title){
 
             nowx = MinCol;
             nowy = MinRow;
-            if(!DetectHandShakeSpeed()){
+            if(!Detect_Speed()){
                 preHandBitClock = clock();
-                cout << "DetectHandShakeSpeed" << endl;
+                cout << "Detect_Speed" << endl;
                 returnval = 3;
             }
 
@@ -417,51 +417,81 @@ void SamplePicInitial(){
 
 }
 
-bool DetectHandShakeSpeed(){
-   if(a > 5) a = 0;
-   if((nowy - prey) > 10){
-        handmoveup = false;
-    }
-    else if((nowy - prey) < -10){
+bool Detect_Speed(){
+    // nowy: 偵測前 的 y
+    // prey: 偵測後 的 y, 相當於下一次的nowy 的 前一次
+    // if(clock_cost_buffer_acc > 5) clock_cost_buffer_acc = 0;
+    if     ( (nowy - prey) >  10) handmoveup = false;
+    else if( (nowy - prey) < -10) handmoveup = true;
+    
+    // pre_handmoveup != handmoveup 表示改變方向, pre_handmoveup == true 代表 最後的動作是往上的時候
+    if(pre_handmoveup != handmoveup && pre_handmoveup == true){
+        // shakhighest = nowy;  // 給計算音量用的
+        nowHandBitClock = clock();  // 紀錄此時時間
 
-        handmoveup = true;
-    }
-    if(pre_handmoveup != handmoveup && pre_handmoveup == true){   // 表示改變方向
-        shakhighest = nowy;
-        nowHandBitClock = clock();
+        cout << "clock_cost_buffer_acc " << clock_cost_buffer_acc << endl;
+        // 紀錄 上次 到 這次 的 改變方向 且 最後動作是往上的 時間花了多久 存進buffer裡
+        clock_cost_buffer[clock_cost_buffer_acc % 6] = nowHandBitClock - preHandBitClock;
+        for(int i = 0; i < 6; i++ )
+            if(i <= clock_cost_buffer_acc) cout << "clock_cost_buffer[" << i << "] " << clock_cost_buffer[i] << endl;
 
-        // cout << "a " << a << endl;
-        compute_speed_M[a] = nowHandBitClock - preHandBitClock;
-        sum_handY = 0;
-        for(int i = 0;i < 6;i ++ ){
-            sum_handY = sum_handY + compute_speed_M[i];
-        }
+        // float clock_sum = 0;
+        // float clock_avg = 0;
+        // int buffer_size = 4;
+        // int acc_amount = 0;
+        // for(int i = 0; i < buffer_size ; i++ ){
+        //     clock_sum = 0;
+        //     int cur_i = clock_cost_buffer_acc - i;
+        //     if(cur_i < 0) cur_i = 6 + cur_i;
+        //     clock_sum += clock_cost_buffer[cur_i];
+        //     acc_amount++;
+        //     // cout << "orbit_len:" << orbit_len << endl;
+        //     // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
+        //     // line( ui_screen, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 255), 1, 8 );
+        // }
+        // clock_avg = clock_sum / acc_amount;
 
-        average_speed = sum_handY / 6;
-        int dev[6] = {0};
-        for(int i = 0;i < 6;i ++ ){
-            dev[i] =  compute_speed_M[i] - average_speed;
-        }
-
-
-        sort(dev, dev + 6);
-        // for(int i = 0;i < 6;i ++ )
-        //     cout << "dev[" << i << "] " << dev[i] << endl;
-
-        var = 0;
-        for(int i = 0;i < 4;i ++ )
-            var = var + pow(dev[i], 2);
-        // cout << "                 ~~~~var " << var << endl;
-        if(var < 60000000){
-            int k = 60000/((dev[0] + dev[1] + dev[2] + dev[3]) / 4 + average_speed + 1);
-            if(k < 300 && k>20)
-                speed = k;
-            // speed = 60000/(endclock-startclock);
-            cout << "---------------------------speed      :" << speed << endl << endl ;
-        }
+        // int k = 60000 / (clock_avg + 0.00000001);
+        // if(k < 300 && k > 20) speed = k;
 
 
-        a += 1;
+        // buffer 裡面的 時間花費 算平均
+        clock_cost_sum = 0;
+        for(int i = 0; i < 6; i ++ )
+            if(i <= clock_cost_buffer_acc) clock_cost_sum += clock_cost_buffer[i];
+        if(clock_cost_buffer_acc < (6 - 1)) clock_cost_avg = clock_cost_sum / (clock_cost_buffer_acc + 1);
+        else                                clock_cost_avg = clock_cost_sum / 6;
+        cout << "clock_cost_avg " << clock_cost_avg << endl;
+
+        // buffer 裡面的 時間花費 減 剛剛算出的平均
+        int clock_cost_0_mean[6] = {0};
+        for(int i = 0; i < 6; i++ )
+            if(i <= clock_cost_buffer_acc) clock_cost_0_mean[i] = clock_cost_buffer[i] - clock_cost_avg;
+        
+        // 排序最小四名 算平方和 來當作 change speed 的門檻值, < 60 000 000
+        // sort(clock_cost_0_mean, clock_cost_0_mean + 6);
+        for(int i = 0; i < 6; i++ )
+            if(i <= clock_cost_buffer_acc) cout << "clock_cost_0_mean[" << i << "] " << clock_cost_0_mean[i] << endl;
+            
+        
+        cout <<  (clock_cost_buffer[0] + clock_cost_buffer[1] + clock_cost_buffer[2] + clock_cost_buffer[3]) / 4                   << endl;
+        int k = 60000 / ((clock_cost_buffer[0] + clock_cost_buffer[1] + clock_cost_buffer[2] + clock_cost_buffer[3]) / 4 +                  1);
+        cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", k:" << k << endl;
+        // 減mean完 又 加回去, 就乾脆一開始用 沒有減mean的 buffer 來算囉, 所以改成上面
+        // cout << ((clock_cost_0_mean[0] + clock_cost_0_mean[1] + clock_cost_0_mean[2] + clock_cost_0_mean[3]) / 4 + clock_cost_avg) << endl;
+        // int k = 60000 / ((clock_cost_0_mean[0] + clock_cost_0_mean[1] + clock_cost_0_mean[2] + clock_cost_0_mean[3]) / 4 + clock_cost_avg + 1);
+        // cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", k:" << k << endl;
+
+        cout << endl;
+        if(k < 300 && k > 20) speed = k;
+
+
+
+        // cout << "change speed :" << speed << endl;
+        // speed = 60000/(endclock-startclock);
+        // cout << "---------------------------speed      :" << speed << endl << endl ;
+        
+        clock_cost_buffer_acc += 1;
         // cout << "---------------------------during time:" << endclock-startclock << endl << endl ;
 
         preHandBitClock = clock();
@@ -489,7 +519,7 @@ bool DetectHandShakeSpeed(){
 
     pre_handmoveup = handmoveup;
     int NOWTIME = clock();
-    cout << "NOWTIME-preHandBitClock" << NOWTIME-preHandBitClock << endl;
+    // cout << "NOWTIME-preHandBitClock" << NOWTIME-preHandBitClock << endl;
     // if( abs(NOWTIME - preHandBitClock) > HandStopShankingTime ) return false;
 
     return true;
