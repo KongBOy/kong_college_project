@@ -99,8 +99,6 @@ bool pre_handmoveup = false;
 CvCapture *  capture ;
 
 
-// time_t LastTimeFineUser;
-// time_t OverTimeUserDisapper;
 
 time_t pre_handmove_up_clock = clock() + 10000;
 time_t now_handmoveup_clock = clock() + 10000;
@@ -112,9 +110,9 @@ void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int 
     float orbit_len_acc = 0;
     float orbit_len_avg = 0;
     float orbit_len     = 0;
-    int buffer_size = 7;
+    int avg_buffer_size = 7;
     int acc_amount = 0;
-    for(int i = 0; i < buffer_size ; i++ ){
+    for(int i = 0; i < avg_buffer_size ; i++ ){
         int cur_i = go_orbit - i;
         int bef_i = go_orbit - i - 1;
         if(cur_i < 0) cur_i = orbit_num + cur_i;
@@ -144,8 +142,6 @@ void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int 
 }
 
 int HandShaking(string Title){
-    // time_t LastTimeFineUser     = clock();
-    // time_t OverTimeUserDisapper = clock()  +  UserGoOutWhenPlayingTime;
     // 初始化 clock_cost_buffer
     for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
 
@@ -183,18 +179,14 @@ int HandShaking(string Title){
     Mat talk;
     Mat talk_roi_ord = Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
     Mat talk_roi     = Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
-    Mat Output2;
     Mat frame_show;
 
 	// 偵測手環是否進入範圍內
 	if(capture){
-	    Mat ReducePic;
-        Mat ReducePicShow;
+
         int returnval = 1;
         int go_frame = 0;
 		while( MusicPlayback){
-		    // cout << "APPNOWTIME" << LastTimeFineUser << endl;
-            // cout << "ENDSTEPTIME" << OverTimeUserDisapper << endl;
 			frame = cvQueryFrame( capture );
 
 			if( !frame.empty() ){
@@ -294,36 +286,35 @@ int HandShaking(string Title){
             }
 
             // 
-            Output2 = Output.clone();
             if(clock() > talktime){
                 talktime = clock() + 5000 + (rand() % 10 * 1000);
                 switch(1 + rand() % 11){
                 case 1:
-                    resize(T1, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T1 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 2:
-                    resize(T2, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T2 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 3:
-                    resize(T3, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T3 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 4:
-                    resize(T4, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T4 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 5:
-                    resize(T5, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T5 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 6:
-                    resize(T6, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T6 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 7:
-                    resize(T7, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T7 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 8:
-                    resize(T8, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T8 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 9:
-                    resize(T9, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                    resize(T9 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                     break;
                 case 10:
                     resize(T10, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
@@ -349,57 +340,6 @@ int HandShaking(string Title){
 	}
 
 }
-
-/*  * 
-  *  @function detectAndDisplay
-  */
-bool detectAndDisplay( Mat frame, float* facex, float* facey, float* facewidth, float* faceheight ){
-	std::vector<Rect> faces;
-    Mat frame_gray;
-    
-    // float facex = 0;
-    // float facey = 0;
-    // float facewidth = 0;
-    // float faceheight = 0;
-    
-    cvtColor( frame, frame_gray, CV_BGR2GRAY );
-    equalizeHist( frame_gray, frame_gray );
-    // -- Detect faces
-
-    face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(1, 1) );
-    if(faces.size() == 0)
-        return false;
-
-    int BiggestFace = 10;
-    int MinFaceLengh = frame.rows + frame.cols;
-    for( int i = 0; i < faces.size(); i ++  ){
-        if((faces[i].width + faces[i].height) < MinFaceLengh){
-            MinFaceLengh = faces[i].width + faces[i].height;
-            BiggestFace = i;
-        }
-
-
-	     *facex = faces[i].x;
-	     *facey = faces[i].y;
-	     *facewidth = faces[i].width;
-	     *faceheight = faces[i].height;
-
-    }
-    if(BiggestFace != 10){
-        Point center( faces[BiggestFace].x  +  faces[BiggestFace].width * 0.5, faces[BiggestFace].y  +  faces[BiggestFace].height * 0.5 );
-        rectangle(frame, cvPoint(faces[BiggestFace].x , faces[BiggestFace].y), cvPoint(faces[BiggestFace].x  + faces[BiggestFace].width , faces[BiggestFace].y  + faces[BiggestFace].height), 2, 3, 0);
-        // cout << "face size x = " << faces[BiggestFace].width << " y = " << faces[BiggestFace].height << endl;
-    }
-
-
-
-     // -- Show what you got
-     // imshow( window_name, frame );
-     // imwrite( "C:\\Users\\user\\Desktop\\test\\result.jpg", frame );
-     return true;
-}
-
-
 
 void SamplePicInitial(){
     // 舊版 opencv 寫法, 要搭配 cvShowImage, cvWaitKey 才可以顯示喔
