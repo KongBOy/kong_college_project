@@ -37,6 +37,8 @@ double changespeed=1;
 Mat background            = imread("Resource/UI_all_picture/UI PIC/UI/Background_kong.png", 1);
 Mat Speed_Volume_Bar      = background(Rect(800, 245, 495, 233)).clone();
 Mat Speed_Volume_Bar_roi;
+Mat volume_bar_roi;
+Mat speed_bar_roi ;
 Mat bar                   = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 1);
 //800 245 495 233
 
@@ -411,11 +413,14 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
 
 
             Drawing_Random_Circles(Output, rng);
-            // DrawMat(Speed_Volume_Bar, Output, 800, 245);
+            
             Speed_Volume_Bar_roi = Output(Rect(800, 245, 495, 233));
             Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);
-            DrawMat(bar, Output, speed_row , (speed  - 20) * (MaxValue - MinValue) / (300 - 20) + MinValue);
-            DrawMat(bar, Output, volume_row, (volume - 80) * (MaxValue - MinValue) / (127 - 80) + MinValue);
+            volume_bar_roi = Output(Rect( (volume       /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
+            speed_bar_roi  = Output(Rect( (speed  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
+            bar.copyTo(volume_bar_roi);
+            bar.copyTo(speed_bar_roi );
+            
             //     imshow(Title, Output);
             //     imshow("debug3", row_proc_img[row_index]);
             /*

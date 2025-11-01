@@ -35,7 +35,6 @@ bool detectAndDisplay( Mat frame, float* facex, float* facey, float* facewidth, 
 void SamplePicInitial();
 // float GaussResult(int a, int b, int c);  // 沒用到
 bool Detect_Speed();
-int DrawMat(Mat Input, Mat& Output, int row, int col);
 int DrawTalk(Mat Input, Mat& Output, int row, int col);
 
 /*  *  Global variables  */
@@ -397,29 +396,7 @@ bool Detect_Speed(){
     return true;
 }
 
-int DrawMat(Mat Input, Mat& Output, int row, int col){
-    int OutputRow = Output.rows;
-    int OutputCol = Output.cols;
-    int InputRow = Input.rows;
-    int InputCol = Input.cols;
 
-    if(row < OutputRow && col < OutputCol){
-        for(int i = row;i < (row + InputRow);i ++ ){
-            for(int j = col;j < (col + InputCol);j ++ ){
-                Output.at<Vec3b>(i, j)[0] = Input.at<Vec3b>(i-row, j-col)[0];
-                Output.at<Vec3b>(i, j)[1] = Input.at<Vec3b>(i-row, j-col)[1];
-                Output.at<Vec3b>(i, j)[2] = Input.at<Vec3b>(i-row, j-col)[2];
-            }
-        }
-
-    }else{
-        cout << "Draw Out of Range" << endl;
-        waitKey(0);
-    }
-    // imshow("Output", Output);
-    // waitKey(0);
-    return 0;
-}
 
 int DrawTalk(Mat Input, Mat& Output, int row, int col){
     int OutputRow = Output.rows;

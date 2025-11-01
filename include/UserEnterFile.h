@@ -21,7 +21,6 @@ using namespace cv;
 int camera();
 bool HandShaking(string Title);
 int HandDetection( );
-int DrawMat(Mat ,Mat& ,int ,int );
 extern int speed;
 extern int volume;
 extern bool MusicPlayback;
