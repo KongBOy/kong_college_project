@@ -93,7 +93,7 @@ int average_volume = 0;
 
 int sum_volume = 0;
 
-bool handmoveup = false;
+bool now_handmoveup = false;
 bool pre_handmoveup = false;
 
 CvCapture *  capture ;
@@ -133,7 +133,7 @@ void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int 
         float len_ratio = orbit_len_avg / (len_max * 0.060) * 100;
         // cout << "    len_ratio:" << len_ratio << endl;
         float temp_volume = len_ratio;       
-        if(temp_volume <   5) temp_volume =   5;  // 最小音量用 10%
+        if(temp_volume <   5) temp_volume =   5;  // 最小音量用  5%
         if(temp_volume > 100) temp_volume = 100;  // 如果超過 100% 就clip掉回100%
         volume = temp_volume / 100 * 127;         // 0 ~ 100 range 縮放成 MIDI音量 0 ~ 127
     }
@@ -226,27 +226,21 @@ int HandShaking(string Title){
             MinCol = minLoc.x;
             MinRow = minLoc.y;
 
-
-            nowx = MinCol;
-            nowy = MinRow;
-            if(!Detect_Speed()){
-                preHandBitClock = clock();
-                cout << "Detect_Speed" << endl;
-                returnval = 3;
-            }
-
-            prex = MinCol;
-            prey = MinRow;
-
-            // 畫出 最新偵測到的 顏色位置 orbitXY, 用 藍色圈圈 表示
-            circle(newimg, cvPoint(MinCol, MinRow), 4, Scalar(250, 0, 0), 2, 8, 0);
-
             // 軌跡buffer 存入 顏色最相近的點
             orbitX[go_orbit] = MinCol;
             orbitY[go_orbit] = MinRow;
-
+            
+            // 用 軌跡判斷 音量
             Detect_Volumn(newimg, orbitX, orbitY, go_orbit, orbit_num);
 
+            // 用 y的變化來算速度
+            nowy = MinRow;
+            Detect_Speed();     
+            prey = nowy;  // nowy用完 變成下次的 prey 囉
+
+
+            // 畫出 最新偵測到的 顏色位置 orbitXY, 用 藍色圈圈 表示
+            circle(newimg, cvPoint(MinCol, MinRow), 4, Scalar(250, 0, 0), 2, 8, 0);
             // 畫出 orbit 裡面的點 連成的 線, 最後一個點不用連回頭所以-1
 			for(int i = 0; i < orbit_num - 1 ; i++ ){
                 int cur_i = go_orbit - i;
@@ -270,7 +264,6 @@ int HandShaking(string Title){
 
             // 把東西貼上 UI Output(寫在 Generate_Play_Midi 跟 PlaySnd共用)
             if(!Output.empty()){
-                
                 // 把 畫完圖的frame 貼上 Output
                 frame_show = Output(Rect(16, 77, newimg.cols, newimg.rows));
                 cv::flip(newimg, newimg, 1);  // 左右翻轉
@@ -327,11 +320,8 @@ int HandShaking(string Title){
                 // cout << "talktime" << talktime << endl;
                 // cout << "clock()" << clock() << endl;
             }
-            
-            
             talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
             DrawTalk(talk, Output, 130, 700);  // 再貼上新的Talk圖片
-
             imshow(Title, Output);
             go_frame++;
 		}
@@ -364,11 +354,11 @@ void SamplePicInitial(){
 bool Detect_Speed(){
     // nowy: 偵測前 的 y
     // prey: 偵測後 的 y, 相當於下一次的nowy 的 前一次
-    if     ( (nowy - prey) >  10) handmoveup = false;  // 動作往下
-    else if( (nowy - prey) < -10) handmoveup = true;   // 動作往上
+    if     ( (nowy - prey) >  10) now_handmoveup = false;  // 動作往下
+    else if( (nowy - prey) < -10) now_handmoveup = true;   // 動作往上
     
-    // pre_handmoveup != handmoveup 表示改變方向, handmoveup == true 代表 最後的動作是往上的時候
-    if(pre_handmoveup != handmoveup && handmoveup == true){
+    // pre_handmoveup != now_handmoveup 表示改變方向, now_handmoveup == true 代表 最後的動作是往上的時候
+    if(pre_handmoveup != now_handmoveup && now_handmoveup == true){
         // 紀錄 上次 到 這次 的 改變方向 且 最後動作是往上的 時間花了多久 存進buffer裡
         now_handmoveup_clock = clock();                                                    // 紀錄此時時間
         clock_cur_posi = clock_cost_buffer_acc % clock_cost_buffer_size;                   // 定位實際buffer可儲存的位置
@@ -393,19 +383,19 @@ bool Detect_Speed(){
         // 60秒可以切幾分 clock_avg 就是 60秒可以打幾下, 就是 bpm 囉
         int speed_temp = 60000 / (clock_avg + 0.00000001);
         cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", acc_amount:" << acc_amount << ", clock_avg:" << clock_avg << ", speed_temp:" << speed_temp << endl;
-        // 把太極端的速度去除後 才設定成 我們要的速度
+        // 把太極端的速度去除後 才設定成 我們要的速度, 補充一下不要用clip因為速度容易受到雜訊干擾超過300, 超過300就等於300的話 很容易一值被拉到300
         if(20 < speed_temp && speed_temp < 300 ) speed = speed_temp;
 
-        // 更新 buffer 目前可儲存位置 和 pre_handmove_up_clock
+        // 更新 buffer 目前可儲存位置
         clock_cost_buffer_acc += 1;
+        // now_handmove_up_clock用完了 可以更新成 pre_handmove_up_clock 了
         pre_handmove_up_clock = now_handmoveup_clock;
     }
     
-    // 更新 pre_handmoveup
-    pre_handmoveup = handmoveup;
+    // now_handmoveup用完了 可以更新成 pre_handmoveup 了
+    pre_handmoveup = now_handmoveup;
     return true;
 }
-
 
 int DrawMat(Mat Input, Mat& Output, int row, int col){
     int OutputRow = Output.rows;
@@ -430,6 +420,7 @@ int DrawMat(Mat Input, Mat& Output, int row, int col){
     // waitKey(0);
     return 0;
 }
+
 int DrawTalk(Mat Input, Mat& Output, int row, int col){
     int OutputRow = Output.rows;
     int OutputCol = Output.cols;
