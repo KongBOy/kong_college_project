@@ -81,15 +81,17 @@ float shakhighest = 0;
 float shaklowest = 0;
 float shakrange = 0;
 
-int clock_cost_buffer_acc = 0;
-// int go_buffer = 0;
-int clock_cost_buffer [6] = {0};
-// int compute_volume_M[6] = {0};
+int  clock_cost_buffer_size = 6;  // 實際 clock_cost_buffer_size 大小
+int clock_cost_buffer_acc   = 0;  // 虛擬 clock_cost_buffer_size 大小, 大概就是假設 buffer無限大 總共input了幾次 clock_cost 進buffer的概念, 也可以代表 最新可以寫入 buffer的位置
+int clock_cost_buffer_go    = 0;  // clock_cost_buffer_acc % clock_cost_buffer_size 為 實際可以寫進buffer的位置
+int* clock_cost_buffer  = new int[clock_cost_buffer_size];
+int clock_cur_posi = 0;
+
 int clock_cost_avg = 0;
 int clock_cost_sum = 0;
 int average_volume = 0;
+
 int sum_volume = 0;
-int var = 0;
 
 bool handmoveup = false;
 bool pre_handmoveup = false;
@@ -100,8 +102,8 @@ CvCapture *  capture ;
 // time_t LastTimeFineUser;
 // time_t OverTimeUserDisapper;
 
-time_t preHandBitClock = clock() + 10000;
-time_t nowHandBitClock = clock() + 10000;
+time_t pre_handmove_up_clock = clock() + 10000;
+time_t now_handmoveup_clock = clock() + 10000;
 
 
 void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int orbit_num){
@@ -144,6 +146,8 @@ void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int 
 int HandShaking(string Title){
     // time_t LastTimeFineUser     = clock();
     // time_t OverTimeUserDisapper = clock()  +  UserGoOutWhenPlayingTime;
+    // 初始化 clock_cost_buffer
+    for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
 
 	IplImage *  vframe ;
 
@@ -420,108 +424,45 @@ void SamplePicInitial(){
 bool Detect_Speed(){
     // nowy: 偵測前 的 y
     // prey: 偵測後 的 y, 相當於下一次的nowy 的 前一次
-    // if(clock_cost_buffer_acc > 5) clock_cost_buffer_acc = 0;
-    if     ( (nowy - prey) >  10) handmoveup = false;
-    else if( (nowy - prey) < -10) handmoveup = true;
+    if     ( (nowy - prey) >  10) handmoveup = false;  // 動作往下
+    else if( (nowy - prey) < -10) handmoveup = true;   // 動作往上
     
-    // pre_handmoveup != handmoveup 表示改變方向, pre_handmoveup == true 代表 最後的動作是往上的時候
-    if(pre_handmoveup != handmoveup && pre_handmoveup == true){
-        // shakhighest = nowy;  // 給計算音量用的
-        nowHandBitClock = clock();  // 紀錄此時時間
-
-        cout << "clock_cost_buffer_acc " << clock_cost_buffer_acc << endl;
+    // pre_handmoveup != handmoveup 表示改變方向, handmoveup == true 代表 最後的動作是往上的時候
+    if(pre_handmoveup != handmoveup && handmoveup == true){
         // 紀錄 上次 到 這次 的 改變方向 且 最後動作是往上的 時間花了多久 存進buffer裡
-        clock_cost_buffer[clock_cost_buffer_acc % 6] = nowHandBitClock - preHandBitClock;
-        for(int i = 0; i < 6; i++ )
+        now_handmoveup_clock = clock();                                                    // 紀錄此時時間
+        clock_cur_posi = clock_cost_buffer_acc % clock_cost_buffer_size;                   // 定位實際buffer可儲存的位置
+        clock_cost_buffer[clock_cur_posi] = now_handmoveup_clock - pre_handmove_up_clock;  // 花的時間存進去
+        // 顯示一下目前clock_cost_buffer
+        for(int i = 0; i < clock_cost_buffer_size; i++ )
             if(i <= clock_cost_buffer_acc) cout << "clock_cost_buffer[" << i << "] " << clock_cost_buffer[i] << endl;
 
-        // float clock_sum = 0;
-        // float clock_avg = 0;
-        // int buffer_size = 4;
-        // int acc_amount = 0;
-        // for(int i = 0; i < buffer_size ; i++ ){
-        //     clock_sum = 0;
-        //     int cur_i = clock_cost_buffer_acc - i;
-        //     if(cur_i < 0) cur_i = 6 + cur_i;
-        //     clock_sum += clock_cost_buffer[cur_i];
-        //     acc_amount++;
-        //     // cout << "orbit_len:" << orbit_len << endl;
-        //     // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
-        //     // line( ui_screen, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 255), 1, 8 );
-        // }
-        // clock_avg = clock_sum / acc_amount;
+        // 抓出 目前花多久時間 current ~ current前n個 時間點的距離算平均 來算速度, n越大越不會那麼敏感一下就變速度
+        float clock_sum = 0;
+        float clock_avg = 0;
+        int avg_buffer_size = 1;
+        int acc_amount = 0;
+        for(int go_avg = 0; go_avg < avg_buffer_size ; go_avg++ ){
+            int cur_avg_i = clock_cur_posi - go_avg;
+            if(cur_avg_i < 0) cur_avg_i = clock_cost_buffer_size + cur_avg_i;
+            clock_sum += clock_cost_buffer[cur_avg_i];
+            acc_amount++;
+        }
+        clock_avg = clock_sum / acc_amount;
 
-        // int k = 60000 / (clock_avg + 0.00000001);
-        // if(k < 300 && k > 20) speed = k;
+        // 60秒可以切幾分 clock_avg 就是 60秒可以打幾下, 就是 bpm 囉
+        int speed_temp = 60000 / (clock_avg + 0.00000001);
+        cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", acc_amount:" << acc_amount << ", clock_avg:" << clock_avg << ", speed_temp:" << speed_temp << endl;
+        // 把太極端的速度去除後 才設定成 我們要的速度
+        if(20 < speed_temp && speed_temp < 300 ) speed = speed_temp;
 
-
-        // buffer 裡面的 時間花費 算平均
-        clock_cost_sum = 0;
-        for(int i = 0; i < 6; i ++ )
-            if(i <= clock_cost_buffer_acc) clock_cost_sum += clock_cost_buffer[i];
-        if(clock_cost_buffer_acc < (6 - 1)) clock_cost_avg = clock_cost_sum / (clock_cost_buffer_acc + 1);
-        else                                clock_cost_avg = clock_cost_sum / 6;
-        cout << "clock_cost_avg " << clock_cost_avg << endl;
-
-        // buffer 裡面的 時間花費 減 剛剛算出的平均
-        int clock_cost_0_mean[6] = {0};
-        for(int i = 0; i < 6; i++ )
-            if(i <= clock_cost_buffer_acc) clock_cost_0_mean[i] = clock_cost_buffer[i] - clock_cost_avg;
-        
-        // 排序最小四名 算平方和 來當作 change speed 的門檻值, < 60 000 000
-        // sort(clock_cost_0_mean, clock_cost_0_mean + 6);
-        for(int i = 0; i < 6; i++ )
-            if(i <= clock_cost_buffer_acc) cout << "clock_cost_0_mean[" << i << "] " << clock_cost_0_mean[i] << endl;
-            
-        
-        cout <<  (clock_cost_buffer[0] + clock_cost_buffer[1] + clock_cost_buffer[2] + clock_cost_buffer[3]) / 4                   << endl;
-        int k = 60000 / ((clock_cost_buffer[0] + clock_cost_buffer[1] + clock_cost_buffer[2] + clock_cost_buffer[3]) / 4 +                  1);
-        cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", k:" << k << endl;
-        // 減mean完 又 加回去, 就乾脆一開始用 沒有減mean的 buffer 來算囉, 所以改成上面
-        // cout << ((clock_cost_0_mean[0] + clock_cost_0_mean[1] + clock_cost_0_mean[2] + clock_cost_0_mean[3]) / 4 + clock_cost_avg) << endl;
-        // int k = 60000 / ((clock_cost_0_mean[0] + clock_cost_0_mean[1] + clock_cost_0_mean[2] + clock_cost_0_mean[3]) / 4 + clock_cost_avg + 1);
-        // cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", k:" << k << endl;
-
-        cout << endl;
-        if(k < 300 && k > 20) speed = k;
-
-
-
-        // cout << "change speed :" << speed << endl;
-        // speed = 60000/(endclock-startclock);
-        // cout << "---------------------------speed      :" << speed << endl << endl ;
-        
+        // 更新 buffer 目前可儲存位置 和 pre_handmove_up_clock
         clock_cost_buffer_acc += 1;
-        // cout << "---------------------------during time:" << endclock-startclock << endl << endl ;
-
-        preHandBitClock = clock();
-        //////////////////////////////////// clock
+        pre_handmove_up_clock = now_handmoveup_clock;
     }
-    // else if(pre_handmoveup != handmoveup && pre_handmoveup == false){
-    //     shaklowest = nowy;
-    //     shakrange = abs(shakhighest - shaklowest);
-    //     // cout << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!Hand shakrange" << shakrange << endl;
-    //     compute_volume_M[go_buffer] = shakrange;
-    //     sum_volume = 0;
-    //     for(int i = 0; i < 6; i ++ ){
-    //         sum_volume = sum_volume + compute_volume_M[i];
-    //     }
-
-    //     average_volume = sum_volume / 6;
-    //     average_volume = 60 + (2 * average_volume);
-    //     // for(int i = 0; i < 6; i ++ )
-    //     //     cout << "compute_volume_M[" << i << "] " << compute_volume_M[i] << endl;
-    //     // cout << "average_volume " << average_volume << endl;
-    //     if(average_volume < 127) volume = average_volume;
-    //     // cout << "change volume:" << volume << endl;
-
-    // }
-
+    
+    // 更新 pre_handmoveup
     pre_handmoveup = handmoveup;
-    int NOWTIME = clock();
-    // cout << "NOWTIME-preHandBitClock" << NOWTIME-preHandBitClock << endl;
-    // if( abs(NOWTIME - preHandBitClock) > HandStopShankingTime ) return false;
-
     return true;
 }
 
