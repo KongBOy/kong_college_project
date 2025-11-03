@@ -57,9 +57,9 @@ static int        gTarray;  // 當前可用的陣列索引
 static BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
 
 
-int Sound (float Freq, int Dura , int Vol , int Voice , float Tempo){
+int MakeSound (float Freq, int Dura , int Vol , int Voice , float Tempo){
     // cout << "gTexit:" << gTexit << endl;
-    // cout << "Sound" << Freq << " " << Dura << " " << Vol << " " << Voice << " " << Tempo << endl;
+    // cout << "MakeSound" << Freq << " " << Dura << " " << Vol << " " << Voice << " " << Tempo << endl;
     if (Freq == 0 && Dura < 1) return gTenter - gTexit;  // 回傳排隊中的數量
     // silence
     if (Freq == 0) Vol  = 0;  // 無聲音時音量歸零
@@ -122,52 +122,52 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
         switch(head_type){
             // 全音符
             case 0:
-                Sound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 4, 127, 0);
+                MakeSound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 4, 127, 0);
                 break;
             
             // 二分音符
             case 2:
-                Sound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 2,  127,  0);
+                MakeSound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 2,  127,  0);
                 break;
             
             // 四 八 十六 ... 分音符(分別time_bar = 0, 1, 2, ...)
             case 4:
-                Sound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * pow(2, - 1 * time_bar ),  127,  0);
+                MakeSound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * pow(2, - 1 * time_bar ),  127,  0);
                 break;
 
             // 四分休止符
             case 5:
-                Sound(0, base_4note_duration * 1, 0, 0);
+                MakeSound(0, base_4note_duration * 1, 0, 0);
                 break;
 
             // 全休止符
             case 1:
-                Sound(0, base_4note_duration * 4, 0, 0);
+                MakeSound(0, base_4note_duration * 4, 0, 0);
                 break;
 
             // 二分休止符
             case 3:
-                Sound(0, base_4note_duration * 2, 0, 0);
+                MakeSound(0, base_4note_duration * 2, 0, 0);
                 break;
 
             // 十六分休止符
             case 6:
-                Sound(0, base_4note_duration * 0.25, 0, 0);
+                MakeSound(0, base_4note_duration * 0.25, 0, 0);
                 break;
             
             // 三十二分休止符
             case 7:
-                Sound(0, base_4note_duration * 0.125, 0, 0);
+                MakeSound(0, base_4note_duration * 0.125, 0, 0);
                 break;
             
             // 八分休止符
             case 8:
-                Sound(0, base_4note_duration * 0.5, 0, 0);
+                MakeSound(0, base_4note_duration * 0.5, 0, 0);
                 break;
             
             // 高音譜記號
             // case 9:
-            //     Sound(0, 0, 0, 0);
+            //     MakeSound(0, 0, 0, 0);
             //     break;
         }
     }
