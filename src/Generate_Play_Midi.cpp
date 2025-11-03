@@ -34,7 +34,7 @@ double changespeed=1;
 
 
 Mat background            = imread("Resource/UI_all_picture/UI PIC/UI/Background_kong.png", 1);
-Mat Speed_Volume_Bar      = background(Rect(800, 245, 495, 233)).clone();
+Mat Speed_Volume_Bar      = background(Rect(750, 245, 545, 233)).clone();
 Mat Speed_Volume_Bar_roi;
 Mat volume_bar_roi;
 Mat speed_bar_roi ;
@@ -62,7 +62,7 @@ static BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
 
 
 int Sound (float Freq, int Dura , int Vol , int Voice , float Tempo){
-    cout << "gTexit:" << gTexit << endl;
+    // cout << "gTexit:" << gTexit << endl;
     // cout << "Sound" << Freq << " " << Dura << " " << Vol << " " << Voice << " " << Tempo << endl;
     DWORD  dwThreadId;
 
@@ -149,7 +149,7 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
 
 
     // *************************************************
-    list_note_info(note_infos -> note_count, note_infos -> note);
+    // list_note_info(note_infos -> note_count, note_infos -> note);
 
     cout << "step1" << endl;
     
@@ -344,13 +344,13 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
                     circle_background = Scalar(100, 120, 125);  // 灰色
                     break;
                 }
+
             // 休止符系列
             if(head_type == 1 || head_type == 3 || head_type == 5 || head_type == 6 || head_type == 7 || head_type == 8)
-                circle_background = Scalar(0, 99, 185);  // 淡黃色
+                circle_background = Scalar(0, 99, 185);  // 咖啡色
 
             // 畫出 音高文字圈圈
             circle(row_proc_img[row_index], pitch_word_posi, 15, circle_background, -1, 1, 0);
-            // circle(row_proc_img[row_index], pitch_word_posi, 15, randomColor(rng), -1, 1, 0);
             
             // 畫出 音高文字圈圈
             int movetocenter = 10;
@@ -395,40 +395,16 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
                 putText(row_proc_img[row_index], ss.str(), pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
 
 
-            //  dst.rowRange(height_acc, height_acc_next+1)
-            //     .colRange( width_acc, width_acc_next+1) = temp_bin.clone();
-            //     Mat temp = UI4_3.clone();
-            //     cvtColor(temp, UI4_3, CV_GRAY2BGR);
-            //     UI4_3.rowRange(0, row_proc_img[row_index].rows+1)
-            //          .colRange(0, row_proc_img[row_index].cols+1) = row_proc_img[row_index].clone();
 
-
-            //for(int go_row = 500 ;go_row <500+ row_proc_img[row_index].rows ; go_row++)
-            //   for(int go_col = 0 ; go_col <row_proc_img[row_index].cols ; go_col++)
-            //      Output.at<Vec3b>(go_row, go_col) = row_proc_img[row_index].at<Vec3b>(go_row-500, go_col);
-
-            // UI4_3(Rect(0, 0, row_proc_img[row_index].cols, row_proc_img[row_index].rows)) = row_proc_img[row_index].clone();
-
-
-
-            Drawing_Random_Circles(Output, rng);
+            Drawing_Random_Circles(Output);
             
-            Speed_Volume_Bar_roi = Output(Rect(800, 245, 495, 233));
+            Speed_Volume_Bar_roi = Output(Rect(750, 245, 545, 233));
             Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);
             volume_bar_roi = Output(Rect( (volume       /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
             speed_bar_roi  = Output(Rect( (speed  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
             bar.copyTo(volume_bar_roi);
             bar.copyTo(speed_bar_roi );
             
-            //     imshow(Title, Output);
-            //     imshow("debug3", row_proc_img[row_index]);
-            /*
-            Mat temp = UI4_3.clone();
-            cvtColor(UI4_3, temp, CV_BGR2GRAY);
-            temp.rowRange(0, row_proc_img[row_index].rows+1)
-                .colRange(0, row_proc_img[row_index].cols+1) = staff_img[row_index].clone();
-            imshow("debug4", temp);
-            */
             
             //  ******************************************************************************************************
             //  ******************************************************************************************************
@@ -440,11 +416,8 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
                 lTarray = gTwait % SNDQUE+1;
             else
                 lTarray = gTwait;
-
             LocSndPar = SndPmtr[lTarray];
-            // cout << "lTarray " << lTarray << endl;
-            // cout << "gTenter " << gTenter << endl;
-            // cout << "gTexit " << gTexit << endl;
+
             Note   = 0;
             Phrase = 0;
             // Msg 共32bit, 從 左2^31 ~ 右2^0 共分成四個區塊
@@ -464,6 +437,8 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
             // cout << "Note:" << Note << endl;
             // Phrase = (LocSndPar.Vol * 256 + Note) * 256 + 144;  // Note on.
             Phrase = (volume * 256 + Note ) * 256 + 144;  //Note on
+            // cout << "volume:" << volume << endl;
+            // cout << "speed :" << speed << endl;
             midiOutShortMsg(hMidi, Phrase);
             //  ******************************************************************************************************
             // cout << "Noteon ON " << LocSndPar.Freq << endl;
@@ -514,32 +489,22 @@ void PlayMidiFile(Note_infos* note_infos){
     }
     cout << "thread---------------" << gSThread << endl;
 
-    // // // // // // // // // // // // // /
+    //////////////////////////
 }
 
 int Drawing_Random_Circles( Mat& image ){
-    cout << "Drawing_Random_Circles" << endl;
+    // cout << "Drawing_Random_Circles" << endl;
     int lineType = 8;
     Point pt1, pt2;
 
     for( int i = 0; i < 1; i++ ){
-        pt1.x = rand()%background.cols;
-        pt1.y = rand()%background.rows;
-        pt2.x = rand()%background.cols;
-        pt2.y = rand()%background.rows;
-        //pt1.x = rng.uniform( 0, Background.cols );
-        //pt1.y = rng.uniform( 0, Background.rows );
-        //pt2.x = rng.uniform( 0, Background.cols );
-        //pt2.y = rng.uniform( 0, Background.rows );
-        cout << "pt1.x " << pt1.x << endl;
-        cout << "pt1.y " << pt1.y << endl;
-        cout << "pt2.x " << pt2.x << endl;
-        cout << "pt2.y " << pt2.y << endl;
-        int radian=2+rand()%3;
+        pt1.x = rand() % background.cols;
+        pt1.y = rand() % background.rows;
+        pt2.x = rand() % background.cols;
+        pt2.y = rand() % background.rows;
+        int radian = 2 + rand() % 3;
         circle(image, pt2, radian, Scalar(255, 255, 255), -1, 1, 0);
         circle(image, pt1, radian, Scalar(255, 255, 255), -1, 1, 0);
-        //imshow("image", image);
-        //line( image, pt1, pt2, randomColor(rng), rng.uniform(1, 10), 8 );
     }
     return 0;
 }
