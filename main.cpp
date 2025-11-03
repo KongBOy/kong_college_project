@@ -31,7 +31,7 @@ using namespace std;
 using namespace cv;
 
 ///***********************************************
-
+Mat UI_Output;
 int NextStep=0;
 
 int main(){

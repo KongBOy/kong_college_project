@@ -17,7 +17,7 @@ using namespace cv;
 int speed  = 60;
 int volume = 80;
 bool MusicPlayback=false;
-Mat UI_Output;
+extern Mat UI_Output;
 int row_index = 0;
 Mat row_proc_img[40];
 
