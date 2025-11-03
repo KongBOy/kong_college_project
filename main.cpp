@@ -79,6 +79,7 @@ int main(){
     // opencv 中文字 編碼只支援 cp950(Big5), 所以要先把 utf8 轉 cp950
     Title = utf8_to_cp950(Title);
     namedWindow(Title);
+    cvMoveWindow(Title.c_str() , 0, 0);
 
     // NextStep 1: 等待 user 輸入樂譜 用到的容器 在這邊宣告
     Mat SrcMusicSheet;
@@ -98,7 +99,6 @@ int main(){
         switch(NextStep){
         // NextStep 0: 進入程式的前導動畫
         case 0:
-
             imshow(Title, UI0);
             waitKey(0);
             imshow(Title, UI0_enter);
@@ -117,10 +117,8 @@ int main(){
             //waitKey(0);
             imshow(Title, UI0_6_enter);
             waitKey(2000);
-
             NextStep=1;
             
-
             break;
         // NextStep 1: 等待 user 輸入樂譜
         case 1:{
@@ -188,7 +186,7 @@ int main(){
                 // 開始辨識
                 int status = Recognition(SrcMusicSheet, staff_count, staff_img_erase_line, staff_img, trans_start_point_x, trans_start_point_y,
                                          note_infos -> note_count,note_infos -> note, note_infos -> row_note_count_array,
-                                         UI2,Title,
+                                         UI2, Title,
                                          Title, UI2_5, 
                                          true);
                 cout << "Recognition status:" << status << endl;
@@ -215,7 +213,6 @@ int main(){
             imshow(Title, UI3_enter_press);
             waitKey(200);
             speed = 100;
-
             ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music
 
             NextStep=4;
@@ -252,14 +249,4 @@ int main(){
 
         }
     }
-
-    ///Animation
-    /* 
-    for(int i = 0;i<=100;i++){
-                rectangle( UI0, Point( i*5, 0 ), Point( (i*5)+5, 5), Scalar( 0, 55, 255 ), CV_FILLED, 4 );
-                imshow("Title", UI0);
-                waitKey(100);
-            }
-
-    */
 }
