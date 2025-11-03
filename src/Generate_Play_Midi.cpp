@@ -6,10 +6,7 @@
 #include <iostream>
 #include <windows.h>
 
-#include "Bar_tool.h"
-#include "UserEnterFile.h"
-
-
+#include "Note_infos.h"
 #include "Generate_Play_Midi.h"
 
 #define SNDQUE 10000
@@ -43,7 +40,6 @@ Mat bar                   = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 
 
 HANDLE     gSThread = NULL;  // 播放聲音的執行緒
 
-
 typedef struct _soundtype{
   double  Freq;   // 頻率（Hz），代表音高
   int     Dura;   // 持續時間（毫秒）
@@ -64,8 +60,6 @@ static BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
 int Sound (float Freq, int Dura , int Vol , int Voice , float Tempo){
     // cout << "gTexit:" << gTexit << endl;
     // cout << "Sound" << Freq << " " << Dura << " " << Vol << " " << Voice << " " << Tempo << endl;
-    DWORD  dwThreadId;
-
     if (Freq == 0 && Dura < 1) return gTenter - gTexit;  // 回傳排隊中的數量
     // silence
     if (Freq == 0) Vol  = 0;  // 無聲音時音量歸零
@@ -84,45 +78,13 @@ int Sound (float Freq, int Dura , int Vol , int Voice , float Tempo){
     SndPmtr[gTarray].Voice  = Voice;
     SndPmtr[gTarray].Tempo  = Tempo;
     SndPmtr[gTarray].sndTid = gTenter;
-
-    // if (gSThread == NULL && (Freq == Abs(Freq) || Freq == 0)){
-    //     // "PlaySnd" needs casting (void *)
-    //     gSThread = CreateThread(NULL, 0, PlaySnd, (void *)"PlaySnd", 0, &dwThreadId);
-    //     //Sleep(1);
-    //     cout << "thread---------------" << gSThread << endl;
-    //     return 0;
-    // }
-
-    // 目前的程式Freq沒有設負的過用不到
-    // if (Freq != Abs(Freq)){
-    //     cout << "here~~~~~~~~~~~~~~~~~~" << endl;
-    //     if (Freq == -1){
-    //         Freq = 0;
-    //         SndPmtr[gTarray].Vol = 0;
-    //     }
-    //     SndPmtr[gTarray].Freq = Abs(Freq);
-    //     gTsig=TRUE;
-    //     while(gSThread != NULL){
-    //         Sleep(10);
-    //     }
-    //     gTexit = gTenter-1;
-    //     gTwait = gTenter-1;
-    //     gTsig = FALSE;
-    //     return PlaySnd(NULL);  // needs some kind of argument
-    // }
     return 0;
 }
-
 
 
 double Round (double n, int d){
     return (floor((n)*pow(10.0, (d))+0.5)/pow(10.0, (d)));
 }
-// 都被註解掉了用不到
-// double Abs (double a){
-//     if (a < 0)  return -a;
-//     return  a;
-// }
 
 
 
@@ -134,33 +96,21 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
                                     {523.3 , 554.4 , 587.3 , 622.3 , 659.3 , 698.5 , 740.0 , 784.0 , 830.6 , 880.0 , 932.3 , 987.8 }, \
                                     {1046.5, 1108.7, 1174.7, 1244.5, 1318.5, 1396.9, 1480.0, 1568.0, 1661.2, 1760.0, 1864.7, 1975.5}, \
                                     {2093.0, 2217.5, 2349.3, 2489.0, 2637.0, 2793.8, 2960.0, 3136.0, 3322.4, 3520.0, 3729.3, 3951.1}};
+    // list_note_info(note_infos -> note_count, note_infos -> note);
 
-
+    // row_proc_img 放 彩色版本的 staff_img
     for(int i = 0 ; i < 40 ; i++){
         row_proc_img[i] = staff_img[i].clone();
         cvtColor(staff_img[i], row_proc_img[i], CV_GRAY2BGR);
-        //       note_infos -> row_note_count_array[i] = in_row_note_count_array[i];
     }
 
-    //   note_infos -> note_count = in_note_count;
-    //   for(int i = 0 ; i < 5 ; i++)
-    //     for(int j = 0 ; j < note_infos -> note_count ; j++)
-    //         note_infos -> note[i][j] = in_note[i][j];
-
-
-    // *************************************************
-    // list_note_info(note_infos -> note_count, note_infos -> note);
-
-    cout << "step1" << endl;
-    
-    
-    // **************************************************************
     // **************************************************************
     int head_type;
     int time_bar;
     int pitch;
     int base_4note_duration;
-    speed = 60;  // 速度單位 bpm, 代表 每分鐘均等的打幾下, 舉例: 132bmp 代表 60秒 打 132下
+    // 速度單位是用 bpm, 代表 每分鐘均等的打幾下, 舉例: 132bmp 代表 60秒 打 132下, 預設開始用 60bpm
+    speed = 60;
     for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++){
         head_type = note_infos -> note[2][go_note];
         time_bar  = note_infos -> note[3][go_note];
@@ -222,47 +172,6 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]){
         }
     }
     return 0;
-    // cout << "speed" << speed << endl;
-
-    // Tugboat whistle sound 95 hertz, 2000ms, 127 = loud, 111 = Shanai
-    // experiment with your own sounds, it's fun ...
-
-
-    /*
-    int a=0;
-    cout << "step1" << endl;
-    Sound(freqTable[3][a%7], 1000, 127, 0);  // 2 second blast
-    cout << "step2" << endl;
-    //Sound( 1, 500, 0, 0);  // 1 second of silence
-    a+=1;
-    // wait till que is empty
-
-    while(a<10000){
-        // cout << "step1" << endl;
-        Sound(freqTable[3][a%12], 1000, 127, 0);  // 2 second blast
-        a+=1;
-        Sound(freqTable[3][a%12], 1000, 127, 0);  // 2 second blast
-        a+=1;
-        Sound(freqTable[3][a%12], 1000, 127, 0);  // 2 second blast
-        a+=1;
-        Sound(freqTable[3][a%12], 1000, 127, 0);  // 2 second blast
-        a+=1;
-        // cout << "step2" << endl;
-        //Sound( 1, 1, 0, 0);
-
-    }
-
-
-
-    // // // // // // // // // // // // // //
-
-    while(gSThread!=NULL){
-        Sleep(1000);
-        speed+=1;
-        // changespeed=changespeed*0.9995;
-    }
-    return 0;
-    */
 }
 
 
@@ -294,6 +203,9 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     Point pitch_word_posi;
     while(gTenter > gTexit && gTsig == FALSE){
         if(MusicPlayback){
+            // 畫一些 裝飾用的 白點點
+            Drawing_Random_Circles(Output);
+
             // ******************************************************************************************************
             // 先畫圖顯示音高 再 播音樂, 才不會 每一row影像 的最後一顆音播完音樂 還沒顯示完 就 換下一row的影像了
             note_x    = note_infos -> note[0][note_infos -> go_note];
@@ -394,9 +306,6 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
             else 
                 putText(row_proc_img[row_index], ss.str(), pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
 
-
-
-            Drawing_Random_Circles(Output);
             
             Speed_Volume_Bar_roi = Output(Rect(750, 245, 545, 233));
             Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);
@@ -488,8 +397,6 @@ void PlayMidiFile(Note_infos* note_infos){
         return;
     }
     cout << "thread---------------" << gSThread << endl;
-
-    //////////////////////////
 }
 
 int Drawing_Random_Circles( Mat& image ){
