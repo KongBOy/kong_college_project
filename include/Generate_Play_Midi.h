@@ -34,7 +34,6 @@ extern Mat bar             ;
 
 
 double  Round (double,int);
-double  Abs (double);
 
 int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]);
 
