@@ -152,8 +152,8 @@ int HandShaking(string Title){
 
     int talktime = 0;
     Mat talk;
-    Mat talk_roi_ord = Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
-    Mat talk_roi     = Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
+    Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
+    Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
     Mat frame_on_ui;
 
 	// 偵測手環是否進入範圍內
@@ -235,18 +235,18 @@ int HandShaking(string Title){
             // 貼到UI前 先縮小到UI指定的大小
             resize(frame_small, frame_small_fit_ui, Size(frame.cols * 0.537, frame.rows * 0.537), 0, 0, INTER_CUBIC);
 
-            // 把東西貼上 UI Output(寫在 Generate_Play_Midi 跟 PlaySnd共用)
-            if(!Output.empty()){
-                // 把 畫完圖的frame 貼上 Output
-                frame_on_ui = Output(Rect(16, 77, frame_small_fit_ui.cols, frame_small_fit_ui.rows));
+            // 把東西貼上 UI_Output(寫在 Generate_Play_Midi 跟 PlaySnd共用)
+            if(!UI_Output.empty()){
+                // 把 畫完圖的frame 貼上 UI_Output
+                frame_on_ui = UI_Output(Rect(16, 77, frame_small_fit_ui.cols, frame_small_fit_ui.rows));
                 cv::flip(frame_small_fit_ui, frame_small_fit_ui, 1);  // 左右翻轉
                 frame_small_fit_ui.copyTo(frame_on_ui);
 
-                // 把 五線譜組 貼上 Output                
+                // 把 五線譜組 貼上 UI_Output                
                 int roi_height = row_proc_img[row_index].rows;
                 int roi_width  = row_proc_img[row_index].cols;
                 if(roi_height > 227) roi_height = 227;  // 高度最多抓 227
-                Mat ui_staff_roi    = Output                 (Rect(62, 530, roi_width, roi_height));
+                Mat ui_staff_roi    = UI_Output                 (Rect(62, 530, roi_width, roi_height));
                 Mat staff_staff_roi = row_proc_img[row_index](Rect( 0,   0, roi_width, roi_height));
                 staff_staff_roi.copyTo(ui_staff_roi);
             }
@@ -294,8 +294,8 @@ int HandShaking(string Title){
                 // cout << "clock()" << clock() << endl;
             }
             talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
-            DrawTalk(talk, Output, 130, 700);  // 再貼上新的Talk圖片
-            imshow(Title, Output);
+            DrawTalk(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
+            imshow(Title, UI_Output);
             go_frame++;
 		}
 		cvReleaseCapture(&capture);
