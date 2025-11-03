@@ -57,6 +57,8 @@ int main(){
     Mat UI2   = imread("Resource\\UI_all_picture/UI PIC/UI/UI2.jpg"  ,1);
     Mat UI2_5 = imread("Resource\\UI_all_picture/UI PIC/UI/UI2_5.jpg",1);
     Mat UI3   = imread("Resource\\UI_all_picture/UI PIC/UI/UI3.jpg"  ,1);
+    Mat UI3_enter       = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter.jpg"  ,1);
+    Mat UI3_enter_press = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter_press.jpg"  ,1);
     Mat UI4_0 = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_0.jpg",1);
     Mat UI4_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_1.jpg",1);
     Mat UI5_0 = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_0.jpg",1);
@@ -207,8 +209,11 @@ int main(){
         case 3:
             cout<<"Case 3"<<endl;
             imshow(Title, UI3);
-            waitKey(0);
             GenerateMidiFile(note_infos, staff_img);
+            imshow(Title, UI3_enter);
+            waitKey(0);
+            imshow(Title, UI3_enter_press);
+            waitKey(200);
             speed = 100;
 
             ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music
