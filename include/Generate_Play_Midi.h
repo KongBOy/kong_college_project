@@ -37,7 +37,7 @@ double  Round (double,int);
 
 int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]);
 
-int Sound (float Freq, int Dura = 0, int Vol = 127, int Voice = 0, float Tempo = 1);
+int MakeSound (float Freq, int Dura = 0, int Vol = 127, int Voice = 0, float Tempo = 1);
 DWORD WINAPI PlaySnd (LPVOID lpParameter);
 void PlayMidiFile    (Note_infos* note_infos);
 
