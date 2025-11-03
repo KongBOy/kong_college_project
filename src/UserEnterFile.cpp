@@ -342,7 +342,7 @@ bool Detect_Speed(){
         // 抓出 目前花多久時間 current ~ current前n個 時間點的距離算平均 來算速度, n越大越不會那麼敏感一下就變速度
         float clock_sum = 0;
         float clock_avg = 0;
-        int avg_buffer_size = 1;
+        int avg_buffer_size = 2;
         int acc_amount = 0;
         for(int go_avg = 0; go_avg < avg_buffer_size ; go_avg++ ){
             int cur_avg_i = clock_cur_posi - go_avg;
@@ -357,6 +357,8 @@ bool Detect_Speed(){
         cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", acc_amount:" << acc_amount << ", clock_avg:" << clock_avg << ", speed_temp:" << speed_temp << endl;
         // 把太極端的速度去除後 才設定成 我們要的速度, 補充一下不要用clip因為速度容易受到雜訊干擾超過300, 超過300就等於300的話 很容易一值被拉到300
         if(20 < speed_temp && speed_temp < 300 ) speed = speed_temp;
+        // 加速時常常揮太快超過300 結果發現沒加速 又揮更快, 所以超過300 且 speed 沒超過300 就慢慢 +5
+        if(speed_temp > 300 and speed < 300) speed += 5;
 
         // 更新 buffer 目前可儲存位置
         clock_cost_buffer_acc += 1;
