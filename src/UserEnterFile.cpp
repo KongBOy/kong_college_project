@@ -33,29 +33,17 @@ Mat background1 = imread("Resource\\UI_all_picture/UI PIC/UI/Background_kong.png
 
 bool detectAndDisplay( Mat frame, float* facex, float* facey, float* facewidth, float* faceheight );
 void SamplePicInitial();
-// float GaussResult(int a, int b, int c);  // 沒用到
 bool Detect_Speed();
 int DrawTalk(Mat Input, Mat& Output, int row, int col);
 
-/*  *  Global variables  */
-// -- Note, either copy these two files from opencv/data/haarscascades to your current folder, or change these locations
-// C:\\Users\\may\\Desktop\\龔洲暐\\學校\\專題\\VC2010\\opencv
 
 // 用不到
-// String face_cascade_name = "C:\\Users\\may\\Desktop\\龔洲暐\\學校\\專題\\VC2010\\opencv\\data\\haarcascades\\haarcascade_frontalface_alt.xml";
 CascadeClassifier face_cascade;
-// string window_name = "Capture - Face detection";
 
 
 static int RedTreshod = 300;
 static int UserGoOutWhenPlayingTime = 60000;  //  1 Min
 static int HandStopShankingTime     = 60000;  // 10 S
-
-////////////////// 臉部偵測用
-float facex;
-float facey;
-float facewidth;
-float faceheight;
 
 ///////////////// 高斯運算用
 CvScalar MeanScalar;
@@ -81,23 +69,21 @@ float shaklowest = 0;
 float shakrange = 0;
 
 int  clock_cost_buffer_size = 6;  // 實際 clock_cost_buffer_size 大小
-int clock_cost_buffer_acc   = 0;  // 虛擬 clock_cost_buffer_size 大小, 大概就是假設 buffer無限大 總共input了幾次 clock_cost 進buffer的概念, 也可以代表 最新可以寫入 buffer的位置
-int clock_cost_buffer_go    = 0;  // clock_cost_buffer_acc % clock_cost_buffer_size 為 實際可以寫進buffer的位置
+int  clock_cost_buffer_acc   = 0;  // 虛擬 clock_cost_buffer_size 大小, 大概就是假設 buffer無限大 總共input了幾次 clock_cost 進buffer的概念, 也可以代表 最新可以寫入 buffer的位置
+int  clock_cost_buffer_go    = 0;  // clock_cost_buffer_acc % clock_cost_buffer_size 為 實際可以寫進buffer的位置
 int* clock_cost_buffer  = new int[clock_cost_buffer_size];
-int clock_cur_posi = 0;
+int  clock_cur_posi = 0;
 
 int clock_cost_avg = 0;
 int clock_cost_sum = 0;
-int average_volume = 0;
 
+int average_volume = 0;
 int sum_volume = 0;
 
 bool now_handmoveup = false;
 bool pre_handmoveup = false;
 
 CvCapture *  capture ;
-
-
 
 time_t pre_handmove_up_clock = clock() + 10000;
 time_t now_handmoveup_clock = clock() + 10000;
@@ -147,18 +133,15 @@ int HandShaking(string Title){
 	IplImage *  vframe ;
 
 	Mat copyFrame;
-	Mat newimg;
 	Mat frame;
+	Mat frame_small;
+	Mat frame_small_fit_ui;
 
 	double MinValue;
 	double MaxValue;
 
 	Point MinLocation;
 	Point MaxLocation;
-
-
-    // 臉部辨識 內建的東西~~來判斷是不是人臉
-	// if( !face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading\n"); return -1; };
 
     // 開始視訊
     SamplePicInitial();  // 初始化 MeanScalar 和 StandardDeviationScalar
@@ -200,12 +183,12 @@ int HandShaking(string Title){
 			if( (char)c ==  'c' ) { break; }
 
 
-			// 臉部偵測的function
-			resize(frame, newimg, Size(int(frame.cols / 2), int(frame.rows / 2)), 0, 0, INTER_CUBIC);
-            // cv::imshow("newimg", newimg);
+            // frame 縮小處理效果差不多 但 會快很多
+			resize(frame, frame_small, Size(int(frame.cols / 2), int(frame.rows / 2)), 0, 0, INTER_CUBIC);
+            // cv::imshow("frame_small", frame_small);
             // cv::waitKey(0);
 
-            // 偵測 顏色最相近的點 在哪裡
+            // 偵測 frame_small內顏色 與 指定物品的顏色 最相近的點 在哪裡
             int MinRow = 0;
             int MinCol = 0;
             int MinValue = 300;
@@ -213,7 +196,7 @@ int HandShaking(string Title){
             Mat distance;
             Mat sample_color_f;
             Mat newimg_f;
-            newimg      .convertTo(newimg_f      , CV_32F);
+            frame_small .convertTo(newimg_f      , CV_32F);
             sample_color.convertTo(sample_color_f, CV_32F);
             pow(newimg_f - sample_color_f,  2.0, distance);
             vector<Mat> channels;
@@ -230,7 +213,7 @@ int HandShaking(string Title){
             orbitY[go_orbit] = MinRow;
             
             // 用 軌跡判斷 音量
-            Detect_Volumn(newimg, orbitX, orbitY, go_orbit, orbit_num);
+            Detect_Volumn(frame_small, orbitX, orbitY, go_orbit, orbit_num);
 
             // 用 y的變化來算速度
             nowy = MinRow;
@@ -239,7 +222,7 @@ int HandShaking(string Title){
 
 
             // 畫出 最新偵測到的 顏色位置 orbitXY, 用 藍色圈圈 表示
-            circle(newimg, cvPoint(MinCol, MinRow), 4, Scalar(250, 0, 0), 2, 8, 0);
+            circle(frame_small, cvPoint(MinCol, MinRow), 4, Scalar(250, 0, 0), 2, 8, 0);
             // 畫出 orbit 裡面的點 連成的 線, 最後一個點不用連回頭所以-1
 			for(int i = 0; i < orbit_num - 1 ; i++ ){
                 int cur_i = go_orbit - i;
@@ -249,9 +232,8 @@ int HandShaking(string Title){
 
                 // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
                 
-                line( newimg, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 3), 1, 8 );
-                // line( newimg, Point(orbitX[i], orbitY[i]), Point(orbitX[(i + 1) % 8], orbitY[(i + 1) % 8]), Scalar(44, 250, 3), 1, 8 );
-				// circle(newimg, cvPoint(orbitX[i], orbitY[i]), 2, Scalar(44, 250, 3), 2, 8, 0);
+                line( frame_small, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 3), 1, 8 );
+				// circle(frame_small, cvPoint(orbitX[i], orbitY[i]), 2, Scalar(44, 250, 3), 2, 8, 0);
 			}
 
             // 更新 軌跡buffer的index
@@ -259,14 +241,14 @@ int HandShaking(string Title){
             else                       go_orbit = 0;
 
             // 貼到UI前 先縮小到UI指定的大小
-            resize(newimg, newimg, Size(frame.cols * 0.537, frame.rows * 0.537), 0, 0, INTER_CUBIC);
+            resize(frame_small, frame_small_fit_ui, Size(frame.cols * 0.537, frame.rows * 0.537), 0, 0, INTER_CUBIC);
 
             // 把東西貼上 UI Output(寫在 Generate_Play_Midi 跟 PlaySnd共用)
             if(!Output.empty()){
                 // 把 畫完圖的frame 貼上 Output
-                frame_show = Output(Rect(16, 77, newimg.cols, newimg.rows));
-                cv::flip(newimg, newimg, 1);  // 左右翻轉
-                newimg.copyTo(frame_show);
+                frame_show = Output(Rect(16, 77, frame_small_fit_ui.cols, frame_small_fit_ui.rows));
+                cv::flip(frame_small_fit_ui, frame_small_fit_ui, 1);  // 左右翻轉
+                frame_small_fit_ui.copyTo(frame_show);
 
                 // 把 五線譜組 貼上 Output                
                 int roi_height = row_proc_img[row_index].rows;
@@ -277,7 +259,7 @@ int HandShaking(string Title){
                 staff_staff_roi.copyTo(ui_staff_roi);
             }
 
-            // 
+            // UI 隨機 挑出 11段對話文字 來畫
             if(clock() > talktime){
                 talktime = clock() + 5000 + (rand() % 10 * 1000);
                 switch(1 + rand() % 11){
@@ -397,7 +379,7 @@ bool Detect_Speed(){
 }
 
 
-
+// Input圖去白色背景(200以上) 貼近 Output圖
 int DrawTalk(Mat Input, Mat& Output, int row, int col){
     int OutputRow = Output.rows;
     int OutputCol = Output.cols;
