@@ -220,7 +220,7 @@ int main(){
         case 4:
             //imshow(Title, UI5);
             cout<<"Case 4"<<endl;
-            Output=background.clone();
+            UI_Output=background.clone();
 
             PlayMidiFile(note_infos);
             NextStep=HandShaking(Title);
