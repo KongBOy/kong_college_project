@@ -37,13 +37,7 @@ bool Detect_Speed();
 int DrawTalk(Mat Input, Mat& Output, int row, int col);
 
 
-// 用不到
-CascadeClassifier face_cascade;
 
-
-static int RedTreshod = 300;
-static int UserGoOutWhenPlayingTime = 60000;  //  1 Min
-static int HandStopShankingTime     = 60000;  // 10 S
 
 ///////////////// 高斯運算用
 CvScalar MeanScalar;
@@ -86,12 +80,12 @@ bool pre_handmoveup = false;
 CvCapture *  capture ;
 
 time_t pre_handmove_up_clock = clock() + 10000;
-time_t now_handmoveup_clock = clock() + 10000;
+time_t now_handmoveup_clock  = clock() + 10000;
 
 
 void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int orbit_num){
     float len_max = sqrt( pow(ui_screen.rows, 2) + pow(ui_screen.cols, 2) );
-    // 看三條線
+    // 看 avg_buffer_size 條線
     float orbit_len_acc = 0;
     float orbit_len_avg = 0;
     float orbit_len     = 0;
@@ -130,9 +124,6 @@ int HandShaking(string Title){
     // 初始化 clock_cost_buffer
     for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
 
-	IplImage *  vframe ;
-
-	Mat copyFrame;
 	Mat frame;
 	Mat frame_small;
 	Mat frame_small_fit_ui;
@@ -143,9 +134,11 @@ int HandShaking(string Title){
 	Point MinLocation;
 	Point MaxLocation;
 
-    // 開始視訊
-    SamplePicInitial();  // 初始化 MeanScalar 和 StandardDeviationScalar
+    // 初始化 指定物品的顏色 的 MeanScalar 和 StandardDeviationScalar
+    SamplePicInitial();
     Mat sample_color;
+
+    // 開始視訊
 	capture = cvCaptureFromCAM( -1 );
     if(capture){
         frame = cvQueryFrame( capture );
@@ -161,27 +154,23 @@ int HandShaking(string Title){
     Mat talk;
     Mat talk_roi_ord = Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
     Mat talk_roi     = Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
-    Mat frame_show;
+    Mat frame_on_ui;
 
 	// 偵測手環是否進入範圍內
 	if(capture){
 
-        int returnval = 1;
+        int status = 1;
         int go_frame = 0;
 		while( MusicPlayback){
 			frame = cvQueryFrame( capture );
-
-			if( !frame.empty() ){
-			  // printf("OK!!!!\n");
-			}
-            else{
-			    printf(" --(!) No captured frame -- Break!"); break;
-			}
+			if( frame.empty() ){
+                printf(" --(!) No captured frame -- Break!");
+                break;
+            }
 
             // delay 1 毫秒 抓一次圖
 			int c = waitKey(1);
 			if( (char)c ==  'c' ) { break; }
-
 
             // frame 縮小處理效果差不多 但 會快很多
 			resize(frame, frame_small, Size(int(frame.cols / 2), int(frame.rows / 2)), 0, 0, INTER_CUBIC);
@@ -195,14 +184,18 @@ int HandShaking(string Title){
 
             Mat distance;
             Mat sample_color_f;
-            Mat newimg_f;
-            frame_small .convertTo(newimg_f      , CV_32F);
+            Mat frame_small_f;
+            //  (b1 - b2)^2, (g1 - g2)^2, (r1 - r2)^2
+            frame_small .convertTo(frame_small_f , CV_32F);
             sample_color.convertTo(sample_color_f, CV_32F);
-            pow(newimg_f - sample_color_f,  2.0, distance);
+            pow(frame_small_f - sample_color_f,  2.0, distance);
+            //  (b1 - b2)^2 + (g1 - g2)^2 + (r1 - r2)^2
             vector<Mat> channels;
             split(distance, channels);
             distance = channels[0] + channels[1] + channels[2];
+            // ( (b1 - b2)^2 + (g1 - g2)^2 + (r1 - r2)^2 ) ^0.5
             sqrt(distance, distance);
+            // 找最小距離(顏色最相近)的點在哪裡
             double minVal; double maxVal; Point minLoc; Point maxLoc;
             minMaxLoc( distance , &minVal, &maxVal, &minLoc, &maxLoc);
             MinCol = minLoc.x;
@@ -229,7 +222,6 @@ int HandShaking(string Title){
                 int bef_i = go_orbit - i - 1;
                 if(cur_i < 0) cur_i = orbit_num + cur_i;
                 if(bef_i < 0) bef_i = orbit_num + bef_i;
-
                 // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
                 
                 line( frame_small, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 3), 1, 8 );
@@ -246,9 +238,9 @@ int HandShaking(string Title){
             // 把東西貼上 UI Output(寫在 Generate_Play_Midi 跟 PlaySnd共用)
             if(!Output.empty()){
                 // 把 畫完圖的frame 貼上 Output
-                frame_show = Output(Rect(16, 77, frame_small_fit_ui.cols, frame_small_fit_ui.rows));
+                frame_on_ui = Output(Rect(16, 77, frame_small_fit_ui.cols, frame_small_fit_ui.rows));
                 cv::flip(frame_small_fit_ui, frame_small_fit_ui, 1);  // 左右翻轉
-                frame_small_fit_ui.copyTo(frame_show);
+                frame_small_fit_ui.copyTo(frame_on_ui);
 
                 // 把 五線譜組 貼上 Output                
                 int roi_height = row_proc_img[row_index].rows;
@@ -307,9 +299,8 @@ int HandShaking(string Title){
             go_frame++;
 		}
 		cvReleaseCapture(&capture);
-        return returnval;
+        return status;
 	}
-
 }
 
 void SamplePicInitial(){
@@ -379,7 +370,7 @@ bool Detect_Speed(){
 }
 
 
-// Input圖去白色背景(200以上) 貼近 Output圖
+// Input圖去白色背景(200以上) 貼進 Output圖
 int DrawTalk(Mat Input, Mat& Output, int row, int col){
     int OutputRow = Output.rows;
     int OutputCol = Output.cols;
