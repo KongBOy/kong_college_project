@@ -25,7 +25,7 @@ extern int speed;
 extern int volume;
 extern bool MusicPlayback;
 
-extern Mat Output;
+extern Mat UI_Output;
 extern int row_index ;
 extern Mat row_proc_img[40];
 static string Title="小小指揮家";

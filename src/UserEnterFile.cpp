@@ -50,7 +50,7 @@ CvScalar StandardDeviationScalar;
 // int speed = 60;
 // int volume = 80;
 // bool MusicPlayback = false;
-// Mat Output;
+// Mat UI_Output;
 // int row_index = 0;
 // Mat row_proc_img[40];
 

@@ -17,7 +17,7 @@ using namespace cv;
 int speed  = 60;
 int volume = 80;
 bool MusicPlayback=false;
-Mat Output;
+Mat UI_Output;
 int row_index = 0;
 Mat row_proc_img[40];
 
@@ -204,7 +204,7 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     while(gTenter > gTexit && gTsig == FALSE){
         if(MusicPlayback){
             // 畫一些 裝飾用的 白點點
-            Drawing_Random_Circles(Output);
+            Drawing_Random_Circles(UI_Output);
 
             // ******************************************************************************************************
             // 先畫圖顯示音高 再 播音樂, 才不會 每一row影像 的最後一顆音播完音樂 還沒顯示完 就 換下一row的影像了
@@ -307,10 +307,10 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
                 putText(row_proc_img[row_index], ss.str(), pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
 
             
-            Speed_Volume_Bar_roi = Output(Rect(750, 245, 545, 233));
+            Speed_Volume_Bar_roi = UI_Output(Rect(750, 245, 545, 233));
             Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);
-            volume_bar_roi = Output(Rect( (volume       /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
-            speed_bar_roi  = Output(Rect( (speed  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
+            volume_bar_roi = UI_Output(Rect( (volume       /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
+            speed_bar_roi  = UI_Output(Rect( (speed  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
             bar.copyTo(volume_bar_roi);
             bar.copyTo(speed_bar_roi );
             
