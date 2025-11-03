@@ -42,7 +42,7 @@ void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & te
         
         // 全休止
         case 1:{
-            color = Scalar(180,100,100);  // 淺紫色 
+            color = Scalar(  2,  63, 117);  // 深深咖啡 
             template_img = template_img_1.clone();
         }
         break;
@@ -56,7 +56,7 @@ void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & te
 
         // 二分休止
         case 3:{
-            color = Scalar(255,120,100);  // 淺紫色
+            color = Scalar(  0,  86, 162);  // 深咖啡
             template_img = template_img_3.clone();
         }
         break;
@@ -70,28 +70,28 @@ void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & te
 
         // 四分休止符
         case 5:{
-            color = Scalar(255,200,100);  // 淺藍
+            color = Scalar(  0,  99, 185);  // 咖啡
             template_img = template_img_5.clone();
         }
         break;
 
         // 十六分休止符
         case 6:{
-            color = Scalar(255,255,100);  // 青藍
+            color = Scalar( 74, 151, 219);  // 淺淺咖啡
             template_img = template_img_6.clone();
         }
         break;
 
         // 三十二分休止符
         case 7:{
-            color = Scalar(140,100,180);  // 淡紫
+            color = Scalar(123, 182, 234);  // 淺淺淺咖啡
             template_img = template_img_7.clone();
         }
         break;
 
         // 八分休止符
         case 8:{
-            color = Scalar(140,180,180);  // 亮綠灰
+            color = Scalar( 32 ,124 ,205);  // 淺咖啡
             template_img = template_img_8.clone();
         }
         break;
