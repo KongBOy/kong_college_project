@@ -29,7 +29,6 @@ int MaxValue=1244;
 int speed_row=390;
 int volume_row=275;
 
-RNG rng( 0xFFFFFFFF );
 
 double changespeed=1;
 
@@ -518,7 +517,7 @@ void PlayMidiFile(Note_infos* note_infos){
     // // // // // // // // // // // // // /
 }
 
-int Drawing_Random_Circles( Mat& image, RNG rng ){
+int Drawing_Random_Circles( Mat& image ){
     cout << "Drawing_Random_Circles" << endl;
     int lineType = 8;
     Point pt1, pt2;
@@ -543,7 +542,4 @@ int Drawing_Random_Circles( Mat& image, RNG rng ){
         //line( image, pt1, pt2, randomColor(rng), rng.uniform(1, 10), 8 );
     }
     return 0;
-}
-static Scalar randomColor( RNG& rng ){
-  return Scalar( rand()%255, rand()%255, rand()%255 );
 }

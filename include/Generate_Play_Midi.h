@@ -19,7 +19,6 @@ extern int MaxValue;
 extern int speed_row;
 extern int volume_row;
 
-extern RNG rng;
 
 extern double changespeed;
 
@@ -43,5 +42,4 @@ int Sound (float Freq, int Dura = 0, int Vol = 127, int Voice = 0, float Tempo =
 DWORD WINAPI PlaySnd (LPVOID lpParameter);
 void PlayMidiFile    (Note_infos* note_infos);
 
-int Drawing_Random_Circles( Mat& image, RNG rng);
-static Scalar randomColor( RNG& rng );
+int Drawing_Random_Circles( Mat& image);
