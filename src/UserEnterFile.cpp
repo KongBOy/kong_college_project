@@ -31,7 +31,6 @@ Mat T10 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\10.jpg"
 Mat T11 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\11.jpg", 1);
 Mat background1 = imread("Resource\\UI_all_picture/UI PIC/UI/Background_kong.png", 1);
 
-bool detectAndDisplay( Mat frame, float* facex, float* facey, float* facewidth, float* faceheight );
 void SamplePicInitial();
 bool Detect_Speed();
 int DrawTalk(Mat Input, Mat& Output, int row, int col);
