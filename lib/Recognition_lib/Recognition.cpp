@@ -62,23 +62,13 @@
 #define FILE_TYPE ".bmp"
 ///////////////////////////////////////////////////////
 
-
-
-
 using namespace std;
 using namespace cv;
-int Recognization();
 
 
-static string IntToString(int num)
-{
-    stringstream ss;
-    ss<<num;
 
-    string temp_string;
-    ss>>temp_string;
-    return temp_string;
-}
+
+
 int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat staff_img[],double trans_start_point_x[],double trans_start_point_y[],
                 int& note_count , int note[][1000] , int row_note_count_array[],
                 Mat UI_bass, string UI_WINDOW_NAME,
