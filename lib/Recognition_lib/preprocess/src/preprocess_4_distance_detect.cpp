@@ -71,8 +71,8 @@ int * Distance_detect(vector<Vec2f> mountain_lines, bool debuging){
     int * dist_diffi_1 = new int[mountain_lines.size()-1-1];
     for(int i = 0 ; i < mountain_lines.size() -1 -1; i++) dist_diffi_1[i] = dist[i+1] - dist[i];
     if(debuging){
-        for(int i = 0 ; i < mountain_lines.size() -1 -1; i++) cout << "rho[" << setw(2) << i << "]=" << setw(4) << rho[i] << " , dist[" << setw(2)  << i                           << "] = " << setw(4) << dist[i]                           << " , dist_diffi_1[" << setw(2) << i << "] = " << setw(4) << dist_diffi_1[i] << endl;
-        cout << "rho[" << setw(2) << mountain_lines.size() -1 -1 << "]=" << setw(4)  << rho[mountain_lines.size() -1 -1]  << " , dist[" << setw(2)  << mountain_lines.size() -1 -1 << "] = " << setw(4) << dist[mountain_lines.size() -1 -1] << endl;
+        for(int i = 0 ; i < mountain_lines.size() -1 -1; i++) cout << "rho[" << setw(2) << i << "]=" << setw(4) << rho[i] << " , dist(sorted, the order is not related to rho)[" << setw(2)  << i                           << "] = " << setw(4) << dist[i]                           << " , dist_diffi_1[" << setw(2) << i << "] = " << setw(4) << dist_diffi_1[i] << endl;
+        cout << "rho[" << setw(2) << mountain_lines.size() -1 -1 << "]=" << setw(4)  << rho[mountain_lines.size() -1 -1]  << " , dist(sorted, the order is not related to rho)[" << setw(2)  << mountain_lines.size() -1 -1 << "] = " << setw(4) << dist[mountain_lines.size() -1 -1] << endl;
         cout << "rho[" << setw(2) << mountain_lines.size() -1    << "]=" << setw(4)  << rho[mountain_lines.size() -1   ]  << setw(2) << endl;
         cout << endl;
         // 直接看結果比較好理解
@@ -196,7 +196,7 @@ int * Distance_detect(vector<Vec2f> mountain_lines, bool debuging){
     //   就直接在用dist_level[0]為底再來篩一次就可以更準的找到五線譜或其他他家有共同距離的距離囉
     /////////// COPY START //////////
     for(int i = 1 ; i < dist_level_count -1 ; i++){
-        if(dist_level[i+1] - dist_level[i] < CHANGE_TOLORANCE ){
+        if(dist_level[i+1] - dist_level[i] < STAFF_LINE_INTER_DISTANCE ){
             array_position_erase(dist_level, i, dist_level_count);
             i--;
         }

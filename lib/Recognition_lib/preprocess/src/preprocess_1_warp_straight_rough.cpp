@@ -126,24 +126,24 @@ double Find_Angle(Mat image, bool debuging){
 }
 
 void Wrap_Straight(Mat & image , double angle, bool debuging ){
-	if(debuging) cout << endl<<"in Wrap_Straight" << endl;
+	if(debuging) cout << endl<< "in Wrap_Straight" << endl;
 
 	double rotate_angle = angle - 90;
 	if(debuging) cout << "rotate_angle=" << rotate_angle << endl;
 	
-	Point center = Point(image.cols/2,image.rows/2); // the center of the picture
-	Mat rot(2,3,CV_64FC1);
-	rot = getRotationMatrix2D(center,rotate_angle,1); //produce wrapAffine_matrix
+	Point center = Point(image.cols/2, image.rows/2); // the center of the picture
+	Mat rot(2, 3, CV_64FC1);
+	rot = getRotationMatrix2D(center, rotate_angle, 1); //produce wrapAffine_matrix
 	
 	if(debuging){
-		imwrite("debug_img/pre1_2_Warp_Straight_1-before_warp.bmp",image);
+		imwrite("debug_img/pre1_2_Warp_Straight_1-before_warp.bmp", image);
 		// imshow("before_warp",image);
 		// waitKey(0);
 		cout << "before_img.cols=" << image.cols <<" , rows=" << image.rows << endl;
 	}
 
 	Mat proc_img = image.clone();
-	if(image.rows < image.cols) resize(proc_img, proc_img, Size(image.cols,image.cols), 0, 0, INTER_CUBIC);
+	if(image.rows < image.cols) resize(proc_img, proc_img, Size(image.cols, image.cols), 0, 0, INTER_CUBIC);
 	warpAffine(image, proc_img, rot, proc_img.size(), 0, 0, 255);
 	image = proc_img.clone();
 

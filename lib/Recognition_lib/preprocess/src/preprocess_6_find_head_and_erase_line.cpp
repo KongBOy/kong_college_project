@@ -522,6 +522,7 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
 
     // ******************************************************
     if(debuging){
+        cv::destroyWindow("src_bin_debug");
         imwrite(window_name + "3.bmp"     , drew_img_debug);
         imwrite(window_name + "_g_img.bmp", src_bin_debug );
         imwrite(window_name + "_g_img_reduce_line.bmp", src_bin_erase_line );

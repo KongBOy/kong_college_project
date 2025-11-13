@@ -72,7 +72,7 @@ using namespace cv;
 int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat staff_img[],double trans_start_point_x[],double trans_start_point_y[],
                 int& note_count , int note[][1000] , int row_note_count_array[],
                 Mat UI_bass, string UI_WINDOW_NAME,
-                string Title,Mat UI2_5,
+                string Title, Mat UI2_5,
                 bool debuging){
     bool developing_debuging = false;
     Mat src_img = ord_img.clone();
@@ -102,10 +102,9 @@ int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat st
         
     
     
-    // ************************* pre3 取影像正中間 *************************
+    // ************************* pre3 取影像正中間cols 後 水平投影 來抓五線譜線 *************************
     // 水平投影 找山 和 找線
     vector<Vec2f> lines;
-    vector<Vec4i> lines_p;
     Mat src_bin_roi = ~src_bin;
     try{
         Center_ROI_by_slider(src_bin_roi, (string)ROI_DIR + "do_roi", developing_debuging);
@@ -133,7 +132,7 @@ int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat st
         return -4;
     }
     
-    // ************************* pre5 利用 dist_level 找出五線譜線組成群組 *************************
+    // ************************* pre5 利用 dist_level 找出五線譜線 並 組成群組(把 lines 弄成 五條一組, 用5的倍數 來走訪各群, 所以只需return 最終五線譜組數即可) *************************
     try{
         staff_count = find_Staff_lines(lines, dist_level[0], dist_level[1], developing_debuging);
         if(developing_debuging){
@@ -153,10 +152,11 @@ int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat st
         return -5;
     }
     
-    // ************************* pre6 每組五線譜群組 的線找頭 *************************
+    // ************************* pre6 每組五線譜群組 的線找頭 存入 left_point, right_point, 並在 順著線跑到頭的過程中 也生出一張 二值化把五線譜刪除的圖 *************************
     Mat color_src_img;  // debug用
-    Mat src_bin_erase_line = src_bin.clone();
     cvtColor(src_img, color_src_img, CV_GRAY2BGR);
+
+    Mat src_bin_erase_line = src_bin.clone();
     
     int*** left_point ;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
     int*** right_point;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
@@ -194,10 +194,8 @@ int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat st
         int r_edge       [200];
         int distance     [200];
         int mountain_area[200];
-        int* note_type;
         recognition_0_vertical_map_to_speed_up(staff_img_erase_line[go_staff],
-                                               e_count, l_edge, r_edge, distance, mountain_area,
-                                               note_type, 
+                                               e_count, l_edge, r_edge, distance, mountain_area, 
                                                developing_debuging);
 
         // ~~~~~~~ 自己設的資料結構 用row為單位來存note~~~~~~~~~
