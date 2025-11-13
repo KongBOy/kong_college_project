@@ -52,8 +52,7 @@ static Point pt1, pt2;
 
 
 //interface，先把東西包成對的格式，再丟到find_head找頭
-void Find_Head_and_Erase_Line_Interface(Mat src_bin,vector<Vec2f>staff_lines, int staff_count, int***& left_point, int***& right_point, Mat color_ord_img, Mat& src_bin_erase_line, bool debuging){
-
+void Find_Head_and_Erase_Line_Interface(Mat src_bin, vector<Vec2f>staff_lines, int staff_count, int***& left_point, int***& right_point, Mat color_ord_img, Mat& src_bin_erase_line, bool debuging){
     drew_img_debug = color_ord_img.clone();
     src_bin_reduce_line_debug = src_bin.clone();
     cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
