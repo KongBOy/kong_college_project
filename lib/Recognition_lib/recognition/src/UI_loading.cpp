@@ -252,7 +252,7 @@ void UI_loading_preprocess(Mat src_img,
 
 int width_frame_acc = 0;  // mod_width;
 
-void UI_loading_recognition_row(int staff_count, Mat staff_img, int row_note_count, int row_note[][1000], 
+void UI_loading_recognition_one_staff(int staff_count, Mat staff_img, int row_note_count, int row_note[][1000], 
                                 Mat& UI_bass, string UI_WINDOW_NAME, bool debuging){
     // 計算 UI畫面上方正白色區域中心
     int UI_center_x = UI_bass.cols / 2.;

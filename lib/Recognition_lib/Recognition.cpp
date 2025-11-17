@@ -277,7 +277,7 @@ int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat st
         }
         // *****************************************************************
         // 在 UI 上顯示 辨識結果
-        UI_loading_recognition_row(staff_count, staff_img[go_staff], row_note_count, row_note, UI_bass, UI_WINDOW_NAME);
+        UI_loading_recognition_one_staff(staff_count, staff_img[go_staff], row_note_count, row_note, UI_bass, UI_WINDOW_NAME);
     }
     return 0;
 }
