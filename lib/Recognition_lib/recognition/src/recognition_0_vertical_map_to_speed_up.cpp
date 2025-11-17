@@ -39,12 +39,9 @@ void Show_mountain(Mat staff_img_erase_line, Mat staff_img_erase_line_color, Mat
         destroyWindow("mountain_cut_staff_img_erase_line");
         destroyWindow("ord_vertical_img_cut");
     }
-
-
-
 }
 
-void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, int& e_count, int l_edge[200], int r_edge[200], int distance[200], int mountain_area[200], int*& note_type, bool debuging){
+
     Mat staff_img_erase_line_color;  // debug用
     if(debuging){
         cv::cvtColor(staff_img_erase_line, staff_img_erase_line_color, COLOR_GRAY2BGR);

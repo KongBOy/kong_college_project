@@ -44,7 +44,7 @@ void array_position_erase(int* src_array , int position , int& array_size){
     }
 }
 
-void bubbleSort(int amount,int *& data){
+void bubbleSort(int amount, int*& data){
 	for(int i = 0 ; i < amount-1 ; i++){
 		for(int j = i+1 ; j < amount ; j++){
 			if( data[i] > data[j] ){

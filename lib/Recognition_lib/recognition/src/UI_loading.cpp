@@ -68,47 +68,34 @@ void set_item_img(int position, Mat& setted_img){
     switch(position){
         case 4:
         case 11:
-        case 15:{
+        case 15:
             setted_img = loading_bar_item_4.clone();
-        }
-        break;
-
+            break;
         case 1:
-        case 7:{
+        case 7:
             setted_img = loading_bar_item_8.clone();
-        }
-        break;
-
+            break;
         case 2:
         case 12:
-        case 14:{
+        case 14:
             setted_img = loading_bar_item_16.clone();
-        }
-        break;
-
+            break;
         case 3:
-        case 10:{
+        case 10:
             setted_img = loading_bar_item_rest_8.clone();
-        }
-        break;
-
+            break;
         case 5:
-        case 8:{
+        case 8:
             setted_img = loading_bar_item_flat.clone();
-        }
-        break;
-
+            break;
         case 6:
         case 9:
-        case 13:{
+        case 13:
             setted_img = loading_bar_item_sharp.clone();
-        }
-        break;
-
-        case 16:{
+            break;
+        case 16:
             setted_img = loading_bar_item_finish.clone();
-        }
-        break;
+            break;
     }
 }
 // 進度條

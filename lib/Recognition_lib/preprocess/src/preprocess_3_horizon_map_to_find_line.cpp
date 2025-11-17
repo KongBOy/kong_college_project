@@ -17,23 +17,22 @@
 
 #define HORIZONTAL_DIR "debug_preprocess/"
 
-//一張a4紙大概最多可以放staff的組數
+// 去掉散狀的雜訊
+#define THRESH_HOLD 5
+// 一張a4紙大概最多可以放staff的組數
 #define STAFF_COUNT_MAX 15
 #define STAFF_COUNT_MIN 6
-//先的粗細差很多喔！
+// 線的粗細, 差很多喔！
 #define STAFF_LINE_WIDTH_MIN 1
 #define STAFF_LINE_WIDTH_MAX 5
-
-
+#define ERROR_RATE 0.9
+///////////////////////////////////////////////////////
 #define TAIL 3*2
 #define NOTE 18*0.8
 #define CIRCLE_LINE 2
 #define WORD 10
 #define ELSE 10
 
-#define ERROR_RATE 0.9
-//去掉散狀的雜訊
-#define THRESH_HOLD 5
 
 using namespace cv;
 using namespace std;
