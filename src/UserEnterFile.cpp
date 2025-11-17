@@ -306,7 +306,7 @@ void SamplePicInitial(){
     // 舊版 opencv 寫法, 要搭配 cvShowImage, cvWaitKey 才可以顯示喔
     // IplImage* src = cvLoadImage("testmode4.jpg", 1);
     // IplImage* src = cvLoadImage("Resource/hand_color/testmode4.jpg", 1);
-    IplImage* src = cvLoadImage("Resource/hand_color/red_pen.jpg", 1);
+    IplImage* src = cvLoadImage("Resource/hand_color/laser_fold4.jpg", 1);
     // IplImage* src = cvLoadImage("Resource/hand_color/yellow.jpg", 1);
     cvAvgSdv(src, &MeanScalar, &StandardDeviationScalar);
 
