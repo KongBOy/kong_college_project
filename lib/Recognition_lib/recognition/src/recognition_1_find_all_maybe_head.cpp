@@ -55,7 +55,7 @@ void matchTemplate2(Mat src_img, Mat template_test, Mat& result_map){
     // waitKey(0);
 }
 
-void debug_draw_result_map_rect_on_staff_bin_erase_line(Mat staff_result_map, Mat staff_bin_erase_line, Mat template_img, int l, int r, int t, int d, Scalar color, string window_name){
+void debug_draw_result_map_rect_on_staff_bin_erase_line(Mat staff_result_map, Mat target_img, Mat template_img, int l, int r, int t, int d, Scalar color, string window_name){
     // ************ 防呆 ***************
     if( l < 0) l = 0;
     if( t < 0) t = 0;
@@ -63,7 +63,7 @@ void debug_draw_result_map_rect_on_staff_bin_erase_line(Mat staff_result_map, Ma
     if( d > staff_result_map.rows-1) d = staff_result_map.rows -1;
 
     Mat staff_bin_erase_line_color;
-    cvtColor(staff_bin_erase_line, staff_bin_erase_line_color, CV_GRAY2BGR);
+    cvtColor(target_img, staff_bin_erase_line_color, CV_GRAY2BGR);
     for(int go_row = t; go_row <= d; go_row++)
         for(int go_col = l; go_col <= r; go_col++)
             if(staff_result_map.at<float>(go_row, go_col) ) 
@@ -72,7 +72,7 @@ void debug_draw_result_map_rect_on_staff_bin_erase_line(Mat staff_result_map, Ma
     cvMoveWindow(window_name.c_str(), 10, 250);
 }
 
-void debug_draw_merging_where(Mat staff_result_map, Mat staff_bin_erase_line, Mat template_img, int x, int y, Scalar color, string window_name, bool print_result_map){
+void debug_draw_merging_where(Mat staff_result_map, Mat target_img, Mat template_img, int x, int y, Scalar color, string window_name, bool print_result_map){
     imshow("template_img", template_img);
     cvMoveWindow("template_img", 10, 10);
 
@@ -96,13 +96,13 @@ void debug_draw_merging_where(Mat staff_result_map, Mat staff_bin_erase_line, Ma
     cvMoveWindow(window_name.c_str(), 10, 50);
     if(print_result_map) cout << staff_result_map( Rect(check_l, check_t, check_r - check_l, check_d - check_t) ) << " " << endl;
 
-    // 看整張圖 的 staff_result_map 在 staff_bin_erase_line 的狀況
-    debug_draw_result_map_rect_on_staff_bin_erase_line(staff_result_map, staff_bin_erase_line, template_img, 0, staff_result_map.cols - 1, 0, staff_result_map.rows - 1, Scalar(0, 0, 255), window_name + "_staff_line_all");
+    // 看整張圖 的 staff_result_map 在 target_img 的狀況
+    debug_draw_result_map_rect_on_staff_bin_erase_line(staff_result_map, target_img, template_img, 0, staff_result_map.cols - 1, 0, staff_result_map.rows - 1, Scalar(0, 0, 255), window_name + "_staff_line_all");
 }
 
 
 // staff_result_map 遇到非0時 將其周圍 0.5 template 大小的區域 只留下一點最大值
-void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, Mat template_img, bool debuging){
+void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat target_img, Mat template_img, bool debuging){
     for(int go_row = 0; go_row < staff_result_map.rows; go_row++){
         for(int go_col = 0; go_col < staff_result_map.cols; go_col++){
             if(staff_result_map.at<float>(go_row, go_col)){
@@ -123,7 +123,7 @@ void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, M
 
                 // before merge 看一下
                 if(debuging){
-                    debug_draw_merging_where(staff_result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
+                    debug_draw_merging_where(staff_result_map, target_img, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
                     waitKey(0);
                 }
 
@@ -145,7 +145,7 @@ void MaybeHead_MergeCloseHead(Mat& staff_result_map, Mat staff_bin_erase_line, M
                 
                 // after merge 看一下
                 if(debuging){
-                    debug_draw_merging_where(staff_result_map, staff_bin_erase_line, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
+                    debug_draw_merging_where(staff_result_map, target_img, template_img, go_col, go_row, Scalar(0, 0, 255), "mergeing where", true);
                     cout << "maxVal=" << maxVal << ", maxLoc=" << maxLoc << endl << endl;
                     waitKey(0);
                 }
