@@ -15,6 +15,7 @@ using namespace std;
 
 #define CHANGE_TOLORANCE 4
 #define ENOUGH_LINE_HAVE_SAME_DISTANCE 3
+#define STAFF_LINE_INTER_DISTANCE 11
 
 
 void array_position_erase(int* src_array , int position , int& array_size){
