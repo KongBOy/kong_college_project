@@ -544,7 +544,7 @@ void recognition_5_find_pitch(Mat cut_ord_img,
     string debug_dir = "debug_img/reg4_find_pitch";
     _mkdir(debug_dir.c_str()); // 建立 框內影像 存放的資料夾
     stringstream ss;
-    ss << setw(2) <<setfill('0') <<go_staff;
+    ss << setw(2) <<setfill('0') << go_staff;
     string str_staff_num = ss.str();
     ss.str("");
     ss.clear();

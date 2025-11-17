@@ -44,29 +44,33 @@ int main(){
 
     static string PicFolder   ="Resource\\iPhone 5c (Global)\\photo";
 
-    Mat UI0         = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0.jpg"        , 1);
-    Mat UI0_enter   = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_enter.jpg"  , 1);
-    Mat UI0_1       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_1.jpg"      , 1);
-    Mat UI0_2       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_2.jpg"      , 1);
-    Mat UI0_3       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_3.jpg"      , 1);
-    Mat UI0_4       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_4.jpg"      , 1);
-    Mat UI0_5       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_5.jpg"      , 1);
-    Mat UI0_6       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6.jpg"      , 1);
-    Mat UI0_6_enter = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6_enter.jpg", 1);
+    Mat UI0             = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0.jpg"        , 1);  // 小小指揮家封面
+    Mat UI0_enter       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_enter.jpg"  , 1);  // 小小指揮家封面_press_enter
+    Mat UI0_1           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_1.jpg"      , 1);  // 歡迎來到指揮家樂園
+    Mat UI0_2           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_2.jpg"      , 1);  // 您可以任意挑選一張您喜愛的樂譜
+    Mat UI0_3           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_3.jpg"      , 1);  // 我們將會幫您看懂樂譜
+    Mat UI0_4           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_4.jpg"      , 1);  // 並且幫您演奏
+    Mat UI0_5           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_5.jpg"      , 1);  // 接著您可以用最直接的方式與音樂共舞
+    Mat UI0_6           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6.jpg"      , 1);  // 盡情地舞動您的雙手吧！
+    Mat UI0_6_enter     = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6_enter.jpg", 1);  // 盡情地舞動您的雙手吧！_press_enter
 
 
-    Mat UI1   = imread("Resource\\UI_all_picture/UI PIC/UI/UI1.jpg"  ,1);
-    Mat UI1_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_1.jpg",1);
-    Mat UI1_2 = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_2.jpg",1);
-    Mat UI2   = imread("Resource\\UI_all_picture/UI PIC/UI/UI2.jpg"  ,1);
-    Mat UI2_5 = imread("Resource\\UI_all_picture/UI PIC/UI/UI2_5.jpg",1);
-    Mat UI3   = imread("Resource\\UI_all_picture/UI PIC/UI/UI3.jpg"  ,1);
-    Mat UI3_enter       = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter.jpg"  ,1);
-    Mat UI3_enter_press = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter_press.jpg"  ,1);
-    Mat UI4_0 = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_0.jpg",1);
-    Mat UI4_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_1.jpg",1);
-    Mat UI5_0 = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_0.jpg",1);
-    Mat UI5_1 = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_1.jpg",1);
+    Mat UI1             = imread("Resource\\UI_all_picture/UI PIC/UI/UI1.jpg"  ,1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!
+    Mat UI1_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_1.jpg",1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!_press_enter
+    Mat UI1_2           = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_2.jpg",1);  // 我們當然需要一些時間視譜與練習
+
+    Mat UI2             = imread("Resource\\UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp", 1);  //  進度條背景
+
+    Mat UI2_5           = imread("Resource\\UI_all_picture/UI PIC/UI/UI2_5.jpg",1);  // 很抱歉　您提供的樂譜我們無法辨識 請您重新拍攝樂譜
+
+    Mat UI3             = imread("Resource\\UI_all_picture/UI PIC/UI/UI3.jpg"            , 1);  // 即將進入指揮囉!(Loading...)
+    Mat UI3_enter       = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter.jpg"      , 1);  // 即將進入指揮囉!(Enter)
+    Mat UI3_enter_press = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter_press.jpg", 1);  // 即將進入指揮囉!(press Enter)
+    
+    Mat UI4_0           = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_0.jpg",1);  // 曲終. 您的指揮真是令我們驚艷！
+    Mat UI4_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_1.jpg",1);  // 感謝您參與這趟旅程，期待下一次相遇。
+    Mat UI5_0           = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_0.jpg",1);  // 封底 參與人員
+    Mat UI5_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_1.jpg",1);  // ******* (沒用到) *******  封底 參與人員 enter
 
     // 檢查 讀UI圖
     if(  UI0.empty()||UI0_1.empty()||UI0_2.empty()||UI0_3.empty()||UI0_4.empty()||UI0_5    .empty()||UI0_6      .empty()\
