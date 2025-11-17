@@ -8,7 +8,7 @@
 
 #include <iostream>
 
-
+#include "Recognition.h"
 #include "recognition_0_array_tools.h"
 #include "Bar_tool.h"
 
@@ -115,6 +115,260 @@ void Overlap_Erase_or_Assing8Note(const int head_type, const Mat head_template, 
         // waitKey(0);
     }    
 }
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Recognition_staff_img::recognition_0_all_head( int head_type){
+    debuging = debuging_recog0;
+    // head_type
+    //  0 全音符
+    //  1 全休止符
+    //  2 二分 音符
+    //  3 二分 休止符
+    //  4 四分 音符
+    //  5 四分 休止符
+    //  6 十六分 音符
+    //  7 三十二分 音符
+    //  8 八分休止符
+    //  9 高音譜記號
+    // 10 八分音符符桿
+
+    Mat staff_result_map;
+    maybe_head_count = 0;
+    switch(head_type){
+        // 0 全音
+        case 0:{
+            Mat template_img = imread("Resource/note/0/0.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.38);
+
+            recognition_2_b_head_recheck(0, template_img);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = 0;
+                note_count++;
+            }
+        }
+        break;
+
+        // 2 二分
+        case 2:{
+            Mat debug_img = staff_img_erase_line.clone();
+            cvtColor(staff_img_erase_line,debug_img,CV_GRAY2BGR);
+
+            Mat template_img = imread("Resource/note/2/2_hard_to_find1.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method2");
+            template_img = imread("Resource/note/2/2_hard_to_find2.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method2");
+            template_img = imread("Resource/note/2/2_hard_to_find3.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method2");
+            template_img = imread("Resource/note/2/2.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method2");
+            staff_result_map /= 8;
+    
+            Grab_MaybeHead_from_ResultMap    (template_img, staff_img_erase_line, staff_result_map, 0.38);
+            // MaybeHead_list_infos(maybe_head_count,maybe_head);
+            // cv::waitKey(0);
+
+            recognition_2_a_head_charactristic(2, template_img);
+            recognition_2_b_head_recheck      (2, template_img);
+            recognition_2_a_head_charactristic(2, template_img);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+        }
+        break;
+
+        // 4 四分
+        case 4:{
+            Mat template_img = imread("Resource/note/4/4.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.38);
+
+            recognition_2_a_head_charactristic(4, template_img);
+            recognition_2_b_head_recheck      (4, template_img);
+
+            recognition_3_a_find_vertical_bar(template_img);
+            recognition_3_b_find_time_bar(template_img);
+
+            // MaybeHead_list_infos(maybe_head_count,maybe_head);
+            // list_Bars_infos(bars_count,bars,bars_dir);
+            // 裡面有把 候選maybe_head 存進note裡 的程式碼, 所以 這邊就不用寫囉
+            recognition_4_merge_head_and_time(4,template_img);
+        }
+        break;
+
+        // 4-rest
+        case 5:{
+            Mat template_img = imread("Resource/note/4-rest/4-rest.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.38);
+            
+            recognition_2_b_head_recheck(5, template_img);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+        }
+        break;
+
+        // 全休止
+        case 1:{
+            Mat template_img = imread("Resource/note/0-rest/0_rest_w_line.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img, staff_result_map, "method1");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img, staff_result_map, 0.80);
+            // find_all_MaybeHead就已經找得很好了 不用 recheck 就存進note裡囉
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+        }
+        break;
+
+        // 二分休止
+        case 3:{
+            Mat template_img = imread("Resource/note/2-rest/2_rest_w_line.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img, staff_result_map, "method1");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img, staff_result_map, 0.80);
+            // find_all_MaybeHead就已經找得很好了 不用 recheck 就存進note裡囉
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+        }
+        break;
+
+        // 十六分休止
+        case 6:{
+            Mat template_img = imread("Resource/note/6-rest/6-rest-2.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.35);
+
+            recognition_2_a_head_charactristic(6, template_img);
+            recognition_2_b_head_recheck(6, template_img);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+        }
+        break;
+
+        // 三十二分休止
+        case 7:{
+            Mat template_img = imread("Resource/note/32-rest/7-1-up15w.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            template_img = imread("Resource/note/32-rest/7-1-up15w-down15w.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            staff_result_map /= 2;
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.3);
+            
+            recognition_2_b_head_recheck(7, template_img);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+        }
+        break;
+
+        // 八分休止
+        case 8:{
+            Mat template_img = imread("Resource/note/8-rest/8-rest-3.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            template_img = imread("Resource/note/8-rest/8-rest.bmp",0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method1");
+            staff_result_map /= 2;
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.15);
+            
+            recognition_2_a_head_charactristic(8, template_img);
+            recognition_2_b_head_recheck(8, template_img);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+        }
+        break;
+
+
+        // 高音譜記號, 最後記得 要用 Overlap_Erase_or_Assing8Note 把 高音譜記號範圍裡面找錯的 note 刪除喔
+        case 9:{
+            Mat template_img = imread("Resource/note/9/9-bin.bmp",0); 
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method2");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.38);
+
+            recognition_2_b_head_recheck(9, template_img);
+            // 把 recheck後 存活下來的 候選maybe_head 存進note裡
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+
+            bubbleSort_note(note_count, note, Y_INDEX);
+            bubbleSort_note(note_count, note, X_INDEX);
+
+            Overlap_Erase_or_Assing8Note(9, template_img, note, note_count, staff_img_erase_line, 2, ERASE, 0);
+        }
+        break;
+
+        // 八分音符 符桿
+        case 10:{
+            Mat template_img = imread("Resource/note/10/10-1.bmp", 0);
+            recognition_1_find_all_MaybeHead(template_img, staff_img_erase_line, staff_result_map, "method2");
+            Grab_MaybeHead_from_ResultMap   (template_img, staff_img_erase_line, staff_result_map, 0.85);
+            // find_all_MaybeHead就已經找得很好了 不用 recheck 就存進note裡囉
+            for(int go_head = 0 ; go_head < maybe_head_count ; go_head++){
+                int go_note = note_count;
+                note[0][note_count] = maybe_head[0][go_head];
+                note[1][note_count] = maybe_head[1][go_head];
+                note[2][note_count] = head_type;
+                note_count++;
+            }
+            Overlap_Erase_or_Assing8Note(10, template_img, note, note_count, staff_img_erase_line, 10, ERASE, 0);
+            Overlap_Erase_or_Assing8Note(10, template_img, note, note_count, staff_img_erase_line, 10, ASSIGN_8_Note, template_img.rows / 2);
+        }
+        break;
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void recognition_0_all_head( int head_type,
                              Mat staff_img_erase_line,    /// 消掉五線譜線的圖

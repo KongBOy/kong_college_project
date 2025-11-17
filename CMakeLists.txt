@@ -7,8 +7,11 @@ project(project_rebuild)
 # 把 build 結果放到 指定的資料夾
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY         "${CMAKE_SOURCE_DIR}")
 
-find_package(OpenCV REQUIRED "C:/Users/VAIO/Desktop/OpenCV/opencv231_2_build")
-set(CMAKE_BUILD_TYPE Release)
+# set(OpenCV_DIR "C:/Users/VAIO/Desktop/OpenCV/opencv231_2_build")
+set(OpenCV_DIR "C:/Users/VAIO/Desktop/OpenCV/opencv231_3_build_debug")
+find_package(OpenCV REQUIRED)
+# set(CMAKE_BUILD_TYPE Release)
+set(CMAKE_BUILD_TYPE Debug)
 message(STATUS "(可省, 看一下變數內容而已)OpenCV_INCLUDE_DIRS: ${OpenCV_INCLUDE_DIRS}" )
 message(STATUS "(可省, 看一下變數內容而已)OpenCV_LIBS        : ${OpenCV_LIBS}" )
 message(STATUS "(可省, 看一下變數內容而已)CMAKE_BUILD_TYPE   : ${CMAKE_BUILD_TYPE}" )
@@ -71,7 +74,7 @@ target_link_libraries     (Recognition_lib PUBLIC ${OpenCV_LIBS}
                                                   )
 
 # main
-add_executable            (project_rebuild main.cpp src/UserEnterFile.cpp src/Generate_Play_Midi.cpp src/ScreenTool.cpp)
+add_executable            (project_rebuild main.cpp src/UserEnterFile.cpp src/Generate_Play_Midi.cpp src/ScreenTool.cpp src/Game_UI.cpp)
 target_include_directories(project_rebuild PUBLIC ${OpenCV_INCLUDE_DIRS}
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/include
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/include

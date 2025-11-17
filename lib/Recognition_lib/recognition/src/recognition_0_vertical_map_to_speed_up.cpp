@@ -7,7 +7,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include <iostream>
-
+#include "Recognition.h"
 #include "recognition_0_vertical_map_to_speed_up.h"
 
 #define AREA_THRESHOLD 20
@@ -41,7 +41,126 @@ void Show_mountain(Mat staff_img_erase_line, Mat staff_img_erase_line_color, Mat
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+void Recognition_staff_img::recognition_0_vertical_map_to_speed_up(){
+    debuging = debuging_recog0;
+    Mat staff_img_erase_line_color;  // debug用
+    if(debuging_recog0){
+        cv::cvtColor(staff_img_erase_line, staff_img_erase_line_color, COLOR_GRAY2BGR);
+        cv::imshow("staff_img_erase_line_color", staff_img_erase_line_color);
+        cvMoveWindow("staff_img_erase_line_color", 10, 10);
+    }
 
+    // 初始化
+    int * b_count = new int[staff_img_erase_line.cols];  //black count
+    for(int i = 0 ; i < staff_img_erase_line.cols ; i++) b_count[i] = 0;
+    
+    // vertical_map 是debug用, 用來視覺化 b_count 垂直投影長什麼樣子
+    Mat vertical_map;
+    // 計算 b_count 垂直投影, 順便把視覺畫圖 vertical_map 畫出來, 這樣比較好看 THRESH_HOLD 取多少比較好
+    vertical_map = Mat(staff_img_erase_line.rows, staff_img_erase_line.cols, CV_8UC1, Scalar(255));
+    for(int go_row = 0 ; go_row < staff_img_erase_line.rows; go_row++){
+        for(int go_col = 0 ; go_col < staff_img_erase_line.cols ; go_col++){
+            if(staff_img_erase_line.at<uchar>(go_row,go_col) == BLACK) vertical_map.at<uchar>(b_count[go_col]++, go_col) = 0;
+        }
+    }
+
+    // 視覺化 b_count (vertical_map)
+    if(debuging_recog0){
+        // 灰階轉彩色
+        cv::cvtColor(vertical_map, vertical_map, COLOR_GRAY2BGR);
+        // THRESH_HOLD的紅線
+        cv::line(vertical_map, cv::Point(0, THRESH_HOLD), cv::Point(staff_img_erase_line.cols , THRESH_HOLD), Scalar(0, 0, 255), 1);
+        // 電腦影像 起始座標是左上角, 但我們數學上常見的坐標系起點是左下角, 所以上下顛倒 比較好看
+        cv::flip(vertical_map, vertical_map, 0);
+        // 顯示出來
+        imshow("vertical_map", vertical_map);
+        cvMoveWindow("vertical_map", 10, 250);
+        waitKey(0);
+    }
+
+    // 初始化 找山的相關容器, l_edge: 山的左邊位置, r_edge: 山的右邊位置
+    e_count = 0;
+    for(int i = 0 ; i < 200 ; i++){
+        l_edge       [i] = 0;
+        r_edge       [i] = 0;
+        distance     [i] = 0;
+        mountain_area[i] = 0;
+    }
+
+    //////////////////////
+    // 找出l_edge, r_edge
+    //////////////////////
+    for(int go_col = 1 ; go_col < staff_img_erase_line.cols ; go_col++){
+        // 如果 左低 右高, 代表找到 左邊界
+        if     (b_count[go_col -1] <= THRESH_HOLD && b_count[go_col] > THRESH_HOLD){ //&& right_side_ok == true)
+            l_edge[e_count] = go_col -1;
+        }
+        // 如果 左高 右低, 代表找到 右邊界
+        else if(b_count[go_col -1] > THRESH_HOLD && b_count[go_col] <= THRESH_HOLD){
+            r_edge[e_count] = go_col;
+
+            // 找到右邊界, 就可以更新 distance 和 area 了
+            distance[e_count] = r_edge[e_count] - l_edge[e_count];
+            // 從目前的左邊界 走道 目前的右邊界, 把 走訪的b_count都加起來 就是面積囉
+            for(int i = l_edge[e_count] +1 ; i < r_edge[e_count] ; i++)
+                mountain_area[e_count] += b_count[i];
+
+            e_count++;
+        }
+    }
+    //////////////////////// debug 看一下目前的山 ////////////////////////
+    if(debuging_recog0) Show_mountain(staff_img_erase_line, staff_img_erase_line_color, vertical_map, e_count, l_edge, r_edge, distance, b_count, Scalar(255, 0, 0), 1);
+
+    ////////////////////////
+    // 距離小的合併
+    ////////////////////////
+    for(int go_mountain = 0 ; go_mountain < e_count-1 ; go_mountain++){
+        if( (l_edge[go_mountain+1]-r_edge[go_mountain]) < DISTANCE_THRESHOLD ){
+            //cout<<"merge"<<endl;
+            r_edge       [go_mountain]  = r_edge[go_mountain + 1];
+            distance     [go_mountain]  = r_edge[go_mountain] - l_edge[go_mountain];
+            mountain_area[go_mountain] += mountain_area[go_mountain+1];
+            for(int go_erase = go_mountain+1 ; go_erase < e_count-1 ; go_erase++){
+                l_edge       [go_erase] = l_edge       [go_erase+1];
+                r_edge       [go_erase] = r_edge       [go_erase+1];
+                distance     [go_erase] = distance     [go_erase+1];
+                mountain_area[go_erase] = mountain_area[go_erase+1];
+            }
+            e_count--;
+            go_mountain--;
+        }
+    }
+
+    ////////////////////////
+    // 連附點都不是的山刪除
+    ////////////////////////
+    for(int go_mountain = 0 ; go_mountain < e_count-1 ; go_mountain++){
+        if( mountain_area[go_mountain] < AREA_THRESHOLD ){
+            //cout<<"merge"<<endl;
+            for(int go_erase = go_mountain ; go_erase < e_count-1 ; go_erase++){
+                l_edge       [go_erase] = l_edge       [go_erase+1];
+                r_edge       [go_erase] = r_edge       [go_erase+1];
+                distance     [go_erase] = distance     [go_erase+1];
+                mountain_area[go_erase] = mountain_area[go_erase+1];
+            }
+            e_count--;
+            go_mountain--;
+        }
+    }
+
+    //////////////////////// debug 看一下目前的山 ////////////////////////
+    if(debuging_recog0) Show_mountain(staff_img_erase_line, staff_img_erase_line_color, vertical_map, e_count, l_edge, r_edge, distance, b_count, Scalar(255, 255, 0), 2);
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+void recognition_0_vertical_map_to_speed_up(Mat staff_img_erase_line, int& e_count, int l_edge[200], int r_edge[200], int distance[200], int mountain_area[200], bool debuging){
     Mat staff_img_erase_line_color;  // debug用
     if(debuging){
         cv::cvtColor(staff_img_erase_line, staff_img_erase_line_color, COLOR_GRAY2BGR);

@@ -14,6 +14,7 @@
 #include "string_tools.h"
 #include "UserEnterFile.h"
 #include "Recognition.h"
+#include "Game_UI.h"
 
 #include "Note_infos.h"
 
@@ -35,6 +36,9 @@ Mat UI_Output;
 int NextStep=0;
 
 int main(){
+
+    Game game;
+    game.run();
     // C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\UI PIC\\UI
     // C:\\Users\\Dennis\\Desktop\\新增資料夾\\UIDesign\\MusicSheetLocation
 

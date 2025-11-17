@@ -10,7 +10,7 @@
 #include <iostream>
 #include <math.h>
 
-
+#include "Recognition.h"
 #include "preprocess_6_find_head_and_erase_line.h"
 
 #include "preprocess_5_find_staff.h"
@@ -49,6 +49,60 @@ static Mat src_bin_reduce_line_debug;
 static Mat src_bin_debug;
 static Mat drew_img_debug;
 static Point pt1, pt2;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//interface，先把東西包成對的格式，再丟到find_head找頭
+void Recognition_page::Find_Head_and_Erase_Line_Interface(){
+    debuging = debuging_pre6;
+    Mat color_src_img;  // debug用
+    cvtColor(src_img, color_src_img, CV_GRAY2BGR);
+
+    src_bin_erase_line = src_bin.clone();
+
+    drew_img_debug = color_src_img.clone();
+    src_bin_reduce_line_debug = src_bin.clone();
+    cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
+
+    // staff = new vector<Vec2f>[staff_count];
+    if(debuging) cout << "staff_count:" << staff_count << endl;
+    left_point  = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
+    right_point = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
+
+    for(int i = 0 ; i < staff_count ; i++){
+        left_point [i] = new int*[STAFF_LINE_COUNT];
+        right_point[i] = new int*[STAFF_LINE_COUNT];
+
+
+        for(int go_width = 0 ; go_width < STAFF_LINE_COUNT ; go_width++){
+            left_point [i][go_width] = new int[X_Y_COUNT];
+            right_point[i][go_width] = new int[X_Y_COUNT];
+
+            for(int k = 0 ; k < X_Y_COUNT ; k++){
+                left_point [i][go_width][k] =  10000; /// 隨便很大的數
+                right_point[i][go_width][k] = -10000; /// 隨便很小的數
+            }
+        }
+    }
+
+
+    // 要注意格式喔~~~包成五個五個為一組！！！
+    for(int i = 0 ; i < staff_count ; i++){
+        int first_line = 5*i;
+        int fifth_line = 5*(i+1)-1;
+
+        vector<Vec2f> staff;
+        for(int go_width = first_line ; go_width <= fifth_line ; go_width++){
+            staff.push_back(lines[go_width]);
+            // cout << "go_width = " << go_width << " data = " << lines[go_width][0] << " " << lines[go_width][1] << endl;
+        }
+        Find_Head_and_Erase_Line( staff, (string)HORIZONTAL_DIR + "find_head",src_bin,left_point[i], right_point[i], src_bin_erase_line, debuging);
+    }
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 //interface，先把東西包成對的格式，再丟到find_head找頭
