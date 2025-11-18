@@ -382,11 +382,11 @@ void Game::Show_loading_bar(int start_num, int end_num){
 
 
 void Game::UI_loading_preprocess(){
-    Mat src_img          = recog_result_ptr -> get_src_img();
-    Mat bin_img          = recog_result_ptr -> get_src_bin();
-    int staff_count      = recog_result_ptr -> get_staff_count();
-    int*** left_point    = recog_result_ptr -> get_left_point();
-    int*** right_point   = recog_result_ptr -> get_right_point();
+    Mat src_img          = recog_page_ptr -> get_src_img();
+    Mat bin_img          = recog_page_ptr -> get_src_bin();
+    int staff_count      = recog_page_ptr -> get_staff_count();
+    int*** left_point    = recog_page_ptr -> get_left_point();
+    int*** right_point   = recog_page_ptr -> get_right_point();
 
     // 進度條預設0
     loading_bar = 0;  
@@ -464,7 +464,7 @@ void Game::UI_loading_preprocess(){
 // int width_frame_acc = 0;  // mod_width;
 
 void Game::UI_loading_recognition_one_staff(Recognition_staff_img* staff_recog){
-    int staff_count = recog_result_ptr->get_staff_count();
+    int staff_count = recog_page_ptr->get_staff_count();
 
     int go_staff  = staff_recog->get_go_staff();
     Mat staff_img = staff_recog->get_staff_img();
