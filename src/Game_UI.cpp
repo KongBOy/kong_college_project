@@ -34,7 +34,7 @@ Game::Game():
     namedWindow(UI_WINDOW_NAME);
     cvMoveWindow(UI_WINDOW_NAME.c_str() , 0, 0);
 
-
+    /////////////////////////////////////////////////////////////////
     UI0             = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0.jpg"        , 1);  // 小小指揮家封面
     UI0_enter       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_enter.jpg"  , 1);  // 小小指揮家封面_press_enter
     UI0_1           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_1.jpg"      , 1);  // 歡迎來到指揮家樂園
@@ -47,7 +47,7 @@ Game::Game():
     UI1             = imread("Resource\\UI_all_picture/UI PIC/UI/UI1.jpg"           ,1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!
     UI1_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_1.jpg"         ,1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!_press_enter
     UI1_2           = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_2.jpg"         ,1);  // 我們當然需要一些時間視譜與練習
-
+    /////////////////////////////////////////////////////////////////
     UI2                         = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp"   , 1);  //  進度條背景
     loading_bar_item_4          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4.bmp"     , 0);  // 04, 11, 15
     loading_bar_item_8          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_8.bmp"     , 0);  // 01, 07
@@ -60,11 +60,29 @@ Game::Game():
     loading_bar = 0;
 
     UI2_5           = imread("Resource\\UI_all_picture/UI PIC/UI/UI2_5.jpg",1);  // 很抱歉　您提供的樂譜我們無法辨識 請您重新拍攝樂譜
-
+    /////////////////////////////////////////////////////////////////
     UI3             = imread("Resource\\UI_all_picture/UI PIC/UI/UI3.jpg"            , 1);  // 即將進入指揮囉!(Loading...)
     UI3_enter       = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter.jpg"      , 1);  // 即將進入指揮囉!(Enter)
     UI3_enter_press = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter_press.jpg", 1);  // 即將進入指揮囉!(press Enter)
-
+    /////////////////////////////////////////////////////////////////
+    // 開始指揮時 用的背景 
+    background1 = imread("Resource\\UI_all_picture/UI PIC/UI/Background_kong.png", 1);
+    background  = imread("Resource/UI_all_picture/UI PIC/UI/Background_kong.png", 1);
+    // 開始指揮時 右上出現的對話文字
+    T1 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\1.jpg", 1);
+    T2 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\2.jpg", 1);
+    T3 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\3.jpg", 1);
+    T4 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\4.jpg", 1);
+    T5 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\5.jpg", 1);
+    T6 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\6.jpg", 1);
+    T7 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\7.jpg", 1);
+    T8 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\8.jpg", 1);
+    T9 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\9.jpg", 1);
+    T10 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\10.jpg", 1);
+    T11 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\11.jpg", 1);
+    // 開始指揮時 顯示 音量 和 速度 的 白色bar
+    bar = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 1);
+    /////////////////////////////////////////////////////////////////
     UI4_0           = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_0.jpg",1);  // 曲終. 您的指揮真是令我們驚艷！
     UI4_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_1.jpg",1);  // 感謝您參與這趟旅程，期待下一次相遇。
     UI5_0           = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_0.jpg",1);  // 封底 參與人員
