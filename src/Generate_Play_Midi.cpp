@@ -100,10 +100,10 @@ int Midi_Generate::GenerateMidiFile(Note_infos& note_infos){
     int base_4note_duration;
     // 速度單位是用 bpm, 代表 每分鐘均等的打幾下, 舉例: 132bmp 代表 60秒 打 132下, 預設開始用 60bpm
     speed = 60;
-    for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++){
-        head_type = note_infos -> note[2][go_note];
-        time_bar  = note_infos -> note[3][go_note];
-        pitch     = note_infos -> note[4][go_note];
+    for(int go_note = 0 ; go_note < note_infos.note_count ; go_note++){
+        head_type = note_infos.note[2][go_note];
+        time_bar  = note_infos.note[3][go_note];
+        pitch     = note_infos.note[4][go_note];
 
         // speed bpm 代表 60秒 打speed下, 所以打一下是 60/speed 秒, 然後因為是給 Sleep()用 單位是毫秒 所以 * 1000
         // 音樂上通常以 四分音符 的 bpm 來當基礎, 所以設定 四分音符 打一下幾秒 當基礎
