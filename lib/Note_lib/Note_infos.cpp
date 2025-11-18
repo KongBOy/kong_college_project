@@ -17,6 +17,8 @@
 using namespace std;
 using namespace cv;
 
+Note_infos::Note_infos(): note_count(0), go_note(0), go_row_note(0){
+}
 
 void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & template_img){
     Mat template_img_4 = imread("Resource/note/4/4.bmp",0);

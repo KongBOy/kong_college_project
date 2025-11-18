@@ -5,20 +5,23 @@
 
 #ifndef NOTE_INFOS_DEBUG_TOOLS_H_INCLUDED
 // 辨識出來 音符 放這邊
-struct Note_infos {
-    /*
-    note[0]: x
-    note[1]: y
-    note[2]: type
-    note[3]: time
-    note[4]: pitch
-    */
-    int note_count;
-    int note[5][1000];
-    int row_note_count_array[40];
+class Note_infos {
+    public:
+        /*
+        note[0]: x
+        note[1]: y
+        note[2]: type
+        note[3]: time
+        note[4]: pitch
+        */
+        int note_count;
+        int note[5][1000];
+        int row_note_count_array[40];
 
-    int go_note;
-    int go_row_note;
+        int go_note;
+        int go_row_note;
+
+        Note_infos();
 };
 
 #define NOTE_INFOS_DEBUG_TOOLS_H_INCLUDED
