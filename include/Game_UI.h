@@ -51,7 +51,7 @@ class Game{
         Mat UI5_0           ;  // 封底 參與人員
         Mat UI5_1           ;  // ******* (沒用到) *******  封底 參與人員 enter
 
-        Recognition_page* recog_result_ptr;
+        Recognition_page* recog_page_ptr;
         int width_frame_acc;
     public:
         Game();

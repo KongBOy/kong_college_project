@@ -173,15 +173,15 @@ void Game::run(){
             try{
                 // 開始辨識
                 ////////////////////////////////////////////////////////////////////////////////////
-                recog_result_ptr = new Recognition_page(SrcMusicSheet);
-                Recognition_page& recog_result = *recog_result_ptr;
-                recog_result.run_preprocess();
+                recog_page_ptr = new Recognition_page(SrcMusicSheet);
+                Recognition_page& recog_page = *recog_page_ptr;
+                recog_page.run_preprocess();
                 UI_loading_preprocess();
                 
 
-                int staff_count = recog_result.get_staff_count();
+                int staff_count = recog_page.get_staff_count();
                 for(int staff_index = 0; staff_index < staff_count; staff_index++){
-                    Recognition_staff_img * staff_recog = recog_result.run_one_staff_recognition(staff_index);
+                    Recognition_staff_img * staff_recog = recog_page.run_one_staff_recognition(staff_index);
                     UI_loading_recognition_one_staff(staff_recog);
                 }
 
