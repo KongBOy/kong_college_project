@@ -6,7 +6,7 @@
 
 using namespace cv;
 
-
+#include "Note_infos.h"
 
 
 class Recognition_staff_img{
@@ -85,6 +85,7 @@ class Recognition_staff_img{
         void get_note(int in_note[][1000], int& in_note_count);
         int  get_go_staff();
         Mat  get_staff_img();
+        int  get_note_count();
 };
 
 class Recognition_page{
@@ -148,6 +149,10 @@ class Recognition_page{
         // Recognition_staff_img staff_recogs[40];
         Recognition_staff_img** staff_img_recogs;
         
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // 把 各staff 辨識結果取出來 方便 後續處理 的容器
+        Note_infos note_infos;
+        
     public:
         Recognition_page(const Mat input_img, bool in_debuging=false);
         Mat get_src_img();
@@ -158,6 +163,11 @@ class Recognition_page{
         int*** get_left_point();
         int*** get_right_point();
         Recognition_staff_img get_staff_recog(int go_staff);
+
+        //////////////////////////////////////////////////////////////////////////////
+        // 把 各staff 辨識結果取出來 方便 後續處理
+        void set_note_infos_from_staff_imgs();
+        Note_infos* get_note_infos();
 
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         int run_preprocess();

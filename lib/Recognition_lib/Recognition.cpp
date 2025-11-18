@@ -194,6 +194,14 @@ Mat*   Recognition_page::get_staff_img           (){ return staff_img; }
 Mat*   Recognition_page::get_staff_img_erase_line(){ return staff_img_erase_line; }
 int*** Recognition_page::get_left_point (){ return left_point; }
 int*** Recognition_page::get_right_point(){ return right_point; }
+//////////////////////////////////////////////////////////////////////////////
+void Recognition_page::set_note_infos_from_staff_imgs(){
+    for(int go_staff = 0; go_staff < staff_count; go_staff++){
+        staff_img_recogs[go_staff] -> get_note( note_infos.note, note_infos.note_count);
+        note_infos.row_note_count_array[go_staff] =  staff_img_recogs[go_staff] -> get_note_count();
+    }
+}
+Note_infos* Recognition_page::get_note_infos(){ return &note_infos; }
 // Recognition_staff_img Recognition_page::get_staff_recog(int go_staff){
 //     return staff_recogs[go_staff];
 // }
@@ -222,6 +230,7 @@ Recognition_staff_img* Recognition_page::run_one_staff_recognition(int staff_ind
 
 int Recognition_staff_img::get_go_staff() {return go_staff; }
 Mat Recognition_staff_img::get_staff_img(){ return staff_img; }
+int Recognition_staff_img::get_note_count(){ return note_count; }
 
 Recognition_staff_img::Recognition_staff_img(int in_go_staff, Mat in_staff_img, Mat in_staff_img_erase_line, int in_pitch_base_y, bool in_debuging):
     go_staff              (in_go_staff),

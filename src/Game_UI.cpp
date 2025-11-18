@@ -203,6 +203,7 @@ void Game::run(){
                     UI_loading_recognition_one_staff(staff_recog);
                 }
 
+                recog_page.set_note_infos_from_staff_imgs();
                 
 
             }
