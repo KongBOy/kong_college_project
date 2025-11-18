@@ -204,6 +204,7 @@ void Game::run(){
                     UI_loading_recognition_one_staff(staff_recog);
                 }
 
+                // 把 staff_imgs 辨識出來的 音符 統整抓進 note_infos 比較方便後續使用
                 recog_page.set_note_infos_from_staff_imgs();
                 
 
