@@ -244,11 +244,11 @@ void Game::run(){
 
         // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
         case 4:
-            //imshow(Title, UI5);
-            // cout<<"Case 4"<<endl;
-            // UI_Output=background.clone();
-
-            // PlayMidiFile(note_infos);
+            cout<<"Case 4"<<endl;
+            UI_Output=background.clone();
+            Midi_ShowPlay midi_show_play(recog_page_ptr, midi_notes_ptr);
+            MusicPlayback = true;
+            midi_show_play.PlayMidiFile();
             // NextStep=HandShaking(Title);
             // switch(NextStep){
             //     case 1:
@@ -260,15 +260,17 @@ void Game::run(){
             //         NextStep=0;
             //         MusicPlayback=false;
             //         break;
-
             // }
-            // imshow(Title, UI4_0);
-            // waitKey(2000);
-            // FadeInOut(Title, UI4_0, UI4_1,50);
-            // waitKey(2000);
+            imshow(Title, UI4_0);
+            waitKey(2000);
+            FadeInOut(Title, UI4_0, UI4_1,50);
+            waitKey(2000);
 
-            // FadeInOut(Title, UI4_1, UI5_0,50);
-            // waitKey(2000);
+            FadeInOut(Title, UI4_1, UI5_0,50);
+            waitKey(2000);
+
+            NextStep=0;
+            
             break;
 
         }
