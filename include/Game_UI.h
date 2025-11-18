@@ -4,6 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 #include "Recognition.h"
+#include "Generate_Play_Midi.h"
 
 using namespace std;
 using namespace cv;
@@ -69,8 +70,12 @@ class Game{
         Mat UI5_0           ;  // 封底 參與人員
         Mat UI5_1           ;  // ******* (沒用到) *******  封底 參與人員 enter
 
+        // 指向 頁面辨識結果
         Recognition_page* recog_page_ptr;
+        // 指向 辨識結果生成的 midi_notes
+        Midi_Generate*    midi_notes_ptr;
         int width_frame_acc;
+        
     public:
         Game();
         void run();
