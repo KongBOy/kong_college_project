@@ -9,8 +9,6 @@
 #include "Note_infos.h"
 #include "Generate_Play_Midi.h"
 
-#define SNDQUE 10000
-
 using namespace std;
 using namespace cv;
 
@@ -40,14 +38,131 @@ Mat bar                   = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 
 
 HANDLE     gSThread = NULL;  // 播放聲音的執行緒
 
-typedef struct _soundtype{
-  double  Freq;   // 頻率（Hz），代表音高
-  int     Dura;   // 持續時間（毫秒）
-  int     Vol;    // 音量
-  int     Voice;  // 音色或聲部種類
-  double  Tempo;  // 節奏速度
-  int     sndTid; // 內部使用的識別 ID
-} soundtype, *LPSOUNDTYPE;
+
+
+Midi_Generate::Midi_Generate():
+    freqTable{  {32.7  , 34.6  , 36.7  , 38.9  , 41.2  , 43.7  , 46.2  , 49.0  , 51.9  , 55.0  , 58.3  , 61.7  }, 
+                {65.4  , 69.3  , 73.4  , 77.8  , 82.4  , 87.3  , 92.5  , 98.0  , 103.8 , 110.0 , 116.5 , 123.5 }, 
+                {130.8 , 138.6 , 146.8 , 155.6 , 164.8 , 174.6 , 185.0 , 196.0 , 207.7 , 220.0 , 233.1 , 246.9 }, 
+                {261.6 , 277.2 , 293.7 , 311.1 , 329.6 , 349.2 , 370.0 , 392.0 , 415.3 , 440.0 , 466.2 , 493.9 }, 
+                {523.3 , 554.4 , 587.3 , 622.3 , 659.3 , 698.5 , 740.0 , 784.0 , 830.6 , 880.0 , 932.3 , 987.8 }, 
+                {1046.5, 1108.7, 1174.7, 1244.5, 1318.5, 1396.9, 1480.0, 1568.0, 1661.2, 1760.0, 1864.7, 1975.5}, 
+                {2093.0, 2217.5, 2349.3, 2489.0, 2637.0, 2793.8, 2960.0, 3136.0, 3322.4, 3520.0, 3729.3, 3951.1}}{
+    
+}
+
+soundtype* Midi_Generate::get_SndPmtr() { return SndPmtr; }
+int  Midi_Generate::get_gTenter(){ return gTenter; }
+int  Midi_Generate::get_gTwait (){ return gTwait;  }
+int  Midi_Generate::get_gTexit (){ return gTexit;  }
+BOOL Midi_Generate::get_gTsig  (){ return gTsig;   } 
+
+// void set_gTwait(int in_gTwait) { gTwait = in_gTwait; }
+// void set_gTexit(int in_gTexit) { gTexit = in_gTexit; }
+
+
+int Midi_Generate::MakeSound (float Freq, int Dura , int Vol , int Voice , float Tempo){
+    // cout << "gTexit:" << gTexit << endl;
+    // cout << "MakeSound" << Freq << " " << Dura << " " << Vol << " " << Voice << " " << Tempo << endl;
+    if (Freq == 0 && Dura < 1) return gTenter - gTexit;  // 回傳排隊中的數量
+    // silence
+    if (Freq == 0) Vol  = 0;  // 無聲音時音量歸零
+    if (Dura <  5) Dura = 5;  // 時間太短的話強制最小值
+    gTenter++;
+    gTsig = FALSE;
+    if (gTenter >= SNDQUE){
+        gTarray = gTenter % SNDQUE + 1;
+    }
+    else{
+        gTarray = gTenter;
+    }
+    SndPmtr[gTarray].Freq   = Freq;
+    SndPmtr[gTarray].Dura   = Dura;
+    SndPmtr[gTarray].Vol    = Vol;
+    SndPmtr[gTarray].Voice  = Voice;
+    SndPmtr[gTarray].Tempo  = Tempo;
+    SndPmtr[gTarray].sndTid = gTenter;
+    return 0;
+}
+
+int Midi_Generate::GenerateMidiFile(Note_infos* note_infos){
+    static float freqTable[7][12]={ {32.7  , 34.6  , 36.7  , 38.9  , 41.2  , 43.7  , 46.2  , 49.0  , 51.9  , 55.0  , 58.3  , 61.7  }, \
+                                    {65.4  , 69.3  , 73.4  , 77.8  , 82.4  , 87.3  , 92.5  , 98.0  , 103.8 , 110.0 , 116.5 , 123.5 }, \
+                                    {130.8 , 138.6 , 146.8 , 155.6 , 164.8 , 174.6 , 185.0 , 196.0 , 207.7 , 220.0 , 233.1 , 246.9 }, \
+                                    {261.6 , 277.2 , 293.7 , 311.1 , 329.6 , 349.2 , 370.0 , 392.0 , 415.3 , 440.0 , 466.2 , 493.9 }, \
+                                    {523.3 , 554.4 , 587.3 , 622.3 , 659.3 , 698.5 , 740.0 , 784.0 , 830.6 , 880.0 , 932.3 , 987.8 }, \
+                                    {1046.5, 1108.7, 1174.7, 1244.5, 1318.5, 1396.9, 1480.0, 1568.0, 1661.2, 1760.0, 1864.7, 1975.5}, \
+                                    {2093.0, 2217.5, 2349.3, 2489.0, 2637.0, 2793.8, 2960.0, 3136.0, 3322.4, 3520.0, 3729.3, 3951.1}};
+    // **************************************************************
+    int head_type;
+    int time_bar;
+    int pitch;
+    int base_4note_duration;
+    // 速度單位是用 bpm, 代表 每分鐘均等的打幾下, 舉例: 132bmp 代表 60秒 打 132下, 預設開始用 60bpm
+    speed = 60;
+    for(int go_note = 0 ; go_note < note_infos -> note_count ; go_note++){
+        head_type = note_infos -> note[2][go_note];
+        time_bar  = note_infos -> note[3][go_note];
+        pitch     = note_infos -> note[4][go_note];
+
+        // speed bpm 代表 60秒 打speed下, 所以打一下是 60/speed 秒, 然後因為是給 Sleep()用 單位是毫秒 所以 * 1000
+        // 音樂上通常以 四分音符 的 bpm 來當基礎, 所以設定 四分音符 打一下幾秒 當基礎
+        base_4note_duration = (60 / speed) * 1000;
+        switch(head_type){
+            // 全音符
+            case 0:
+                MakeSound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 4, 127, 0);
+                break;
+            
+            // 二分音符
+            case 2:
+                MakeSound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * 2,  127,  0);
+                break;
+            
+            // 四 八 十六 ... 分音符(分別time_bar = 0, 1, 2, ...)
+            case 4:
+                MakeSound(freqTable[ pitch /12 -1 ][ pitch %12 ], base_4note_duration * pow(2, - 1 * time_bar ),  127,  0);
+                break;
+
+            // 四分休止符
+            case 5:
+                MakeSound(0, base_4note_duration * 1, 0, 0);
+                break;
+
+            // 全休止符
+            case 1:
+                MakeSound(0, base_4note_duration * 4, 0, 0);
+                break;
+
+            // 二分休止符
+            case 3:
+                MakeSound(0, base_4note_duration * 2, 0, 0);
+                break;
+
+            // 十六分休止符
+            case 6:
+                MakeSound(0, base_4note_duration * 0.25, 0, 0);
+                break;
+            
+            // 三十二分休止符
+            case 7:
+                MakeSound(0, base_4note_duration * 0.125, 0, 0);
+                break;
+            
+            // 八分休止符
+            case 8:
+                MakeSound(0, base_4note_duration * 0.5, 0, 0);
+                break;
+            
+            // 高音譜記號
+            // case 9:
+            //     MakeSound(0, 0, 0, 0);
+            //     break;
+        }
+    }
+    return 0;
+}
+
 
 static soundtype  SndPmtr[SNDQUE + 1];
 static int        gTenter;  // 佇列寫入位置（enter index）

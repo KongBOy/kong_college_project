@@ -2,6 +2,7 @@
 #include "Note_infos.h"
 #include "string_tools.h"
 #include "ScreenTool.h"
+#include "Generate_Play_Midi.h"
 
 #define LOADING_BAR_SHIFT_X -80
 
@@ -221,14 +222,18 @@ void Game::run(){
 
         // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
         case 3:
-            // cout<<"Case 3"<<endl;
-            // imshow(Title, UI3);
-            // GenerateMidiFile(note_infos, staff_img);
-            // imshow(Title, UI3_enter);
-            // waitKey(0);
-            // imshow(Title, UI3_enter_press);
-            // waitKey(200);
-            // speed = 100;
+            cout<<"Case 3"<<endl;
+            imshow(Title, UI3);
+
+            Recognition_page& recog_page = *recog_page_ptr;
+            Note_infos* note_infos_ptr = recog_page.get_note_infos();
+            Midi_Generate midi_notes;
+            midi_notes.GenerateMidiFile(note_infos_ptr);
+            imshow(Title, UI3_enter);
+            waitKey(0);
+            imshow(Title, UI3_enter_press);
+            waitKey(200);
+            speed = 100;
             // ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music
 
             NextStep=4;

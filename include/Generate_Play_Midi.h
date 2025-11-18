@@ -6,6 +6,8 @@
 #include <windows.h>
 #include "Note_infos.h"
 
+#define SNDQUE 10000
+
 using namespace cv;
 
 extern int speed;
@@ -30,6 +32,41 @@ extern Mat background      ;
 extern Mat bar             ;
 
 
+
+typedef struct _soundtype{
+  double  Freq;   // 頻率（Hz），代表音高
+  int     Dura;   // 持續時間（毫秒）
+  int     Vol;    // 音量
+  int     Voice;  // 音色或聲部種類
+  double  Tempo;  // 節奏速度
+  int     sndTid; // 內部使用的識別 ID
+} soundtype;
+
+////////////////////////////////////////////////////////////
+class Midi_Generate{
+    private:
+        soundtype  SndPmtr[SNDQUE + 1];
+        int        gTenter;  // 佇列寫入位置（enter index）
+        int        gTwait;   // 等待狀態位置
+        int        gTexit;   // 佇列取出位置（exit index）
+        int        gTarray;  // 當前可用的陣列索引
+        BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
+
+        float freqTable[7][12];
+public:
+        Midi_Generate();
+        int MakeSound (float Freq, int Dura = 0, int Vol = 127, int Voice = 0, float Tempo = 1);
+        int GenerateMidiFile(Note_infos* note_infos);
+
+        soundtype* get_SndPmtr();
+        int get_gTenter();
+        int get_gTwait();
+        int get_gTexit();
+        BOOL get_gTsig();
+
+        void set_gTwait(int in_gTwait);
+        void set_gTexit(int in_gTexit);
+};
 
 
 
