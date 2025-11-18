@@ -547,7 +547,7 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     Note_infos* note_infos = (Note_infos*)lpParameter;
 
     soundtype  LocSndPar;
-    int  lTarray;
+    int lTarray;
     int Note = 0;
     int Phrase = 0;
     row_index = 0;
