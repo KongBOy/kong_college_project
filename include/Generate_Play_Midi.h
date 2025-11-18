@@ -56,7 +56,7 @@ class Midi_Generate{
 public:
         Midi_Generate();
         int MakeSound (float Freq, int Dura = 0, int Vol = 127, int Voice = 0, float Tempo = 1);
-        int GenerateMidiFile(Note_infos* note_infos);
+        int GenerateMidiFile(Note_infos& note_infos);
 
         soundtype* get_SndPmtr();
         int get_gTenter();

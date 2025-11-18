@@ -226,9 +226,9 @@ void Game::run(){
             imshow(Title, UI3);
 
             Recognition_page& recog_page = *recog_page_ptr;
-            Note_infos* note_infos_ptr = recog_page.get_note_infos();
+            Note_infos& note_infos = recog_page.get_note_infos();
             Midi_Generate midi_notes;
-            midi_notes.GenerateMidiFile(note_infos_ptr);
+            midi_notes.GenerateMidiFile(note_infos);
             imshow(Title, UI3_enter);
             waitKey(0);
             imshow(Title, UI3_enter_press);

@@ -85,7 +85,7 @@ int Midi_Generate::MakeSound (float Freq, int Dura , int Vol , int Voice , float
     return 0;
 }
 
-int Midi_Generate::GenerateMidiFile(Note_infos* note_infos){
+int Midi_Generate::GenerateMidiFile(Note_infos& note_infos){
     static float freqTable[7][12]={ {32.7  , 34.6  , 36.7  , 38.9  , 41.2  , 43.7  , 46.2  , 49.0  , 51.9  , 55.0  , 58.3  , 61.7  }, \
                                     {65.4  , 69.3  , 73.4  , 77.8  , 82.4  , 87.3  , 92.5  , 98.0  , 103.8 , 110.0 , 116.5 , 123.5 }, \
                                     {130.8 , 138.6 , 146.8 , 155.6 , 164.8 , 174.6 , 185.0 , 196.0 , 207.7 , 220.0 , 233.1 , 246.9 }, \

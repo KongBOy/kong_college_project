@@ -201,7 +201,7 @@ void Recognition_page::set_note_infos_from_staff_imgs(){
         note_infos.row_note_count_array[go_staff] =  staff_img_recogs[go_staff] -> get_note_count();
     }
 }
-Note_infos* Recognition_page::get_note_infos(){ return &note_infos; }
+Note_infos& Recognition_page::get_note_infos(){ return note_infos; }
 // Recognition_staff_img Recognition_page::get_staff_recog(int go_staff){
 //     return staff_recogs[go_staff];
 // }
