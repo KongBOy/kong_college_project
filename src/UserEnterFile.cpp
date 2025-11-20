@@ -78,8 +78,6 @@ int sum_volume = 0;
 bool now_handmoveup = false;
 bool pre_handmoveup = false;
 
-CvCapture *  capture ;
-
 time_t pre_handmove_up_clock = clock() + 10000;
 time_t now_handmoveup_clock  = clock() + 10000;
 
@@ -169,7 +167,6 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
     Mat sample_color;
 
     // 開始視訊
-	// capture = cvCaptureFromCAM( -1 );
     // 1. 建立 VideoCapture 物件並打開攝影機
     VideoCapture cap(0);
     // 2. 檢查攝影機是否成功開啟
@@ -334,7 +331,7 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
         imshow(Title, UI_Output);
         go_frame++;
     }
-    cvReleaseCapture(&capture);
+    cap.release();
     return status;
 }
 
@@ -640,7 +637,7 @@ int HandShaking(string Title){
             imshow(Title, UI_Output);
             go_frame++;
 		}
-		cvReleaseCapture(&capture);
+		cap.release();
         return status;
 	}
 }
