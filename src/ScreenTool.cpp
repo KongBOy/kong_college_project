@@ -4,6 +4,7 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
+using namespace std;
 
 void FadeInOut(string Title, Mat Now, Mat After, int delay){
     int row=Now.rows;

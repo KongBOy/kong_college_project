@@ -27,6 +27,7 @@ class Note_infos {
 #define NOTE_INFOS_DEBUG_TOOLS_H_INCLUDED
 #endif // NOTE_INFOS_DEBUG_TOOLS_H_INCLUDED
 
+using namespace std;
 using namespace cv;
 
 void get_note_color_and_img(int head_type,int time_bar,Scalar & color , Mat & template_img);

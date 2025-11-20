@@ -11,6 +11,7 @@
 
 #define SNDQUE 10000
 
+using namespace std;
 using namespace cv;
 
 extern int speed;
