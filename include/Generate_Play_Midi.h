@@ -54,7 +54,7 @@ class Midi_Generate{
         int        gTwait;   // 等待狀態位置
         int        gTexit;   // 佇列取出位置（exit index）
         int        gTarray;  // 當前可用的陣列索引
-        BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
+        bool       gTsig;    // 控制旗標，用於同步/中斷播放
 
         float freqTable[7][12];
 public:
@@ -64,9 +64,9 @@ public:
 
         soundtype* get_SndPmtr();
         int get_gTenter();
-        int get_gTwait();
-        int get_gTexit();
-        BOOL get_gTsig();
+        int  get_gTwait();
+        int  get_gTexit();
+        bool get_gTsig();
 
         void set_gTwait(int in_gTwait);
         void set_gTexit(int in_gTexit);

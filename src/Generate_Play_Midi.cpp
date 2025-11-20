@@ -74,7 +74,7 @@ int Midi_Generate::MakeSound (float Freq, int Dura , int Vol , int Voice , float
     if (Freq == 0) Vol  = 0;  // 無聲音時音量歸零
     if (Dura <  5) Dura = 5;  // 時間太短的話強制最小值
     gTenter++;
-    gTsig = FALSE;
+    gTsig = false;
     if (gTenter >= SNDQUE){
         gTarray = gTenter % SNDQUE + 1;
     }
@@ -212,7 +212,7 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
     bool gTsig  = midi_notes.get_gTsig();
     soundtype* SndPmtr = midi_notes.get_SndPmtr();
 
-    while(gTenter > gTexit && gTsig == FALSE){
+    while(gTenter > gTexit && gTsig == false){
         if(MusicPlayback){
             // 畫一些 裝飾用的 白點點
             Drawing_Random_Circles(UI_Output);
@@ -417,7 +417,7 @@ static int        gTenter;  // 佇列寫入位置（enter index）
 static int        gTwait;   // 等待狀態位置
 static int        gTexit;   // 佇列取出位置（exit index）
 static int        gTarray;  // 當前可用的陣列索引
-static BOOL       gTsig;    // 控制旗標，用於同步/中斷播放
+static bool       gTsig;    // 控制旗標，用於同步/中斷播放
 
 
 int MakeSound (float Freq, int Dura , int Vol , int Voice , float Tempo){
@@ -564,7 +564,7 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     Mat template_img;
     Scalar color;
     Point pitch_word_posi;
-    while(gTenter > gTexit && gTsig == FALSE){
+    while(gTenter > gTexit && gTsig == false){
         if(MusicPlayback){
             // 畫一些 裝飾用的 白點點
             Drawing_Random_Circles(UI_Output);
