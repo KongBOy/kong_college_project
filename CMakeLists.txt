@@ -9,6 +9,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY         "${CMAKE_SOURCE_DIR}")
 
 # set(OpenCV_DIR "C:/Users/VAIO/Desktop/OpenCV/opencv231_2_build")
 set(OpenCV_DIR "C:/Users/VAIO/Desktop/OpenCV/opencv231_3_build_debug")
+# set(OpenCV_DIR "C:/Users/VAIO/Desktop/OpenCV/opencv3416_1_build_debug")     # 失敗, 有用 windows.h 會跟 OpenCV 衝突
+# set(OpenCV_DIR "C:/Users/VAIO/Desktop/OpenCV/opencv4541415_1_build_debug")  # 失敗, 很多type都有衝突
 find_package(OpenCV REQUIRED)
 # set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_BUILD_TYPE Debug)
