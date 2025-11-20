@@ -20,7 +20,8 @@ message(STATUS "(可省, 看一下變數內容而已)CMAKE_BUILD_TYPE   : ${CMAK
 add_library               (Note_lib lib/Note_lib/Note_infos.cpp
                                     lib/Note_lib/Maybe_head_tool.cpp
                                     lib/Note_lib/Bar_tool.cpp)
-target_include_directories(Note_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include )
+target_include_directories(Note_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib/Note_lib/include
+                                           ${OpenCV_INCLUDE_DIRS}  )
 
 # String_tool_lib
 add_library               (String_tool_lib lib/String_tool_lib/string_tools.cpp)
