@@ -132,6 +132,8 @@ int main(){
         case 1:{
             imshow(Title, UI1);
             waitKey(100);
+            imshow(Title, UI1_1);
+            waitKey(100);
 
             // // debug 用, 直接指定想要的樂譜
             // SrcMusicSheet=imread("Resource/test_img/phone_clear_template14.jpg",0);
