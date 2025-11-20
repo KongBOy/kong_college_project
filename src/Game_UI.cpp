@@ -251,7 +251,10 @@ void Game::run(){
             MusicPlayback = true;
             midi_show_play.thread_PlaySnd();
 
-            Camera_HandShaking_Detect hand_shaking_detect;
+            // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
+            Midi_shared_datas& midi_shared_datas = midi_show_play.get_Midi_shared_datas();
+
+            Camera_HandShaking_Detect hand_shaking_detect( &midi_shared_datas );
             hand_shaking_detect.HandShaking(UI_WINDOW_NAME);
             // NextStep=HandShaking(Title);
             // switch(NextStep){

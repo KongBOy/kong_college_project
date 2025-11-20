@@ -82,7 +82,7 @@ time_t pre_handmove_up_clock = clock() + 10000;
 time_t now_handmoveup_clock  = clock() + 10000;
 
 
-Camera_HandShaking_Detect::Camera_HandShaking_Detect():
+Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr):
     prex(0),
     prey(0),
     nowx(0),
@@ -105,7 +105,9 @@ Camera_HandShaking_Detect::Camera_HandShaking_Detect():
     pre_handmoveup(false),
 
     pre_handmove_up_clock(clock() + 10000),
-    now_handmoveup_clock (clock() + 10000)
+    now_handmoveup_clock (clock() + 10000),
+
+    midi_shared_datas_ptr(in_midi_shared_datas_ptr)
 {
     clock_cost_buffer  = new int[clock_cost_buffer_size];
 }
@@ -143,6 +145,8 @@ void Camera_HandShaking_Detect::Detect_Volumn(Mat ui_screen, int orbitX[], int o
         if(temp_volume <   5) temp_volume =   5;  // 最小音量用  5%
         if(temp_volume > 100) temp_volume = 100;  // 如果超過 100% 就clip掉回100%
         volume = temp_volume / 100 * 127;         // 0 ~ 100 range 縮放成 MIDI音量 0 ~ 127
+        // 手勢偵測 偵測到的速度 設定到 和 Midi播放 共用的資料空間
+        midi_shared_datas_ptr -> set_volume(volume);
     }
     
     // cout << "orbit_len_avg:" << orbit_len_avg << ", len_max:" << len_max << ", temp_volume:" << temp_volume << ", volume:" << volume << endl;
@@ -391,6 +395,8 @@ bool Camera_HandShaking_Detect::Detect_Speed(){
         if(20 < speed_temp && speed_temp < 300 ) speed = speed_temp;
         // 加速時常常揮太快超過300 結果發現沒加速 又揮更快, 所以超過300 且 speed 沒超過300 就慢慢 +5
         if(speed_temp > 300 and speed < 300) speed += 5;
+        // 手勢偵測 偵測到的速度 設定到 和 Midi播放 共用的資料空間
+        midi_shared_datas_ptr -> set_speed(speed);
 
         // 更新 buffer 目前可儲存位置
         clock_cost_buffer_acc += 1;

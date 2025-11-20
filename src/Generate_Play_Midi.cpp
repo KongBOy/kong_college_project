@@ -39,6 +39,11 @@ Mat bar                   = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 
 HANDLE     gSThread = NULL;  // 播放聲音的執行緒
 
 
+Midi_shared_datas::Midi_shared_datas(): speed(60), volume(80) {}
+void Midi_shared_datas::set_speed  (int in_speed ){ speed  = in_speed; }
+void Midi_shared_datas::set_volume (int in_volume){ volume = in_volume; }
+int  Midi_shared_datas::get_speed  (){return speed;  }
+int  Midi_shared_datas::get_volume (){return volume; }
 
 Midi_Generate::Midi_Generate():
     freqTable{  {32.7  , 34.6  , 36.7  , 38.9  , 41.2  , 43.7  , 46.2  , 49.0  , 51.9  , 55.0  , 58.3  , 61.7  }, 
@@ -166,6 +171,11 @@ int Midi_Generate::GenerateMidiFile(Note_infos& note_infos){
         }
     }
     return 0;
+}
+
+
+Midi_shared_datas& Midi_ShowPlay::get_Midi_shared_datas(){
+    return midi_shared_datas;
 }
 
 Midi_ShowPlay::Midi_ShowPlay(Recognition_page* in_recog_page_ptr, Midi_Generate* in_midi_notes_ptr): 
@@ -320,8 +330,8 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
             
             Speed_Volume_Bar_roi = UI_Output(Rect(750, 245, 545, 233));
             Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);
-            volume_bar_roi = UI_Output(Rect( (volume       /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
-            speed_bar_roi  = UI_Output(Rect( (speed  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
+            volume_bar_roi = UI_Output(Rect( (self.midi_shared_datas.get_volume()       /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
+            speed_bar_roi  = UI_Output(Rect( (self.midi_shared_datas.get_speed ()  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
             bar.copyTo(volume_bar_roi);
             bar.copyTo(speed_bar_roi );
             
@@ -356,13 +366,13 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
             Note = (int)Round( ( 69 + 12 * log2(LocSndPar.Freq / 440) ) , 0);
             // cout << "Note:" << Note << endl;
             // Phrase = (LocSndPar.Vol * 256 + Note) * 256 + 144;  // Note on.
-            Phrase = (volume * 256 + Note ) * 256 + 144;  //Note on
-            // cout << "volume:" << volume << endl;
-            // cout << "speed :" << speed << endl;
+            Phrase = (self.midi_shared_datas.get_volume() * 256 + Note ) * 256 + 144;  //Note on
+            // cout << "volume:" << self.midi_shared_datas.get_volume() << endl;
+            // cout << "speed :" << self.midi_shared_datas.get_speed() << endl;
             midiOutShortMsg(hMidi, Phrase);
             //  ******************************************************************************************************
             // cout << "Noteon ON " << LocSndPar.Freq << endl;
-            changespeed=(60 / (float)speed);
+            changespeed=(60 / (float)self.midi_shared_datas.get_speed());
 
             // cout << "changespeed" << changespeed << endl;
             // cout << "LocSndPar.Dura  :" << LocSndPar.Dura << endl;

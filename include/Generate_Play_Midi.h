@@ -35,6 +35,19 @@ extern Mat Speed_Volume_Bar;
 extern Mat background      ;
 extern Mat bar             ;
 
+// Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
+class Midi_shared_datas{
+    private:
+        int speed;
+        int volume;
+
+    public:
+        Midi_shared_datas();
+        void set_speed (int in_speed);
+        void set_volume(int in_volume);
+        int get_speed();
+        int get_volume();
+};
 
 
 typedef struct _soundtype{
@@ -78,6 +91,9 @@ class Midi_ShowPlay{
         Recognition_page* recog_page_ptr;
         Midi_Generate*    mide_notes_ptr;
 
+        // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
+        Midi_shared_datas  midi_shared_datas;
+
     public:
         Midi_ShowPlay(Recognition_page* in_recog_page_ptr, Midi_Generate* in_midi_notes_ptr);
 
@@ -91,6 +107,8 @@ class Midi_ShowPlay{
         // Recognition_page* self_ptr = (Recognition_page*)lpParameter;
         // Recognition_page& self     = *self_ptr;
         static DWORD WINAPI PlaySnd (LPVOID lpParameter);
+
+        Midi_shared_datas& get_Midi_shared_datas();
 };
 
 

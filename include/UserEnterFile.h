@@ -11,6 +11,8 @@
 #include <cv.h>
 #include <highgui.h>
 
+#include "Generate_Play_Midi.h"
+
 
 using namespace std;
 using namespace cv;
@@ -57,8 +59,11 @@ class Camera_HandShaking_Detect{
         time_t pre_handmove_up_clock; 
         time_t now_handmoveup_clock;
 
+        // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
+        Midi_shared_datas* midi_shared_datas_ptr;
+
     public:
-        Camera_HandShaking_Detect();
+        Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr);
         int HandShaking(string Title);
         void SamplePicInitial();
         void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int orbit_num);
