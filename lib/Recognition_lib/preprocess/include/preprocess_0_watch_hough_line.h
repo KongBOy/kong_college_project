@@ -6,14 +6,6 @@ using namespace std;
 using namespace cv;
 
 
-#ifndef WATCH_HOUGH_LINE_H_INCLUDED
-#define WATCH_HOUGH_LINE_H_INCLUDED
-
-
-
-#endif // WATCH_HOUGH_LINE_H_INCLUDED
-
-
 void Watch_Hough_Line_Shift(vector<Vec4f>, Mat,string,string);
 //void Watch_Hough_Line_Shift_Staff(vector<Vec5f>, Mat,string,string);
 

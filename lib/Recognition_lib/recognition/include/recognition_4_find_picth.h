@@ -4,11 +4,6 @@
 
 #include <iostream>
 
-
-#ifndef RECOGNITION_5_FIND_PICTH_H_INCLUDED
-#define RECOGNITION_5_FIND_PICTH_H_INCLUDED
-#endif // RECOGNITION_5_FIND_PICTH_H_INCLUDED
-
 using namespace cv;
 using namespace std;
 

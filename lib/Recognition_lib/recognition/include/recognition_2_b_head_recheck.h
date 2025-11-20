@@ -4,9 +4,6 @@
 using namespace cv;
 
 
-#ifndef RECOGNITIOIN_2_B_HEAD_RECHECK_H_INCLUDED
-#define RECOGNITIOIN_2_B_HEAD_RECHECK_H_INCLUDED
-#endif // RECOGNITIOIN_2_B_HEAD_RECHECK_H_INCLUDED
 void recognition_2_b_head_recheck(int head_type,
                                   Mat MaybeHead_final_template,
                                   Mat reduce_line,

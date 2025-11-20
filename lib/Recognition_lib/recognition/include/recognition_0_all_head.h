@@ -4,12 +4,6 @@
 
 #include <iostream>
 
-
-
-#ifndef RECOGNITION_0_ALL_HEAD_H_INCLUDED
-#define RECOGNITION_0_ALL_HEAD_H_INCLUDED
-#endif // RECOGNITION_0_ALL_HEAD_H_INCLUDED
-
 using namespace cv;
 using namespace std;
 

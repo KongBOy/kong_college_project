@@ -4,13 +4,6 @@
 
 using namespace cv;
 
-
-#ifndef BINARY_H_INCLUDED
-#define BINARY_H_INCLUDED
-
-#endif // BINARY_H_INCLUDED
-
-
 void Binary_by_patch(Mat & dst, const int div_row, const int div_col, bool debuging=false); //切小塊，再做二值化
 unsigned char Binary(Mat & dst);
 //第一個參數：想要二值化的原圖

@@ -1,9 +1,5 @@
-#ifndef HEADER_H_INCLUDED
-#define HEADER_H_INCLUDED
+#pragma once
 
-
-
-#endif // HEADER_H_INCLUDED
 
 #include <opencv2/objdetect/objdetect.hpp>
 #include <opencv2/core/core_c.h>

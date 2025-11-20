@@ -3,12 +3,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 
 
-#ifndef RECOGNITIOIN_2_A_HEAD_CHARACTARISTIC_H_INCLUDED
-#define RECOGNITIOIN_2_A_HEAD_CHARACTARISTIC_H_INCLUDED
-
-#endif // RECOGNITIOIN_2_A_HEAD_CHARACTARISTIC_H_INCLUDED
-
-
 using namespace cv;
 
 void recognition_2_a_head_charactristic(int head_type,

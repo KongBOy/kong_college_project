@@ -3,10 +3,6 @@
 #include <opencv2/highgui/highgui.hpp>
 
 
-#ifndef RECOGNITION_4_MERGE_HEAD_AND_TIME_H_INCLUDED
-#define RECOGNITION_4_MERGE_HEAD_AND_TIME_H_INCLUDED
-#endif // RECOGNITION_4_MERGE_HEAD_AND_TIME_H_INCLUDED
-
 using namespace std;
 using namespace cv;
 

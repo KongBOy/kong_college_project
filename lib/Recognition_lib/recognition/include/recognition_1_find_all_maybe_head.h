@@ -4,13 +4,6 @@
 
 #include <iostream>
 
-#ifndef RECOGNITIOIN_1_FIND_ALL_MAYBE_HEAD_H_INCLUDED
-#define RECOGNITIOIN_1_FIND_ALL_MAYBE_HEAD_H_INCLUDED
-
-
-
-#endif // RECOGNITIOIN_1_FIND_ALL_MAYBE_HEAD_H_INCLUDED
-
 
 /// input：reduceline以後的圖片
 /// 原本寫在cut_according_staff 的 function：

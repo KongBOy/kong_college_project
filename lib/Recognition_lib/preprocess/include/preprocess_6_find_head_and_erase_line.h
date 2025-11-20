@@ -5,17 +5,6 @@
 
 using namespace cv;
 
-#ifndef FIND_HEAD_H_INCLUDED
-#define FIND_HEAD_H_INCLUDED
-
-
-
-#endif // FIND_HEAD_H_INCLUDED
-
-
-
-
-
 void Watch_Hough_Line2 (vector<Vec2f> lines , Mat  drew_img  ,string window_name);
 void Find_Head_and_Erase_Line (vector<Vec2f> lines, string window_name, Mat test_bin,int**& left_point, int**& right_point, Mat& src_bin_erase_line, bool debuging);
 

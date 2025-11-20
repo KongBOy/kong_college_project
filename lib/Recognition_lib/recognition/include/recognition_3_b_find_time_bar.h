@@ -3,12 +3,6 @@
 #include <opencv2/imgproc/imgproc.hpp>
 using namespace cv;
 
-#ifndef RECOGNITIOIN_3_B_FIND_TIME_BAR_H_INCLUDED
-#define RECOGNITIOIN_3_B_FIND_TIME_BAR_H_INCLUDED
-
-
-#endif // RECOGNITIOIN_3_B_FIND_TIME_BAR_H_INCLUDED
-
 void recognition_3_b_find_time_bar(Mat template_img,
                                    int bars_count,short bars[][200],bool bars_dir[200],
                                    int bars_time[200],
