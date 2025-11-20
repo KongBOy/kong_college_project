@@ -15,7 +15,7 @@
 using namespace std;
 using namespace cv;
 int camera();
-bool HandShaking(string Title);
+int HandShaking(string Title);
 int HandDetection( );
 extern int speed;
 extern int volume;
