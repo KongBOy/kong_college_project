@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <cv.h>
 #include <highgui.h>
+#include <ctime>
 
 #include "Generate_Play_Midi.h"
 
