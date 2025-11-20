@@ -399,7 +399,7 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
 }
 
 
-void Midi_ShowPlay::PlayMidiFile(){
+void Midi_ShowPlay::thread_PlaySnd(){
     MusicPlayback = true;
     DWORD  dwThreadId;
     gSThread = CreateThread(NULL, 0, Midi_ShowPlay::PlaySnd, this, 0, &dwThreadId);
@@ -750,7 +750,7 @@ DWORD WINAPI PlaySnd (LPVOID lpParameter){
     return 0;
 }
 
-void PlayMidiFile(Note_infos* note_infos){
+void thread_PlaySnd(Note_infos* note_infos){
     MusicPlayback = true;
     DWORD  dwThreadId;
     gSThread = CreateThread(NULL, 0, PlaySnd, note_infos, 0, &dwThreadId);

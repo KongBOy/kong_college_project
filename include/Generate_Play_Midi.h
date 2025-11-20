@@ -81,11 +81,11 @@ class Midi_ShowPlay{
     public:
         Midi_ShowPlay(Recognition_page* in_recog_page_ptr, Midi_Generate* in_midi_notes_ptr);
 
-        // PlayMidiFile 是用 CreateThread() 來把 PlaySnd 丟給thread,
+        // thread_PlaySnd 是用 CreateThread() 來把 PlaySnd 丟給thread,
         // CreateThread() 參數規定 丟的function 不可以含this 要不然參數會對不上,
         // 所以 要用 static 讓 member function 變成普通function,
         // 如果想要用 data member, 可以 第四個參數 丟 function參數時 丟this指標進去
-        void PlayMidiFile();
+        void thread_PlaySnd();
         // LPVOID lpParameter 就會 是this指標,
         // 再強制轉換成 Recognition_page* 就可以用囉, 具體如下
         // Recognition_page* self_ptr = (Recognition_page*)lpParameter;
@@ -101,6 +101,6 @@ int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]);
 
 int MakeSound (float Freq, int Dura = 0, int Vol = 127, int Voice = 0, float Tempo = 1);
 DWORD WINAPI PlaySnd (LPVOID lpParameter);
-void PlayMidiFile    (Note_infos* note_infos);
+void thread_PlaySnd    (Note_infos* note_infos);
 
 int Drawing_Random_Circles( Mat& image);

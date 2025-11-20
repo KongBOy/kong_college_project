@@ -248,7 +248,7 @@ void Game::run(){
             UI_Output=background.clone();
             Midi_ShowPlay midi_show_play(recog_page_ptr, midi_notes_ptr);
             MusicPlayback = true;
-            midi_show_play.PlayMidiFile();
+            midi_show_play.thread_PlaySnd();
             // NextStep=HandShaking(Title);
             // switch(NextStep){
             //     case 1:

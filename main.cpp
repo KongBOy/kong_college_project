@@ -234,7 +234,7 @@ int main(){
             cout<<"Case 4"<<endl;
             UI_Output=background.clone();
 
-            PlayMidiFile(note_infos);
+            thread_PlaySnd(note_infos);
             NextStep=HandShaking(Title);
             switch(NextStep){
                 case 1:
