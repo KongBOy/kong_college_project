@@ -138,11 +138,17 @@ int HandShaking(string Title){
     Mat sample_color;
 
     // 開始視訊
-	capture = cvCaptureFromCAM( -1 );
-    if(capture){
-        frame = cvQueryFrame( capture );
-        sample_color = Mat( int(frame.rows / 2), int(frame.cols / 2), CV_8UC3, Scalar(MeanScalar.val[0], MeanScalar.val[1], MeanScalar.val[2]));
+    // 1. 建立 VideoCapture 物件並打開攝影機
+    VideoCapture cap(0);
+    // 2. 檢查攝影機是否成功開啟
+    if (!cap.isOpened()) {
+        cout << "error, cannot open camera." << endl;
+        return -1;
     }
+
+    // 3. 先抓一張影像來取出 frame 大小, 生成 sample_color影像
+    cap.read(frame);
+    sample_color = Mat( int(frame.rows / 2), int(frame.cols / 2), CV_8UC3, Scalar(MeanScalar.val[0], MeanScalar.val[1], MeanScalar.val[2]));
 
     int go_orbit = 0;
 	int orbit_num = 8;
@@ -155,13 +161,13 @@ int HandShaking(string Title){
     Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
     Mat frame_on_ui;
 
-	// 偵測手環是否進入範圍內
-	if(capture){
+	// 如果 視訊 有正常開啟
+	if(cap.isOpened()){
 
         int status = 1;
         int go_frame = 0;
 		while( MusicPlayback){
-			frame = cvQueryFrame( capture );
+			cap.read(frame);
 			if( frame.empty() ){
                 printf(" --(!) No captured frame -- Break!");
                 break;
