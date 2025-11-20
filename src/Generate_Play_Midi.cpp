@@ -60,7 +60,7 @@ soundtype* Midi_Generate::get_SndPmtr() { return SndPmtr; }
 int  Midi_Generate::get_gTenter(){ return gTenter; }
 int  Midi_Generate::get_gTwait (){ return gTwait;  }
 int  Midi_Generate::get_gTexit (){ return gTexit;  }
-BOOL Midi_Generate::get_gTsig  (){ return gTsig;   } 
+bool Midi_Generate::get_gTsig  (){ return gTsig;   } 
 
 // void set_gTwait(int in_gTwait) { gTwait = in_gTwait; }
 // void set_gTexit(int in_gTexit) { gTexit = in_gTexit; }
@@ -428,7 +428,7 @@ int MakeSound (float Freq, int Dura , int Vol , int Voice , float Tempo){
     if (Freq == 0) Vol  = 0;  // 無聲音時音量歸零
     if (Dura <  5) Dura = 5;  // 時間太短的話強制最小值
     gTenter++;
-    gTsig = FALSE;
+    gTsig = false;
     if (gTenter >= SNDQUE){
         gTarray = gTenter % SNDQUE + 1;
     }
