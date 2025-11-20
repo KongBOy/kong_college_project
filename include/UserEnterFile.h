@@ -25,3 +25,43 @@ extern Mat UI_Output;
 extern int row_index ;
 extern Mat row_proc_img[40];
 static string Title="小小指揮家";
+
+
+class Camera_HandShaking_Detect{
+    private:
+        float prex;
+        float prey;
+        float nowx;
+        float nowy;
+        float shakhighest;
+        float shaklowest;
+        float shakrange;
+
+        int  clock_cost_buffer_size;  // 實際 clock_cost_buffer_size 大小
+        int  clock_cost_buffer_acc;   // 虛擬 clock_cost_buffer_size 大小, 大概就是假設 buffer無限大 總共input了幾次 clock_cost 進buffer的概念, 也可以代表 最新可以寫入 buffer的位置
+        int  clock_cost_buffer_go;    // clock_cost_buffer_acc % clock_cost_buffer_size 為 實際可以寫進buffer的位置
+        int* clock_cost_buffer;
+        int  clock_cur_posi;
+
+        int clock_cost_avg;
+        int clock_cost_sum;
+
+        int average_volume;
+        int sum_volume;
+
+        bool now_handmoveup;
+        bool pre_handmoveup;
+
+        CvCapture *  capture;
+
+        time_t pre_handmove_up_clock; 
+        time_t now_handmoveup_clock;
+
+    public:
+        Camera_HandShaking_Detect();
+        int HandShaking(string Title);
+        void SamplePicInitial();
+        void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int orbit_num);
+        bool Detect_Speed();
+
+};

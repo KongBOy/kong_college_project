@@ -3,6 +3,7 @@
 #include "string_tools.h"
 #include "ScreenTool.h"
 #include "Generate_Play_Midi.h"
+#include "UserEnterFile.h"
 
 #define LOADING_BAR_SHIFT_X -80
 
@@ -249,6 +250,9 @@ void Game::run(){
             Midi_ShowPlay midi_show_play(recog_page_ptr, midi_notes_ptr);
             MusicPlayback = true;
             midi_show_play.thread_PlaySnd();
+
+            Camera_HandShaking_Detect hand_shaking_detect;
+            hand_shaking_detect.HandShaking(UI_WINDOW_NAME);
             // NextStep=HandShaking(Title);
             // switch(NextStep){
             //     case 1:
