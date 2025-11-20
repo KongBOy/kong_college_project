@@ -34,7 +34,7 @@ void Watch_Hough_Line(vector<Vec2f> lines, const Mat & gray_dst, string window_n
 	if(!gray_dst.empty()) cvtColor(gray_dst, color_dst, CV_GRAY2BGR);
 	
 
-	for(size_t i = 0; i < lines.size(); i++ ){
+	for(int i = 0; i < lines.size(); i++ ){
 		cout<<"i = "<<i<<" , ";
 		double rho = lines[i][0], theta = lines[i][1];
 		double angle_value = (theta/PI)*180;
@@ -74,7 +74,7 @@ void Watch_Hough_Line_Shift(vector<Vec4f> lines, Mat gray_dst, string window_nam
     cvtColor(gray_dst,color_dst, CV_GRAY2BGR);
 
 
-	for(size_t i = 0; i < lines.size(); i++ ){
+	for(int i = 0; i < lines.size(); i++ ){
 		cout<<"i = "<<i<<" , ";
 		float rho = lines[i][2], theta = lines[i][3];
 		double angle_value = (theta/PI)*180;
@@ -109,7 +109,7 @@ void Watch_Hough_Line_Shift_Staff(vector<Vec5f> lines , Mat gray_dst,string wind
     cvtColor(gray_dst,color_dst, CV_GRAY2BGR);
 
 
-	for(size_t i = 0; i < lines.size(); i++ ){
+	for(int i = 0; i < lines.size(); i++ ){
 		cout<<"i = "<<i<<" , ";
 
 
@@ -141,7 +141,7 @@ void Watch_Hough_Line_Shift_Staff(vector<Vec5f> lines , Mat gray_dst,string wind
 */
 void Watch_Hough_roh(vector<Vec2f> lines , Mat& dst){
 	Mat color_dst = dst.clone();
-	for(size_t i = 0 ; i < lines.size();i++){
+	for(int i = 0 ; i < lines.size();i++){
 		if(lines[i][0] > 0){
 		//想要看什麼訊息就把註解拿掉
 		// cout<<"i = "<<i<<" , line at y    = "<<lines[i][0]<<" , value = "<<(int)color_dst.at<uchar>(lines[i][0] ,color_dst.cols/2 )<<endl;
@@ -168,7 +168,7 @@ void Watch_Hough_P_Line(vector<Vec4i> lines , Mat gray_dst,string window_name,st
 	cvtColor(dst,gray_dst,CV_BGR2GRAY);
 	*/
 	// bubbleSort_H_P_Y(lines);
-	for(size_t i = 0 ; i < lines.size(); i++){
+	for(int i = 0 ; i < lines.size(); i++){
 		// cout<<"i = "<<i<<" , ";
 		Vec4i l = lines[i];
 		int point1_value = gray_dst.at<uchar>(l[1],l[0]);
