@@ -251,6 +251,24 @@ void Game::run(){
             MusicPlayback = true;
             midi_show_play.thread_PlaySnd();
 
+            while( MusicPlayback){
+                // 把 畫好彩色簡譜的五線譜組 貼上 UI_Output
+                Mat& staff_img_draw_note = midi_show_play.get_staff_img_draw_note();
+                // 防呆, 一開始thread可能還沒準備好圖片 就抓可能就抓到 empty
+                if(!staff_img_draw_note.empty()){
+                    // 每張staff_img的 w, h 可能會不一樣 所以每次都要重抓 w, h
+                    int roi_height = staff_img_draw_note.rows;
+                    int roi_width  = staff_img_draw_note.cols;
+                    if(roi_height > 227) roi_height = 227;      // 高度最多抓 227
+                    Mat ui_staff_roi    = UI_Output          (Rect(62, 530, roi_width, roi_height));
+                    Mat staff_staff_roi = staff_img_draw_note(Rect( 0,   0, roi_width, roi_height));
+                    staff_staff_roi.copyTo(ui_staff_roi);
+                }
+
+                imshow("UI_Output", UI_Output);
+                waitKey(1);
+            }
+
             // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
             Midi_shared_datas& midi_shared_datas = midi_show_play.get_Midi_shared_datas();
 

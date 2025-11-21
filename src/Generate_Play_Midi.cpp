@@ -174,9 +174,11 @@ int Midi_Generate::GenerateMidiFile(Note_infos& note_infos){
 }
 
 
-Midi_shared_datas& Midi_ShowPlay::get_Midi_shared_datas(){
-    return midi_shared_datas;
-}
+/////////////////////////////////////////////////////////////////////////////
+Midi_shared_datas& Midi_ShowPlay::get_Midi_shared_datas  (){ return midi_shared_datas;}
+
+Mat&               Midi_ShowPlay::get_staff_img_draw_note(){ return staff_img_draw_note;}
+/////////////////////////////////////////////////////////////////////////////
 
 Midi_ShowPlay::Midi_ShowPlay(Recognition_page* in_recog_page_ptr, Midi_Generate* in_midi_notes_ptr): 
     recog_page_ptr(in_recog_page_ptr),
@@ -196,6 +198,8 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
     Midi_Generate&    midi_notes = *(self.mide_notes_ptr);
 
     Note_infos& note_infos = recog_page.get_note_infos();
+    Mat*        staff_imgs = recog_page.get_staff_img ();
+    
 
     soundtype  LocSndPar;
     int lTarray;
@@ -206,6 +210,8 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
     HMIDIOUT hMidi;
     midiOutOpen    (&hMidi, (UINT)-1, 0, 0, CALLBACK_NULL);
     midiOutShortMsg(hMidi, (256 * LocSndPar.Voice ) + 192);
+    // staff_img_draw_note初始化, 把 staff_img 轉成彩色的 才可以畫彩色的簡譜在上面
+    cvtColor(staff_imgs[row_index], self.staff_img_draw_note, CV_GRAY2BGR);
 
     int note_x;
     int note_y;
@@ -241,6 +247,8 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
                 if( note_infos.go_row_note >= note_infos.row_note_count_array[row_index]){
                     note_infos.go_row_note = 0;
                     row_index++;
+                    // row_index更新時, 也要更新現在正在畫的staff_img
+                    cvtColor(staff_imgs[row_index], self.staff_img_draw_note, CV_GRAY2BGR);
                 }
                 note_x    = note_infos.note[0][note_infos.go_note];
                 note_y    = note_infos.note[1][note_infos.go_note];
@@ -251,8 +259,8 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
             // 取出 template_img 和 head_type顏色
             get_note_color_and_img(head_type, time_bar, color, template_img);
             // 畫出 note框框
-            rectangle(row_proc_img[row_index], Point(note_x                    , note_y), 
-                                               Point(note_x + template_img.cols, note_y + template_img.rows), color, 2);
+            rectangle(self.staff_img_draw_note, Point(note_x                    , note_y), 
+                                                Point(note_x + template_img.cols, note_y + template_img.rows), color, 2);
 
             // 定位 音高文字的位置
             pitch_word_posi.x = note_x + 8;
@@ -283,7 +291,7 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
                 circle_background = Scalar(0, 99, 185);  // 咖啡色
 
             // 畫出 音高文字圈圈
-            circle(row_proc_img[row_index], pitch_word_posi, 15, circle_background, -1, 1, 0);
+            circle(self.staff_img_draw_note, pitch_word_posi, 15, circle_background, -1, 1, 0);
             
             // 畫出 音高文字圈圈
             int movetocenter = 10;
@@ -322,10 +330,10 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
             ss << nodePitch;
             // 休止符系列 顯示 "R"
             if(head_type == 1 || head_type == 3 || head_type == 5 || head_type == 6 || head_type == 7 || head_type == 8)
-                putText(row_proc_img[row_index], "R"     , pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
+                putText(self.staff_img_draw_note, "R"     , pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
             // 剩下顯示 簡譜數字
             else 
-                putText(row_proc_img[row_index], ss.str(), pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
+                putText(self.staff_img_draw_note, ss.str(), pitch_word_posi, FONT_HERSHEY_PLAIN, 2.0, Scalar(255, 255, 255), 2, 1, false);
 
             
             Speed_Volume_Bar_roi = UI_Output(Rect(750, 245, 545, 233));
@@ -393,6 +401,8 @@ DWORD WINAPI Midi_ShowPlay::PlaySnd (LPVOID lpParameter){
             if( note_infos.go_row_note >= note_infos.row_note_count_array[row_index]){
                 note_infos.go_row_note = 0;
                 row_index++;
+                // row_index更新時, 也要更新現在正在畫的staff_img
+                cvtColor(staff_imgs[row_index], self.staff_img_draw_note, CV_GRAY2BGR);
             }
         }
         else{

@@ -93,6 +93,8 @@ class Midi_ShowPlay{
 
         // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
         Midi_shared_datas  midi_shared_datas;
+        // 播音樂時 畫彩色簡譜在staff_img上的容器, UI如果需要就從這邊取
+        Mat staff_img_draw_note;
 
     public:
         Midi_ShowPlay(Recognition_page* in_recog_page_ptr, Midi_Generate* in_midi_notes_ptr);
@@ -109,6 +111,8 @@ class Midi_ShowPlay{
         static DWORD WINAPI PlaySnd (LPVOID lpParameter);
 
         Midi_shared_datas& get_Midi_shared_datas();
+        // 播音樂時 畫彩色簡譜在staff_img上的容器, UI如果需要就從這邊取
+        Mat& get_staff_img_draw_note();
 };
 
 
