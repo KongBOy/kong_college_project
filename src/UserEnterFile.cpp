@@ -138,7 +138,7 @@ void Camera_HandShaking_Detect::Detect_Volumn(Mat frame_small, int go_orbit){
     // cout << "orbit_len_avg:" << orbit_len_avg << ", len_max:" << len_max << ", temp_volume:" << temp_volume << ", volume:" << volume << endl;
 }
 
-int Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
+DWORD WINAPI Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
     Camera_HandShaking_Detect* self_ptr = (Camera_HandShaking_Detect*)lpParameter;
     Camera_HandShaking_Detect& self     = *self_ptr;
 
@@ -146,7 +146,7 @@ int Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
 	Mat frame_small;  // 原始frame 縮小處理   比較快
     
     // 初始化 指定物品的顏色 的 MeanScalar 和 StandardDeviationScalar
-    SamplePicInitial();
+    self.SamplePicInitial();
     Mat sample_color;
 
     // 開始視訊
@@ -222,11 +222,11 @@ int Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
         self.orbitY[go_orbit] = MinRow;
         
         // 用 軌跡判斷 音量
-        Detect_Volumn(frame_small, go_orbit);
+        self.Detect_Volumn(frame_small, go_orbit);
 
         // 用 y的變化來算速度
         self.nowy = MinRow;
-        Detect_Speed();     
+        self.Detect_Speed();     
         self.prey = self.nowy;  // nowy用完 變成下次的 self.prey 囉
 
 

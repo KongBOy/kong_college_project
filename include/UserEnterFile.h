@@ -56,7 +56,7 @@ class Camera_HandShaking_Detect{
 
     public:
         Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr);
-        int HandShaking(LPVOID lpParameter);
+        static DWORD WINAPI HandShaking(LPVOID lpParameter);
         void SamplePicInitial();
         void Detect_Volumn(Mat frame_small, int go_orbit);
         bool Detect_Speed();
