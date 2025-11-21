@@ -324,7 +324,7 @@ void Game::run(){
             Midi_shared_datas& midi_shared_datas = midi_show_play.get_Midi_shared_datas();
 
             Camera_HandShaking_Detect hand_shaking_detect( &midi_shared_datas );
-            hand_shaking_detect.HandShaking(UI_WINDOW_NAME);
+            hand_shaking_detect.HandShaking();
             // NextStep=HandShaking(Title);
             // switch(NextStep){
             //     case 1:

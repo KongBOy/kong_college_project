@@ -158,7 +158,7 @@ void Camera_HandShaking_Detect::Detect_Volumn(Mat frame_small, int go_orbit){
     // cout << "orbit_len_avg:" << orbit_len_avg << ", len_max:" << len_max << ", temp_volume:" << temp_volume << ", volume:" << volume << endl;
 }
 
-int Camera_HandShaking_Detect::HandShaking(string Title){
+int Camera_HandShaking_Detect::HandShaking(){
     // 初始化 clock_cost_buffer
     for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
 
@@ -331,7 +331,7 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
         // }
         // talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
         // DrawTalk(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
-        imshow(Title, UI_Output);
+        imshow("Debug", UI_Output);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         go_frame++;
     }
