@@ -83,6 +83,8 @@ time_t now_handmoveup_clock  = clock() + 10000;
 
 
 Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr):
+    orbit_num(ORBIT_NUM),
+
     prex(0),
     prey(0),
     nowx(0),
@@ -110,11 +112,15 @@ Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_
     midi_shared_datas_ptr(in_midi_shared_datas_ptr)
 {
     clock_cost_buffer  = new int[clock_cost_buffer_size];
+    for(int i = 0; i < 8; i++){
+        orbitX[i] = 0;
+        orbitY[i] = 0;
+    }
 }
 
 
-void Camera_HandShaking_Detect::Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int orbit_num){
-    float len_max = sqrt( pow(ui_screen.rows, 2) + pow(ui_screen.cols, 2) );
+void Camera_HandShaking_Detect::Detect_Volumn(Mat frame_small, int go_orbit){
+    float len_max = sqrt( pow(frame_small.rows, 2) + pow(frame_small.cols, 2) );
     // 看 avg_buffer_size 條線
     float orbit_len_acc = 0;
     float orbit_len_avg = 0;
@@ -134,9 +140,9 @@ void Camera_HandShaking_Detect::Detect_Volumn(Mat ui_screen, int orbitX[], int o
             acc_amount++;
         // cout << "orbit_len:" << orbit_len << endl;
         // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
-        // line( ui_screen, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 255), 1, 8 );
+        // line( frame_small, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 255), 1, 8 );
     }
-    // cv::imshow("ui_screen", ui_screen);
+    // cv::imshow("frame_small", frame_small);
     if(acc_amount > 0){
         orbit_len_avg = orbit_len_acc / acc_amount;
         float len_ratio = orbit_len_avg / (len_max * 0.060) * 100;
@@ -177,9 +183,6 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
     sample_color = Mat( int(frame.rows / 2), int(frame.cols / 2), CV_8UC3, Scalar(MeanScalar.val[0], MeanScalar.val[1], MeanScalar.val[2]));
 
     int go_orbit = 0;
-	int orbit_num = 8;
-	int orbitX[8] = {0};
-	int orbitY[8] = {0};
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // UI部分
@@ -239,7 +242,7 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
         orbitY[go_orbit] = MinRow;
         
         // 用 軌跡判斷 音量
-        Detect_Volumn(frame_small, orbitX, orbitY, go_orbit, orbit_num);
+        Detect_Volumn(frame_small, go_orbit);
 
         // 用 y的變化來算速度
         nowy = MinRow;
@@ -419,8 +422,8 @@ bool Camera_HandShaking_Detect::Detect_Speed(){
 
 
 
-void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int orbit_num){
-    float len_max = sqrt( pow(ui_screen.rows, 2) + pow(ui_screen.cols, 2) );
+void Detect_Volumn(Mat frame_small, int orbitX[], int orbitY[], int go_orbit, int orbit_num){
+    float len_max = sqrt( pow(frame_small.rows, 2) + pow(frame_small.cols, 2) );
     // 看 avg_buffer_size 條線
     float orbit_len_acc = 0;
     float orbit_len_avg = 0;
@@ -440,9 +443,9 @@ void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int 
             acc_amount++;
         // cout << "orbit_len:" << orbit_len << endl;
         // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
-        // line( ui_screen, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 255), 1, 8 );
+        // line( frame_small, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 255), 1, 8 );
     }
-    // cv::imshow("ui_screen", ui_screen);
+    // cv::imshow("frame_small", frame_small);
     if(acc_amount > 0){
         orbit_len_avg = orbit_len_acc / acc_amount;
         float len_ratio = orbit_len_avg / (len_max * 0.060) * 100;

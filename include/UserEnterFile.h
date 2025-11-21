@@ -13,6 +13,8 @@
 
 #include "Generate_Play_Midi.h"
 
+#define ORBIT_NUM 8
+
 
 using namespace std;
 using namespace cv;
@@ -31,6 +33,10 @@ static string Title="小小指揮家";
 
 class Camera_HandShaking_Detect{
     private:
+        int orbit_num;
+        int orbitX[ORBIT_NUM];
+        int orbitY[ORBIT_NUM];
+
         float prex;
         float prey;
         float nowx;
@@ -66,7 +72,7 @@ class Camera_HandShaking_Detect{
         Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr);
         int HandShaking(string Title);
         void SamplePicInitial();
-        void Detect_Volumn(Mat ui_screen, int orbitX[], int orbitY[], int go_orbit, int orbit_num);
+        void Detect_Volumn(Mat frame_small, int go_orbit);
         bool Detect_Speed();
 
 };
