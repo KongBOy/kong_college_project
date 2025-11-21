@@ -156,16 +156,9 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
     // 初始化 clock_cost_buffer
     for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
 
-	Mat frame;
-	Mat frame_small;
-	Mat frame_small_fit_ui;
-
-	double MinValue;
-	double MaxValue;
-
-	Point MinLocation;
-	Point MaxLocation;
-
+	Mat frame;        // 原始frame
+	Mat frame_small;  // 原始frame 縮小處理   比較快
+    
     // 初始化 指定物品的顏色 的 MeanScalar 和 StandardDeviationScalar
     SamplePicInitial();
     Mat sample_color;
@@ -188,12 +181,16 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
 	int orbitX[8] = {0};
 	int orbitY[8] = {0};
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // UI部分
     int talktime = 0;
     Mat talk;
     Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
     Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
     Mat frame_on_ui;
 
+	Mat frame_small_fit_ui;  // 原始frame 縮小處理後 畫上軌跡的結果 在縮放到 配合UI圖片中小電腦的大小
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 如果 視訊 有正常開啟
 
     int status = 1;
@@ -217,7 +214,6 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
         // 偵測 frame_small內顏色 與 指定物品的顏色 最相近的點 在哪裡
         int MinRow = 0;
         int MinCol = 0;
-        int MinValue = 300;
 
         Mat distance;
         Mat sample_color_f;
@@ -268,7 +264,7 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
         // 更新 軌跡buffer的index
         if(go_orbit < orbit_num-1) go_orbit++  ;
         else                       go_orbit = 0;
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 貼到UI前 先縮小到UI指定的大小
         resize(frame_small, frame_small_fit_ui, Size(frame.cols * 0.537, frame.rows * 0.537), 0, 0, INTER_CUBIC);
 
@@ -279,60 +275,61 @@ int Camera_HandShaking_Detect::HandShaking(string Title){
             cv::flip(frame_small_fit_ui, frame_small_fit_ui, 1);  // 左右翻轉
             frame_small_fit_ui.copyTo(frame_on_ui);
 
-            // 把 五線譜組 貼上 UI_Output                
-            int roi_height = row_proc_img[row_index].rows;
-            int roi_width  = row_proc_img[row_index].cols;
-            if(roi_height > 227) roi_height = 227;  // 高度最多抓 227
-            Mat ui_staff_roi    = UI_Output                 (Rect(62, 530, roi_width, roi_height));
-            Mat staff_staff_roi = row_proc_img[row_index](Rect( 0,   0, roi_width, roi_height));
-            staff_staff_roi.copyTo(ui_staff_roi);
+            // // 把 五線譜組 貼上 UI_Output                
+            // int roi_height = row_proc_img[row_index].rows;
+            // int roi_width  = row_proc_img[row_index].cols;
+            // if(roi_height > 227) roi_height = 227;  // 高度最多抓 227
+            // Mat ui_staff_roi    = UI_Output                 (Rect(62, 530, roi_width, roi_height));
+            // Mat staff_staff_roi = row_proc_img[row_index](Rect( 0,   0, roi_width, roi_height));
+            // staff_staff_roi.copyTo(ui_staff_roi);
         }
 
-        // UI 隨機 挑出 11段對話文字 來畫
-        if(clock() > talktime){
-            talktime = clock() + 5000 + (rand() % 10 * 1000);
-            switch(1 + rand() % 11){
-            case 1:
-                resize(T1 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 2:
-                resize(T2 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 3:
-                resize(T3 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 4:
-                resize(T4 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 5:
-                resize(T5 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 6:
-                resize(T6 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 7:
-                resize(T7 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 8:
-                resize(T8 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 9:
-                resize(T9 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 10:
-                resize(T10, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            case 11:
-                resize(T11, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-                break;
-            }
+        // // UI 隨機 挑出 11段對話文字 來畫
+        // if(clock() > talktime){
+        //     talktime = clock() + 5000 + (rand() % 10 * 1000);
+        //     switch(1 + rand() % 11){
+        //     case 1:
+        //         resize(T1 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 2:
+        //         resize(T2 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 3:
+        //         resize(T3 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 4:
+        //         resize(T4 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 5:
+        //         resize(T5 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 6:
+        //         resize(T6 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 7:
+        //         resize(T7 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 8:
+        //         resize(T8 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 9:
+        //         resize(T9 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 10:
+        //         resize(T10, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     case 11:
+        //         resize(T11, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+        //         break;
+        //     }
 
-            // cout << "talktime" << talktime << endl;
-            // cout << "clock()" << clock() << endl;
-        }
-        talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
-        DrawTalk(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
+        //     // cout << "talktime" << talktime << endl;
+        //     // cout << "clock()" << clock() << endl;
+        // }
+        // talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
+        // DrawTalk(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
         imshow(Title, UI_Output);
+        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
         go_frame++;
     }
     cap.release();
@@ -463,15 +460,8 @@ int HandShaking(string Title){
     // 初始化 clock_cost_buffer
     for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
 
-	Mat frame;
-	Mat frame_small;
-	Mat frame_small_fit_ui;
-
-	double MinValue;
-	double MaxValue;
-
-	Point MinLocation;
-	Point MaxLocation;
+	Mat frame;        // 原始frame
+	Mat frame_small;  // 原始frame 縮小處理   比較快
 
     // 初始化 指定物品的顏色 的 MeanScalar 和 StandardDeviationScalar
     SamplePicInitial();
@@ -490,17 +480,22 @@ int HandShaking(string Title){
     cap.read(frame);
     sample_color = Mat( int(frame.rows / 2), int(frame.cols / 2), CV_8UC3, Scalar(MeanScalar.val[0], MeanScalar.val[1], MeanScalar.val[2]));
 
+    // 紀錄八張frame來判斷軌跡
     int go_orbit = 0;
 	int orbit_num = 8;
 	int orbitX[8] = {0};
 	int orbitY[8] = {0};
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
     int talktime = 0;
     Mat talk;
     Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
     Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
     Mat frame_on_ui;
 
+    // UI部分
+	Mat frame_small_fit_ui;  // 原始frame 縮小處理後 畫上軌跡的結果 在縮放到 配合UI圖片中小電腦的大小
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 如果 視訊 有正常開啟
 	if(cap.isOpened()){
 
@@ -525,7 +520,6 @@ int HandShaking(string Title){
             // 偵測 frame_small內顏色 與 指定物品的顏色 最相近的點 在哪裡
             int MinRow = 0;
             int MinCol = 0;
-            int MinValue = 300;
 
             Mat distance;
             Mat sample_color_f;
@@ -641,6 +635,7 @@ int HandShaking(string Title){
             talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
             DrawTalk(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
             imshow(Title, UI_Output);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
             go_frame++;
 		}
 		cap.release();

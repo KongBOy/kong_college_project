@@ -251,6 +251,11 @@ void Game::run(){
             MusicPlayback = true;
             midi_show_play.thread_PlaySnd();
 
+
+            int talktime = 0;
+            Mat talk;
+            Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
+            Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
             while( MusicPlayback){
                 // 把 畫好彩色簡譜的五線譜組 貼上 UI_Output
                 Mat& staff_img_draw_note = midi_show_play.get_staff_img_draw_note();
@@ -265,6 +270,52 @@ void Game::run(){
                     staff_staff_roi.copyTo(ui_staff_roi);
                 }
 
+
+                // UI 隨機 挑出 11段對話文字 來畫
+                if(clock() > talktime){
+                    talktime = clock() + 5000 + (rand() % 10 * 1000);
+                    switch(1 + rand() % 11){
+                    case 1:
+                        resize(T1 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 2:
+                        resize(T2 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 3:
+                        resize(T3 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 4:
+                        resize(T4 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 5:
+                        resize(T5 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 6:
+                        resize(T6 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 7:
+                        resize(T7 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 8:
+                        resize(T8 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 9:
+                        resize(T9 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 10:
+                        resize(T10, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    case 11:
+                        resize(T11, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
+                        break;
+                    }
+
+                    // cout << "talktime" << talktime << endl;
+                    // cout << "clock()" << clock() << endl;
+                }
+                talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
+                DrawTalk2(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
+                
                 imshow("UI_Output", UI_Output);
                 waitKey(1);
             }
