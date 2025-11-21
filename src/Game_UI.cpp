@@ -252,6 +252,16 @@ void Game::run(){
             midi_show_play.thread_PlaySnd();
 
 
+            // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
+            Midi_shared_datas& midi_shared_datas = midi_show_play.get_Midi_shared_datas();
+
+            Camera_HandShaking_Detect hand_shaking_detect( &midi_shared_datas );
+            hand_shaking_detect.HandShaking( &hand_shaking_detect );
+
+
+
+            
+
             int talktime = 0;
             Mat talk;
             Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
@@ -320,11 +330,7 @@ void Game::run(){
                 waitKey(1);
             }
 
-            // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
-            Midi_shared_datas& midi_shared_datas = midi_show_play.get_Midi_shared_datas();
-
-            Camera_HandShaking_Detect hand_shaking_detect( &midi_shared_datas );
-            hand_shaking_detect.HandShaking();
+            
             // NextStep=HandShaking(Title);
             // switch(NextStep){
             //     case 1:

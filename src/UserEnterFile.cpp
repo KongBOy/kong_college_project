@@ -55,25 +55,13 @@ CvScalar StandardDeviationScalar;
 // int row_index = 0;
 // Mat row_proc_img[40];
 
-float prex = 0;
 float prey = 0;
-float nowx = 0;
 float nowy = 0;
-float shakhighest = 0;
-float shaklowest = 0;
-float shakrange = 0;
 
 int  clock_cost_buffer_size = 6;  // 實際 clock_cost_buffer_size 大小
-int  clock_cost_buffer_acc   = 0;  // 虛擬 clock_cost_buffer_size 大小, 大概就是假設 buffer無限大 總共input了幾次 clock_cost 進buffer的概念, 也可以代表 最新可以寫入 buffer的位置
-int  clock_cost_buffer_go    = 0;  // clock_cost_buffer_acc % clock_cost_buffer_size 為 實際可以寫進buffer的位置
+int  clock_cost_buffer_acc  = 0;  // 虛擬 clock_cost_buffer_size 大小, 大概就是假設 buffer無限大 總共input了幾次 clock_cost 進buffer的概念, 也可以代表 最新可以寫入 buffer的位置
 int* clock_cost_buffer  = new int[clock_cost_buffer_size];
 int  clock_cur_posi = 0;
-
-int clock_cost_avg = 0;
-int clock_cost_sum = 0;
-
-int average_volume = 0;
-int sum_volume = 0;
 
 bool now_handmoveup = false;
 bool pre_handmoveup = false;
@@ -85,23 +73,12 @@ time_t now_handmoveup_clock  = clock() + 10000;
 Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr):
     orbit_num(ORBIT_NUM),
 
-    prex(0),
     prey(0),
-    nowx(0),
     nowy(0),
-    shakhighest(0),
-    shaklowest(0),
-    shakrange(0),
 
     clock_cost_buffer_size(6),
     clock_cost_buffer_acc(0),
-    clock_cost_buffer_go(0),
     clock_cur_posi(0),
-
-    clock_cost_avg(0),
-    clock_cost_sum(0),
-    average_volume(0),
-    sum_volume(0),
 
     now_handmoveup(false),
     pre_handmoveup(false),
@@ -111,7 +88,10 @@ Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_
 
     midi_shared_datas_ptr(in_midi_shared_datas_ptr)
 {
+    // 初始化 self.clock_cost_buffer
     clock_cost_buffer  = new int[clock_cost_buffer_size];
+    for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
+
     for(int i = 0; i < 8; i++){
         orbitX[i] = 0;
         orbitY[i] = 0;
@@ -158,9 +138,9 @@ void Camera_HandShaking_Detect::Detect_Volumn(Mat frame_small, int go_orbit){
     // cout << "orbit_len_avg:" << orbit_len_avg << ", len_max:" << len_max << ", temp_volume:" << temp_volume << ", volume:" << volume << endl;
 }
 
-int Camera_HandShaking_Detect::HandShaking(){
-    // 初始化 clock_cost_buffer
-    for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
+int Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
+    Camera_HandShaking_Detect* self_ptr = (Camera_HandShaking_Detect*)lpParameter;
+    Camera_HandShaking_Detect& self     = *self_ptr;
 
 	Mat frame;        // 原始frame
 	Mat frame_small;  // 原始frame 縮小處理   比較快
@@ -238,34 +218,34 @@ int Camera_HandShaking_Detect::HandShaking(){
         MinRow = minLoc.y;
 
         // 軌跡buffer 存入 顏色最相近的點
-        orbitX[go_orbit] = MinCol;
-        orbitY[go_orbit] = MinRow;
+        self.orbitX[go_orbit] = MinCol;
+        self.orbitY[go_orbit] = MinRow;
         
         // 用 軌跡判斷 音量
         Detect_Volumn(frame_small, go_orbit);
 
         // 用 y的變化來算速度
-        nowy = MinRow;
+        self.nowy = MinRow;
         Detect_Speed();     
-        prey = nowy;  // nowy用完 變成下次的 prey 囉
+        self.prey = self.nowy;  // nowy用完 變成下次的 self.prey 囉
 
 
         // 畫出 最新偵測到的 顏色位置 orbitXY, 用 藍色圈圈 表示
         circle(frame_small, cvPoint(MinCol, MinRow), 4, Scalar(250, 0, 0), 2, 8, 0);
         // 畫出 orbit 裡面的點 連成的 線, 最後一個點不用連回頭所以-1
-        for(int i = 0; i < orbit_num - 1 ; i++ ){
+        for(int i = 0; i < self.orbit_num - 1 ; i++ ){
             int cur_i = go_orbit - i;
             int bef_i = go_orbit - i - 1;
-            if(cur_i < 0) cur_i = orbit_num + cur_i;
-            if(bef_i < 0) bef_i = orbit_num + bef_i;
+            if(cur_i < 0) cur_i = self.orbit_num + cur_i;
+            if(bef_i < 0) bef_i = self.orbit_num + bef_i;
             // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
             
-            line( frame_small, Point(orbitX[cur_i], orbitY[cur_i]), Point(orbitX[bef_i], orbitY[bef_i]), Scalar(44, 250, 3), 1, 8 );
-            // circle(frame_small, cvPoint(orbitX[i], orbitY[i]), 2, Scalar(44, 250, 3), 2, 8, 0);
+            line( frame_small, Point(self.orbitX[cur_i], self.orbitY[cur_i]), Point(self.orbitX[bef_i], self.orbitY[bef_i]), Scalar(44, 250, 3), 1, 8 );
+            // circle(frame_small, cvPoint(self.orbitX[i], self.orbitY[i]), 2, Scalar(44, 250, 3), 2, 8, 0);
         }
 
         // 更新 軌跡buffer的index
-        if(go_orbit < orbit_num-1) go_orbit++  ;
+        if(go_orbit < self.orbit_num-1) go_orbit++  ;
         else                       go_orbit = 0;
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 貼到UI前 先縮小到UI指定的大小
