@@ -64,11 +64,10 @@ Game::Game():
     UI2_5           = imread("Resource\\UI_all_picture/UI PIC/UI/UI2_5.jpg",1);  // 很抱歉　您提供的樂譜我們無法辨識 請您重新拍攝樂譜
     /////////////////////////////////////////////////////////////////
     UI3             = imread("Resource\\UI_all_picture/UI PIC/UI/UI3.jpg"            , 1);  // 即將進入指揮囉!(Loading...)
-    UI3_enter       = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter.jpg"      , 1);  // 即將進入指揮囉!(Enter)
+    UI3_enter       = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter.jpg"      , 1);  // 即將進入指揮囉!(Enter(未按))
     UI3_enter_press = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter_press.jpg", 1);  // 即將進入指揮囉!(press Enter)
     /////////////////////////////////////////////////////////////////
     // 開始指揮時 用的背景 
-    background1 = imread("Resource\\UI_all_picture/UI PIC/UI/Background_kong.png", 1);
     background  = imread("Resource/UI_all_picture/UI PIC/UI/Background_kong.png", 1);
     // 開始指揮時 右上出現的對話文字
     T1 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\1.jpg", 1);
@@ -225,7 +224,7 @@ void Game::run(){
         // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
         case 3:{
             cout<<"Case 3"<<endl;
-            imshow(Title, UI3);
+            imshow(Title, UI3);  // 即將進入指揮囉!(Loading...)
             // 頁面辨識的結果拿出來
             Recognition_page& recog_page = *recog_page_ptr;
             Note_infos& note_infos = recog_page.get_note_infos();
@@ -233,9 +232,10 @@ void Game::run(){
             midi_notes_ptr = new Midi_Generate();
             Midi_Generate& midi_notes = *midi_notes_ptr;
             midi_notes.GenerateMidiFile(note_infos);
-            imshow(Title, UI3_enter);
+            // 生成完MIDI後 UI 的 Enter 可以顯示出來了 並且等待 user 按下任意鍵
+            imshow(Title, UI3_enter);        // 即將進入指揮囉!(Enter(未按))
             waitKey(0);
-            imshow(Title, UI3_enter_press);
+            imshow(Title, UI3_enter_press);  // 即將進入指揮囉!(press Enter)
             waitKey(200);
             speed = 100;
 
@@ -246,7 +246,7 @@ void Game::run(){
         // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
         case 4:
             cout<<"Case 4"<<endl;
-            UI_Output=background.clone();
+            UI_Output = background.clone();
             // Midi播放的物件建立 並 丟thread開始播放
             Midi_ShowPlay midi_show_play(recog_page_ptr, midi_notes_ptr);
             MusicPlayback = true;
