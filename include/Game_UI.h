@@ -48,7 +48,6 @@ class Game{
         Mat UI3_enter_press ;  // 即將進入指揮囉!(press Enter)
         /////////////////////////////////////////////////////////////////
         // 開始指揮時 用的背景        
-        Mat background1;
         Mat background;
         // 開始指揮時 右上出現的對話文字
         Mat T1;
