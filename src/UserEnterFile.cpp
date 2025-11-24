@@ -72,6 +72,7 @@ time_t now_handmoveup_clock  = clock() + 10000;
 
 Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr):
     orbit_num(ORBIT_NUM),
+    go_orbit(0),
 
     prey(0),
     nowy(0),
@@ -98,8 +99,10 @@ Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_
     }
 }
 
+void Camera_HandShaking_Detect::set_frame_ptr(Mat* in_frame_ptr){ frame_ptr = in_frame_ptr; }
+Mat&  Camera_HandShaking_Detect::get_frame_small_draw_orbit() { return frame_small_draw_orbit; }
 
-void Camera_HandShaking_Detect::Detect_Volumn(Mat frame_small, int go_orbit){
+void Camera_HandShaking_Detect::Detect_Volumn(){
     float len_max = sqrt( pow(frame_small.rows, 2) + pow(frame_small.cols, 2) );
     // 看 avg_buffer_size 條線
     float orbit_len_acc = 0;
@@ -142,56 +145,20 @@ DWORD WINAPI Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
     Camera_HandShaking_Detect* self_ptr = (Camera_HandShaking_Detect*)lpParameter;
     Camera_HandShaking_Detect& self     = *self_ptr;
 
-	Mat frame;        // 原始frame
-	Mat frame_small;  // 原始frame 縮小處理   比較快
-    
     // 初始化 指定物品的顏色 的 MeanScalar 和 StandardDeviationScalar
     self.SamplePicInitial();
     Mat sample_color;
-
-    // 開始視訊
-    // 1. 建立 VideoCapture 物件並打開攝影機
-    VideoCapture cap(0);
-    // 2. 檢查攝影機是否成功開啟
-    if (!cap.isOpened()) {
-        cout << "error, cannot open camera." << endl;
-        return -1;
-    }
-
-    // 3. 先抓一張影像來取出 frame 大小, 生成 sample_color影像
-    cap.read(frame);
-    sample_color = Mat( int(frame.rows / 2), int(frame.cols / 2), CV_8UC3, Scalar(MeanScalar.val[0], MeanScalar.val[1], MeanScalar.val[2]));
-
-    int go_orbit = 0;
+    // 把 存取 frame 從 "->" 改成 "."
+    self.frame = *self.frame_ptr;
+    sample_color = Mat( int(self.frame.rows / 2), int(self.frame.cols / 2), CV_8UC3, Scalar(MeanScalar.val[0], MeanScalar.val[1], MeanScalar.val[2]));
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // UI部分
-    int talktime = 0;
-    Mat talk;
-    Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
-    Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
-    Mat frame_on_ui;
-
-	Mat frame_small_fit_ui;  // 原始frame 縮小處理後 畫上軌跡的結果 在縮放到 配合UI圖片中小電腦的大小
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// 如果 視訊 有正常開啟
-
+	// 如果正在播音樂(MusicPlayback==True) 且 主frame視訊有正常開啟並傳frame進來 就開始記錄軌跡並偵測手勢
     int status = 1;
-    int go_frame = 0;
-    while( MusicPlayback){
-        cap.read(frame);
-        if( frame.empty() ){
-            printf(" --(!) No captured frame -- Break!");
-            break;
-        }
-
-        // delay 1 毫秒 抓一次圖
-        int c = waitKey(1);
-        if( (char)c ==  'c' ) { break; }
-
-        // frame 縮小處理效果差不多 但 會快很多
-        resize(frame, frame_small, Size(int(frame.cols / 2), int(frame.rows / 2)), 0, 0, INTER_CUBIC);
-        // cv::imshow("frame_small", frame_small);
+    while( MusicPlayback && !self.frame.empty()){
+        // self.frame 縮小處理效果差不多 但 會快很多
+        resize(self.frame, self.frame_small, Size(int(self.frame.cols / 2), int(self.frame.rows / 2)), 0, 0, INTER_CUBIC);
+        // cv::imshow("self.frame_small", self.frame_small);
         // cv::waitKey(0);
 
         // 偵測 frame_small內顏色 與 指定物品的顏色 最相近的點 在哪裡
@@ -202,7 +169,7 @@ DWORD WINAPI Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
         Mat sample_color_f;
         Mat frame_small_f;
         //  (b1 - b2)^2, (g1 - g2)^2, (r1 - r2)^2
-        frame_small .convertTo(frame_small_f , CV_32F);
+        self.frame_small .convertTo(frame_small_f , CV_32F);
         sample_color.convertTo(sample_color_f, CV_32F);
         pow(frame_small_f - sample_color_f,  2.0, distance);
         //  (b1 - b2)^2 + (g1 - g2)^2 + (r1 - r2)^2
@@ -218,11 +185,11 @@ DWORD WINAPI Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
         MinRow = minLoc.y;
 
         // 軌跡buffer 存入 顏色最相近的點
-        self.orbitX[go_orbit] = MinCol;
-        self.orbitY[go_orbit] = MinRow;
+        self.orbitX[self.go_orbit] = MinCol;
+        self.orbitY[self.go_orbit] = MinRow;
         
         // 用 軌跡判斷 音量
-        self.Detect_Volumn(frame_small, go_orbit);
+        self.Detect_Volumn();
 
         // 用 y的變化來算速度
         self.nowy = MinRow;
@@ -230,94 +197,41 @@ DWORD WINAPI Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
         self.prey = self.nowy;  // nowy用完 變成下次的 self.prey 囉
 
 
-        // 畫出 最新偵測到的 顏色位置 orbitXY, 用 藍色圈圈 表示
-        circle(frame_small, cvPoint(MinCol, MinRow), 4, Scalar(250, 0, 0), 2, 8, 0);
-        // 畫出 orbit 裡面的點 連成的 線, 最後一個點不用連回頭所以-1
+        // frame_small_draw_orbit 從 frame_small 複製一份 並 畫出 最新偵測到的 orbitXY(用藍色圈圈) 和 過去buffer裡面的 orbitXY(用綠色細線)
+        // 不能用 .clone(), 應該是因為 不是真的新建一個 new Mat 而是 複製pointer, 所以在取second thread的時候 如果 frame_small已經更新的話, frame_small已經指向新圖片而原本的空間可能會被release掉, frame_small_draw_orbit又指向被release掉的空間來做事情 就會當掉
+        // 所以 frame_small_draw_orbit 就手動建立一個新Mat 再把 frame_small 加進來, 就可以保證 frame_small_draw_orbit 指向的東西會存在喔
+        self.frame_small_draw_orbit = Mat(self.frame_small.rows, self.frame_small.cols, CV_8UC3, Scalar(0, 0, 0)) + self.frame_small;
+        // 畫出 orbit 最新的點(藍色空心點)
+        circle(self.frame_small_draw_orbit, cvPoint(MinCol, MinRow), 4, Scalar(250, 0, 0), 2, 8, 0);
+        // 畫出 orbit 裡面的點 連成的 線, 最後一個點不用連回頭所以-1(綠色細線)
         for(int i = 0; i < self.orbit_num - 1 ; i++ ){
-            int cur_i = go_orbit - i;
-            int bef_i = go_orbit - i - 1;
+            int cur_i = self.go_orbit - i;
+            int bef_i = self.go_orbit - i - 1;
             if(cur_i < 0) cur_i = self.orbit_num + cur_i;
             if(bef_i < 0) bef_i = self.orbit_num + bef_i;
             // cout << "go_orbit:" << go_orbit <<  ", cur_i:" << cur_i << ", bef_i:" << bef_i << endl;
             
-            line( frame_small, Point(self.orbitX[cur_i], self.orbitY[cur_i]), Point(self.orbitX[bef_i], self.orbitY[bef_i]), Scalar(44, 250, 3), 1, 8 );
-            // circle(frame_small, cvPoint(self.orbitX[i], self.orbitY[i]), 2, Scalar(44, 250, 3), 2, 8, 0);
+            line( self.frame_small_draw_orbit, Point(self.orbitX[cur_i], self.orbitY[cur_i]), Point(self.orbitX[bef_i], self.orbitY[bef_i]), Scalar(44, 250, 3), 1, 8 );
+            // circle(self.frame_small_draw_orbit, cvPoint(self.orbitX[i], self.orbitY[i]), 2, Scalar(44, 250, 3), 2, 8, 0);
         }
-
+        
         // 更新 軌跡buffer的index
-        if(go_orbit < self.orbit_num-1) go_orbit++  ;
-        else                       go_orbit = 0;
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // 貼到UI前 先縮小到UI指定的大小
-        resize(frame_small, frame_small_fit_ui, Size(frame.cols * 0.537, frame.rows * 0.537), 0, 0, INTER_CUBIC);
-
-        // 把東西貼上 UI_Output(寫在 Generate_Play_Midi 跟 PlaySnd共用)
-        if(!UI_Output.empty()){
-            // 把 畫完圖的frame 貼上 UI_Output
-            frame_on_ui = UI_Output(Rect(16, 77, frame_small_fit_ui.cols, frame_small_fit_ui.rows));
-            cv::flip(frame_small_fit_ui, frame_small_fit_ui, 1);  // 左右翻轉
-            frame_small_fit_ui.copyTo(frame_on_ui);
-
-            // // 把 五線譜組 貼上 UI_Output                
-            // int roi_height = row_proc_img[row_index].rows;
-            // int roi_width  = row_proc_img[row_index].cols;
-            // if(roi_height > 227) roi_height = 227;  // 高度最多抓 227
-            // Mat ui_staff_roi    = UI_Output                 (Rect(62, 530, roi_width, roi_height));
-            // Mat staff_staff_roi = row_proc_img[row_index](Rect( 0,   0, roi_width, roi_height));
-            // staff_staff_roi.copyTo(ui_staff_roi);
-        }
-
-        // // UI 隨機 挑出 11段對話文字 來畫
-        // if(clock() > talktime){
-        //     talktime = clock() + 5000 + (rand() % 10 * 1000);
-        //     switch(1 + rand() % 11){
-        //     case 1:
-        //         resize(T1 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 2:
-        //         resize(T2 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 3:
-        //         resize(T3 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 4:
-        //         resize(T4 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 5:
-        //         resize(T5 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 6:
-        //         resize(T6 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 7:
-        //         resize(T7 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 8:
-        //         resize(T8 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 9:
-        //         resize(T9 , talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 10:
-        //         resize(T10, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     case 11:
-        //         resize(T11, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
-        //         break;
-        //     }
-
-        //     // cout << "talktime" << talktime << endl;
-        //     // cout << "clock()" << clock() << endl;
-        // }
-        // talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
-        // DrawTalk(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
-        imshow("Debug", UI_Output);
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        go_frame++;
+        if(self.go_orbit < self.orbit_num-1) self.go_orbit++  ;
+        else                                 self.go_orbit = 0;
     }
-    cap.release();
     return status;
 }
+
+void Camera_HandShaking_Detect::thread_HandShaking(){
+    DWORD  dwThreadId;
+    HANDLE gSThread = CreateThread(NULL, 0, Camera_HandShaking_Detect::HandShaking, this, 0, &dwThreadId);
+    if (gSThread == NULL) {
+        cerr << "Failed to create thread!" << endl;
+        return;
+    }
+    cout << "thread_HandShaking ---------------" << gSThread << endl;
+}
+
 
 void Camera_HandShaking_Detect::SamplePicInitial(){
     // 舊版 opencv 寫法, 要搭配 cvShowImage, cvWaitKey 才可以顯示喔

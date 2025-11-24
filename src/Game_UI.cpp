@@ -247,6 +247,7 @@ void Game::run(){
         case 4:
             cout<<"Case 4"<<endl;
             UI_Output=background.clone();
+            // Midi播放的物件建立 並 丟thread開始播放
             Midi_ShowPlay midi_show_play(recog_page_ptr, midi_notes_ptr);
             MusicPlayback = true;
             midi_show_play.thread_PlaySnd();
@@ -255,18 +256,36 @@ void Game::run(){
             // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
             Midi_shared_datas& midi_shared_datas = midi_show_play.get_Midi_shared_datas();
 
+            // 手勢偵測的物件建立 並 開啟照相機後丟thread開始手勢偵測
             Camera_HandShaking_Detect hand_shaking_detect( &midi_shared_datas );
-            hand_shaking_detect.HandShaking( &hand_shaking_detect );
-
-
-
             
+            // 開始視訊
+            // 1. 建立 VideoCapture 物件並打開攝影機
+            VideoCapture cap(0);
+            // 2. 檢查攝影機是否成功開啟
+            if (!cap.isOpened()) {
+                cout << "error, cannot open camera." << endl;
+                return;
+            }
+            // 3.先取出一個frame 來 set_frame_ptr, 建立 主thread 和 second thread 共用此 frame 的 ptr 的通道後 開啟 second thread
+            Mat frame;
+            cap.read(frame);
+            hand_shaking_detect.set_frame_ptr(&frame);
+            // 4. HandShaking 丟 thread 開始監聽 frame
+            hand_shaking_detect.thread_HandShaking();
 
             int talktime = 0;
             Mat talk;
             Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
             Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
             while( MusicPlayback){
+                // 主frame 不斷更新 frame, 因為上面有用 set_frame_ptr 設定好共用此 frame 的 ptr, 所以 second frame 只要不斷抓取共用的 frame 的 ptr 就可以收到 最新的影像囉
+                cap.read(frame);
+                if( frame.empty() ){
+                    printf(" --(!) No captured frame -- Break!");
+                    break;
+                }
+
                 // 把 畫好彩色簡譜的五線譜組 貼上 UI_Output
                 Mat& staff_img_draw_note = midi_show_play.get_staff_img_draw_note();
                 // 防呆, 一開始thread可能還沒準備好圖片 就抓可能就抓到 empty
@@ -280,6 +299,18 @@ void Game::run(){
                     staff_staff_roi.copyTo(ui_staff_roi);
                 }
 
+                // 把 畫好軌跡的手是偵測圖 貼上 UI_Output
+                Mat& frame_small_draw_orbit = hand_shaking_detect.get_frame_small_draw_orbit();
+                Mat frame_small_fit_ui;
+                // 防呆, 一開始thread可能還沒準備好圖片 就抓可能就抓到 empty
+                if(!frame_small_draw_orbit.empty()){
+                    // 貼到UI前 先縮小到UI指定的大小
+                    resize(frame_small_draw_orbit, frame_small_fit_ui, Size(frame.cols * 0.537, frame.rows * 0.537), 0, 0, INTER_CUBIC);
+                    // 把 畫完圖的frame 貼上 UI_Output
+                    Mat frame_on_ui = UI_Output(Rect(16, 77, frame_small_fit_ui.cols, frame_small_fit_ui.rows));
+                    cv::flip(frame_small_fit_ui, frame_small_fit_ui, 1);  // 左右翻轉
+                    frame_small_fit_ui.copyTo(frame_on_ui);
+                }
 
                 // UI 隨機 挑出 11段對話文字 來畫
                 if(clock() > talktime){
@@ -326,8 +357,11 @@ void Game::run(){
                 talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
                 DrawTalk2(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
                 
-                imshow("UI_Output", UI_Output);
-                waitKey(1);
+                
+                if(!staff_img_draw_note.empty() && !frame_small_draw_orbit.empty()){
+                    imshow(Title, UI_Output);
+                    waitKey(1);
+                }
             }
 
             
