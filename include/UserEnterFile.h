@@ -6,33 +6,18 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include <iostream>
-#include <stdio.h>
-#include <cv.h>
-#include <highgui.h>
-
 #include "Generate_Play_Midi.h"
 
 #define ORBIT_NUM 8
 
-
 using namespace std;
 using namespace cv;
-int camera();
-int HandShaking(string Title);
-int HandDetection( );
-extern int speed;
-extern int volume;
-extern bool MusicPlayback;
-
-extern Mat UI_Output;
-extern int row_index ;
-extern Mat row_proc_img[40];
-static string Title="小小指揮家";
-
 
 class Camera_HandShaking_Detect{
     private:
+        CvScalar MeanScalar;
+        CvScalar StandardDeviationScalar;
+
         Mat* frame_ptr;              // 接主frame的ptr, VideoCapture只能在 主thread 裡面才能正常運作, 所以這裡second frame 多設一個ptr 來接 主thread 的 frame 來和主frame共用
         Mat frame;                   // 接主frame的ptr 參考的 原始frame, 主要是想讓 -> 改成 . 好寫一點
 	    Mat frame_small;             // frame 縮小處理效果差不多 但 會快很多, 然後畫好的結果也是直接放 small_frame上囉
