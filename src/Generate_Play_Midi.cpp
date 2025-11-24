@@ -36,10 +36,10 @@ Mat speed_bar_roi ;
 Mat bar                   = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 1);
 //800 245 495 233
 
-HANDLE     gSThread = NULL;  // 播放聲音的執行緒
+HANDLE gSThread = NULL;  // 播放聲音的執行緒
 
 
-Midi_shared_datas::Midi_shared_datas(): speed(60), volume(80) {}
+Midi_shared_datas::Midi_shared_datas(): speed(120), volume(80) {}
 void Midi_shared_datas::set_speed  (int in_speed ){ speed  = in_speed; }
 void Midi_shared_datas::set_volume (int in_volume){ volume = in_volume; }
 int  Midi_shared_datas::get_speed  (){return speed;  }
@@ -427,7 +427,7 @@ void Midi_ShowPlay::thread_PlaySnd(){
         cerr << "Failed to create thread!" << endl;
         return;
     }
-    cout << "thread---------------" << gSThread << endl;
+    cout << "thread_PlaySnd---------------" << gSThread << endl;
 }
 
 
