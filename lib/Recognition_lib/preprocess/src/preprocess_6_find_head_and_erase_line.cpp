@@ -11,12 +11,7 @@
 #include <math.h>
 
 #include "Recognition.h"
-#include "preprocess_6_find_head_and_erase_line.h"
-
-#include "preprocess_5_find_staff.h"
 #include "preprocess_0_hough_tool.h"
-
-//#include "include/find_staff.h"
 #include "preprocess_0_watch_hough_line.h"
 
 
@@ -49,105 +44,6 @@ static Mat src_bin_reduce_line_debug;
 static Mat src_bin_debug;
 static Mat drew_img_debug;
 static Point pt1, pt2;
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//interface，先把東西包成對的格式，再丟到find_head找頭
-void Recognition_page::Find_Head_and_Erase_Line_Interface(){
-    debuging = debuging_pre6;
-    Mat color_src_img;  // debug用
-    cvtColor(src_img, color_src_img, CV_GRAY2BGR);
-
-    src_bin_erase_line = src_bin.clone();
-
-    drew_img_debug = color_src_img.clone();
-    src_bin_reduce_line_debug = src_bin.clone();
-    cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
-
-    // staff = new vector<Vec2f>[staff_count];
-    if(debuging) cout << "staff_count:" << staff_count << endl;
-    left_point  = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
-    right_point = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
-
-    for(int i = 0 ; i < staff_count ; i++){
-        left_point [i] = new int*[STAFF_LINE_COUNT];
-        right_point[i] = new int*[STAFF_LINE_COUNT];
-
-
-        for(int go_width = 0 ; go_width < STAFF_LINE_COUNT ; go_width++){
-            left_point [i][go_width] = new int[X_Y_COUNT];
-            right_point[i][go_width] = new int[X_Y_COUNT];
-
-            for(int k = 0 ; k < X_Y_COUNT ; k++){
-                left_point [i][go_width][k] =  10000; /// 隨便很大的數
-                right_point[i][go_width][k] = -10000; /// 隨便很小的數
-            }
-        }
-    }
-
-
-    // 要注意格式喔~~~包成五個五個為一組！！！
-    for(int i = 0 ; i < staff_count ; i++){
-        int first_line = 5*i;
-        int fifth_line = 5*(i+1)-1;
-
-        vector<Vec2f> staff;
-        for(int go_width = first_line ; go_width <= fifth_line ; go_width++){
-            staff.push_back(lines[go_width]);
-            // cout << "go_width = " << go_width << " data = " << lines[go_width][0] << " " << lines[go_width][1] << endl;
-        }
-        Find_Head_and_Erase_Line( staff, (string)HORIZONTAL_DIR + "find_head",src_bin,left_point[i], right_point[i], src_bin_erase_line, debuging);
-    }
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-//interface，先把東西包成對的格式，再丟到find_head找頭
-void Find_Head_and_Erase_Line_Interface(Mat src_bin, vector<Vec2f>staff_lines, int staff_count, int***& left_point, int***& right_point, Mat color_ord_img, Mat& src_bin_erase_line, bool debuging){
-    drew_img_debug = color_ord_img.clone();
-    src_bin_reduce_line_debug = src_bin.clone();
-    cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
-
-    // staff = new vector<Vec2f>[staff_count];
-    if(debuging) cout << "staff_count:" << staff_count << endl;
-    left_point  = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
-    right_point = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
-
-    for(int i = 0 ; i < staff_count ; i++){
-        left_point [i] = new int*[STAFF_LINE_COUNT];
-        right_point[i] = new int*[STAFF_LINE_COUNT];
-
-
-        for(int go_width = 0 ; go_width < STAFF_LINE_COUNT ; go_width++){
-            left_point [i][go_width] = new int[X_Y_COUNT];
-            right_point[i][go_width] = new int[X_Y_COUNT];
-
-            for(int k = 0 ; k < X_Y_COUNT ; k++){
-                left_point [i][go_width][k] =  10000; /// 隨便很大的數
-                right_point[i][go_width][k] = -10000; /// 隨便很小的數
-            }
-        }
-    }
-
-
-    // 要注意格式喔~~~包成五個五個為一組！！！
-    for(int i = 0 ; i < staff_count ; i++){
-        int first_line = 5*i;
-        int fifth_line = 5*(i+1)-1;
-
-        vector<Vec2f> staff;
-        for(int go_width = first_line ; go_width <= fifth_line ; go_width++){
-            staff.push_back(staff_lines[go_width]);
-            // cout << "go_width = " << go_width << " data = " << staff_lines[go_width][0] << " " << staff_lines[go_width][1] << endl;
-        }
-        Find_Head_and_Erase_Line( staff, (string)HORIZONTAL_DIR + "find_head",src_bin,left_point[i],right_point[i], src_bin_erase_line, debuging);
-    }
-}
-
-
 
 void Erase_line(Mat& src_bin, int x0, int y0, int one_step, int one_step_height, int go_range){
     for(int go = 0 ; go < go_range ; go++){
@@ -206,7 +102,6 @@ void Erase_line(Mat& src_bin, int x0, int y0, int one_step, int one_step_height,
 
 
 
-int Check_shift(Mat, int,int,int,int);
 // 用來測試某個 點 可能是否在線上
 // 門檻值為 CHECK_LINE_LENGTH * CODA_RATE
 // 回傳值：
@@ -579,5 +474,56 @@ void Find_Head_and_Erase_Line(vector<Vec2f> lines, string window_name, Mat src_b
         imwrite(window_name + "3.bmp"     , drew_img_debug);
         imwrite(window_name + "_g_img.bmp", src_bin_debug );
         imwrite(window_name + "_g_img_reduce_line.bmp", src_bin_erase_line );
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//interface，先把東西包成對的格式，再丟到find_head找頭
+void Recognition_page::Find_Head_and_Erase_Line_Interface(){
+    debuging = debuging_pre6;
+    Mat color_src_img;  // debug用
+    cvtColor(src_img, color_src_img, CV_GRAY2BGR);
+
+    src_bin_erase_line = src_bin.clone();
+
+    drew_img_debug = color_src_img.clone();
+    src_bin_reduce_line_debug = src_bin.clone();
+    cvtColor(src_bin, src_bin_debug, CV_GRAY2BGR);
+
+    // staff = new vector<Vec2f>[staff_count];
+    if(debuging) cout << "staff_count:" << staff_count << endl;
+    left_point  = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
+    right_point = new int**[staff_count];  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
+
+    for(int i = 0 ; i < staff_count ; i++){
+        left_point [i] = new int*[STAFF_LINE_COUNT];
+        right_point[i] = new int*[STAFF_LINE_COUNT];
+
+
+        for(int go_width = 0 ; go_width < STAFF_LINE_COUNT ; go_width++){
+            left_point [i][go_width] = new int[X_Y_COUNT];
+            right_point[i][go_width] = new int[X_Y_COUNT];
+
+            for(int k = 0 ; k < X_Y_COUNT ; k++){
+                left_point [i][go_width][k] =  10000; /// 隨便很大的數
+                right_point[i][go_width][k] = -10000; /// 隨便很小的數
+            }
+        }
+    }
+
+
+    // 要注意格式喔~~~包成五個五個為一組！！！
+    for(int i = 0 ; i < staff_count ; i++){
+        int first_line = 5*i;
+        int fifth_line = 5*(i+1)-1;
+
+        vector<Vec2f> staff;
+        for(int go_width = first_line ; go_width <= fifth_line ; go_width++){
+            staff.push_back(lines[go_width]);
+            // cout << "go_width = " << go_width << " data = " << lines[go_width][0] << " " << lines[go_width][1] << endl;
+        }
+        Find_Head_and_Erase_Line( staff, (string)HORIZONTAL_DIR + "find_head",src_bin,left_point[i], right_point[i], src_bin_erase_line, debuging);
     }
 }

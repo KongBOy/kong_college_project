@@ -58,8 +58,6 @@ add_library(Recognition_lib lib/Recognition_lib/Recognition.cpp
                             lib/Recognition_lib/recognition/src/recognition_3_b_find_time_bar.cpp
                             lib/Recognition_lib/recognition/src/recognition_3_c_merge_head_and_time.cpp
                             lib/Recognition_lib/recognition/src/recognition_4_find_picth.cpp
-
-                            lib/Recognition_lib/recognition/src/UI_loading.cpp
                             )
 target_include_directories(Recognition_lib PUBLIC ${OpenCV_INCLUDE_DIRS} 
                                                   ${CMAKE_CURRENT_SOURCE_DIR}/lib/Recognition_lib/include
