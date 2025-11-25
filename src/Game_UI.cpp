@@ -39,18 +39,18 @@ Game::Game():
     cvMoveWindow(UI_WINDOW_NAME.c_str() , 0, 0);
 
     /////////////////////////////////////////////////////////////////
-    UI0             = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0.jpg"        , 1);  // 小小指揮家封面
-    UI0_enter       = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_enter.jpg"  , 1);  // 小小指揮家封面_press_enter
-    UI0_1           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_1.jpg"      , 1);  // 歡迎來到指揮家樂園
-    UI0_2           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_2.jpg"      , 1);  // 您可以任意挑選一張您喜愛的樂譜
-    UI0_3           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_3.jpg"      , 1);  // 我們將會幫您看懂樂譜
-    UI0_4           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_4.jpg"      , 1);  // 並且幫您演奏
-    UI0_5           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_5.jpg"      , 1);  // 接著您可以用最直接的方式與音樂共舞
-    UI0_6           = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6.jpg"      , 1);  // 盡情地舞動您的雙手吧！
-    UI0_6_enter     = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI0_6_enter.jpg", 1);  // 盡情地舞動您的雙手吧！_press_enter
-    UI1             = imread("Resource\\UI_all_picture/UI PIC/UI/UI1.jpg"           ,1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!
-    UI1_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_1.jpg"         ,1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!_press_enter
-    UI1_2           = imread("Resource\\UI_all_picture/UI PIC/UI/UI1_2.jpg"         ,1);  // 我們當然需要一些時間視譜與練習
+    UI0             = imread("Resource/UI_all_picture/UI PIC/UI/UI0.jpg"        , 1);  // 小小指揮家封面
+    UI0_enter       = imread("Resource/UI_all_picture/UI PIC/UI/UI0_enter.jpg"  , 1);  // 小小指揮家封面_press_enter
+    UI0_1           = imread("Resource/UI_all_picture/UI PIC/UI/UI0_1.jpg"      , 1);  // 歡迎來到指揮家樂園
+    UI0_2           = imread("Resource/UI_all_picture/UI PIC/UI/UI0_2.jpg"      , 1);  // 您可以任意挑選一張您喜愛的樂譜
+    UI0_3           = imread("Resource/UI_all_picture/UI PIC/UI/UI0_3.jpg"      , 1);  // 我們將會幫您看懂樂譜
+    UI0_4           = imread("Resource/UI_all_picture/UI PIC/UI/UI0_4.jpg"      , 1);  // 並且幫您演奏
+    UI0_5           = imread("Resource/UI_all_picture/UI PIC/UI/UI0_5.jpg"      , 1);  // 接著您可以用最直接的方式與音樂共舞
+    UI0_6           = imread("Resource/UI_all_picture/UI PIC/UI/UI0_6.jpg"      , 1);  // 盡情地舞動您的雙手吧！
+    UI0_6_enter     = imread("Resource/UI_all_picture/UI PIC/UI/UI0_6_enter.jpg", 1);  // 盡情地舞動您的雙手吧！_press_enter
+    UI1             = imread("Resource/UI_all_picture/UI PIC/UI/UI1.jpg"           ,1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!
+    UI1_1           = imread("Resource/UI_all_picture/UI PIC/UI/UI1_1.jpg"         ,1);  // 請挑選一個您喜歡的樂譜，並傳給我們吧!_press_enter
+    UI1_2           = imread("Resource/UI_all_picture/UI PIC/UI/UI1_2.jpg"         ,1);  // 我們當然需要一些時間視譜與練習
     /////////////////////////////////////////////////////////////////
     UI2                         = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/UI_bass2.bmp"   , 1);  //  進度條背景
     loading_bar_item_4          = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_4.bmp"     , 0);  // 04, 11, 15
@@ -63,33 +63,33 @@ Game::Game():
     loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp", 0);  // 16
     loading_bar = 0;
 
-    UI2_5           = imread("Resource\\UI_all_picture/UI PIC/UI/UI2_5.jpg",1);  // 很抱歉　您提供的樂譜我們無法辨識 請您重新拍攝樂譜
+    UI2_5           = imread("Resource/UI_all_picture/UI PIC/UI/UI2_5.jpg",1);  // 很抱歉　您提供的樂譜我們無法辨識 請您重新拍攝樂譜
     /////////////////////////////////////////////////////////////////
-    UI3             = imread("Resource\\UI_all_picture/UI PIC/UI/UI3.jpg"            , 1);  // 即將進入指揮囉!(Loading...)
-    UI3_enter       = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter.jpg"      , 1);  // 即將進入指揮囉!(Enter(未按))
-    UI3_enter_press = imread("Resource\\UI_all_picture/UI PIC/UI/UI3_enter_press.jpg", 1);  // 即將進入指揮囉!(press Enter)
+    UI3             = imread("Resource/UI_all_picture/UI PIC/UI/UI3.jpg"            , 1);  // 即將進入指揮囉!(Loading...)
+    UI3_enter       = imread("Resource/UI_all_picture/UI PIC/UI/UI3_enter.jpg"      , 1);  // 即將進入指揮囉!(Enter(未按))
+    UI3_enter_press = imread("Resource/UI_all_picture/UI PIC/UI/UI3_enter_press.jpg", 1);  // 即將進入指揮囉!(press Enter)
     /////////////////////////////////////////////////////////////////
     // 開始指揮時 用的背景 
     background  = imread("Resource/UI_all_picture/UI PIC/UI/Background_kong.png", 1);
     // 開始指揮時 右上出現的對話文字
-    T1 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\1.jpg", 1);
-    T2 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\2.jpg", 1);
-    T3 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\3.jpg", 1);
-    T4 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\4.jpg", 1);
-    T5 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\5.jpg", 1);
-    T6 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\6.jpg", 1);
-    T7 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\7.jpg", 1);
-    T8 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\8.jpg", 1);
-    T9 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\9.jpg", 1);
-    T10 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\10.jpg", 1);
-    T11 = imread("Resource\\UI_all_picture/UI PIC\\UI\\UI_say_something\\11.jpg", 1);
+    T1  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/1.jpg", 1);
+    T2  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/2.jpg", 1);
+    T3  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/3.jpg", 1);
+    T4  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/4.jpg", 1);
+    T5  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/5.jpg", 1);
+    T6  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/6.jpg", 1);
+    T7  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/7.jpg", 1);
+    T8  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/8.jpg", 1);
+    T9  = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/9.jpg", 1);
+    T10 = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/10.jpg", 1);
+    T11 = imread("Resource/UI_all_picture/UI PIC/UI/UI_say_something/11.jpg", 1);
     // 開始指揮時 顯示 音量 和 速度 的 白色bar
     bar = imread("Resource/UI_all_picture/UI PIC/UI/Bar.png", 1);
     /////////////////////////////////////////////////////////////////
-    UI4_0           = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_0.jpg",1);  // 曲終. 您的指揮真是令我們驚艷！
-    UI4_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI4_1.jpg",1);  // 感謝您參與這趟旅程，期待下一次相遇。
-    UI5_0           = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_0.jpg",1);  // 封底 參與人員
-    UI5_1           = imread("Resource\\UI_all_picture/UI PIC/UI/UI5_1.jpg",1);  // ******* (沒用到) *******  封底 參與人員 enter
+    UI4_0           = imread("Resource/UI_all_picture/UI PIC/UI/UI4_0.jpg",1);  // 曲終. 您的指揮真是令我們驚艷！
+    UI4_1           = imread("Resource/UI_all_picture/UI PIC/UI/UI4_1.jpg",1);  // 感謝您參與這趟旅程，期待下一次相遇。
+    UI5_0           = imread("Resource/UI_all_picture/UI PIC/UI/UI5_0.jpg",1);  // 封底 參與人員
+    UI5_1           = imread("Resource/UI_all_picture/UI PIC/UI/UI5_1.jpg",1);  // ******* (沒用到) *******  封底 參與人員 enter
 
 
     width_frame_acc = 0;
@@ -99,7 +99,6 @@ Game::Game():
 
 
 void Game::run(){
-
     int NextStep=1;
 
     // opencv 中文字 編碼只支援 cp950(Big5), 所以要先把 utf8 轉 cp950
@@ -166,7 +165,7 @@ void Game::run(){
 
             //     // 如果有檔案傳進來, 不管傳進來幾個, 只 讀取第一個.jpg檔案 
             //     if(files.size() > 0){
-            //         SrcMusicSheet = imread(PicFolder+"\\" + files[0], 0);
+            //         SrcMusicSheet = imread(PicFolder+"/" + files[0], 0);
 
             //         // 如果讀取成功
             //         if(!SrcMusicSheet.empty()){
@@ -223,7 +222,7 @@ void Game::run(){
             NextStep=3;
             break;
 
-        // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
+        // NextStep 3: 辨識完成後 建立 MIDI音樂
         case 3:{
             cout<<"Case 3"<<endl;
             imshow(Title, UI3);  // 即將進入指揮囉!(Loading...)
@@ -244,7 +243,7 @@ void Game::run(){
             break;
         }
 
-        // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
+        // NextStep 4: 播放MIDI音樂+樂譜音高, 顯示畫面指揮畫面
         case 4:
             // 
             Mat UI_Output = background.clone();
