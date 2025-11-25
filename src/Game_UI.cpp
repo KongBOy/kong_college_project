@@ -93,9 +93,6 @@ Game::Game():
     UI5_1           = imread("Resource/UI_all_picture/UI PIC/UI/UI5_1.jpg",1);  // ******* (沒用到) *******  封底 參與人員 enter
 }
 
-
-
-
 void Game::run(){
     int NextStep=1;
 
@@ -396,9 +393,7 @@ void Game::run(){
             waitKey(2000);
 
             NextStep=0;
-
             break;
-
         }
     }
 
