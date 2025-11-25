@@ -46,7 +46,7 @@ int Drawing_Random_Circles(Mat& image){
 
 
 // Input圖去白色背景(200以上) 貼進 Output圖
-int DrawTalk2(Mat Input, Mat& Output, int row, int col){
+int DrawTalk(Mat Input, Mat& Output, int row, int col){
     int OutputRow = Output.rows;
     int OutputCol = Output.cols;
     int InputRow = Input.rows;

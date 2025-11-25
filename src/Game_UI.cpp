@@ -62,6 +62,7 @@ Game::Game():
     loading_bar_item_finish     = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp", 0);  // 16
     loading_bar_item_staff_line = imread("Resource/UI_all_picture/UI PIC/UI/loading_bar_item/note_finish.bmp", 0);  // 16
     loading_bar = 0;
+    width_frame_acc = 0;
 
     UI2_5           = imread("Resource/UI_all_picture/UI PIC/UI/UI2_5.jpg",1);  // 很抱歉　您提供的樂譜我們無法辨識 請您重新拍攝樂譜
     /////////////////////////////////////////////////////////////////
@@ -90,9 +91,6 @@ Game::Game():
     UI4_1           = imread("Resource/UI_all_picture/UI PIC/UI/UI4_1.jpg",1);  // 感謝您參與這趟旅程，期待下一次相遇。
     UI5_0           = imread("Resource/UI_all_picture/UI PIC/UI/UI5_0.jpg",1);  // 封底 參與人員
     UI5_1           = imread("Resource/UI_all_picture/UI PIC/UI/UI5_1.jpg",1);  // ******* (沒用到) *******  封底 參與人員 enter
-
-
-    width_frame_acc = 0;
 }
 
 
@@ -245,22 +243,26 @@ void Game::run(){
 
         // NextStep 4: 播放MIDI音樂+樂譜音高, 顯示畫面指揮畫面
         case 4:
-            // 
+            cout<<"Case 4"<<endl;
+            // 開始遊戲的 乾淨背景複製一份進 UI_Output, 要畫的東西進通通畫進Output
             Mat UI_Output = background.clone();
-            int MinValue   = 863;
-            int MaxValue   = 1244;
-            int volume_row = 275;
-            int speed_row  = 390;
+            // 音量/速度 的 左邊界, 右邊界, 音量的y, 速度的y
+            int bar_x_left   =  863;
+            int bar_x_right  = 1244;
+            int bar_volume_y =  275;
+            int bar_speed_y  =  390;
             // 把原始background 的 音量/速度條 複製一份下來, 等等畫完 bar的時候 才可以復原 畫下一次的bar
             Speed_Volume_Bar      = background(Rect(750, 245, 545, 233)).clone();
             Speed_Volume_Bar_roi  = UI_Output (Rect(750, 245, 545, 233));
-            // 
+            // UI右上角的對話框
             int talktime = 0;
             Mat talk;
             Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
             Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
+            // UI畫隨機白圈圈限制時間多長畫一次用的
+            time_t random_circle_pre = clock();
 
-            cout<<"Case 4"<<endl;
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // 建立 Midi播放的物件 並 丟thread開始播放(裡面會把 MsicPlayback設true 讓其他thread知道 可以開始運作了)
             Midi_ShowPlay midi_show_play(recog_page_ptr, midi_notes_ptr);
             midi_show_play.thread_PlaySnd();
@@ -283,12 +285,16 @@ void Game::run(){
             hand_shaking_detect.set_frame_ptr(&frame);
             // 4. HandShaking 丟 thread 開始監聽 frame
             hand_shaking_detect.thread_HandShaking();
-
+            
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
             // 如果 MusicPlayback == true, 就持續從 midi播放thread(畫好彩色簡譜的五線譜組) 和 手勢偵測thread(畫好軌跡的手勢偵測圖) 取出 畫好的圖片 並 顯示在 UI上面
             while( midi_shared_datas.get_MusicPlayback() ){
                 // 畫一些 裝飾用的 白點點
-                if( !(clock() % 10 * CLOCKS_PER_SEC) )
+                time_t random_circle_now = clock();
+                if( (random_circle_now - random_circle_pre) > 1.5 * CLOCKS_PER_SEC ){
                     Drawing_Random_Circles(UI_Output);
+                    random_circle_pre = random_circle_now;
+                }
                 // 主frame 不斷更新 frame, 因為上面有用 set_frame_ptr 設定好共用此 frame 的 ptr, 所以 second frame 只要不斷抓取共用的 frame 的 ptr 就可以收到 最新的影像囉
                 cap.read(frame);
                 if( frame.empty() ){
@@ -299,8 +305,8 @@ void Game::run(){
                 // 先把 音量/速度bar 的UI 復原
                 Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);  
                 // 再根據目前的 音量/速度 在相應的地方貼上 bar小白條
-                volume_bar_roi = UI_Output(Rect( (midi_shared_datas.get_volume()        /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
-                speed_bar_roi  = UI_Output(Rect( (midi_shared_datas.get_speed ()  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
+                volume_bar_roi = UI_Output(Rect( (midi_shared_datas.get_volume()        /         127.) * (bar_x_right - bar_x_left) + bar_x_left, bar_volume_y, bar.cols, bar.rows) );
+                speed_bar_roi  = UI_Output(Rect( (midi_shared_datas.get_speed ()  - 20.)/ (300. -  20.) * (bar_x_right - bar_x_left) + bar_x_left, bar_speed_y , bar.cols, bar.rows) );
                 bar.copyTo(volume_bar_roi);
                 bar.copyTo(speed_bar_roi );
 
@@ -368,12 +374,11 @@ void Game::run(){
                         resize(T11, talk, Size(T1.cols * 0.7, T1.rows * 0.7), 0, 0, INTER_CUBIC);
                         break;
                     }
-
                     // cout << "talktime" << talktime << endl;
                     // cout << "clock()" << clock() << endl;
                 }
-                talk_roi_ord.copyTo(talk_roi);         // 先把上次的結果還原回原始UI
-                DrawTalk2(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
+                talk_roi_ord.copyTo(talk_roi);        // 先把上次的結果還原回原始UI
+                DrawTalk(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
                 
                 // 如果有抓到 畫好彩色簡譜的五線譜組 和 畫好軌跡的手勢偵測圖 的話 就顯示UI
                 if(!staff_img_draw_note.empty() && !frame_small_draw_orbit.empty()){
@@ -391,7 +396,7 @@ void Game::run(){
             waitKey(2000);
 
             NextStep=0;
-            
+
             break;
 
         }
@@ -586,9 +591,6 @@ void Game::UI_loading_preprocess(){
     show_pre_roi_back.copyTo(show_pre_roi);
 }
 
-
-// int width_frame_acc = 0;  // mod_width;
-
 void Game::UI_loading_recognition_one_staff(Recognition_staff_img* staff_recog){
     int staff_count = recog_page_ptr->get_staff_count();
 
@@ -622,9 +624,6 @@ void Game::UI_loading_recognition_one_staff(Recognition_staff_img* staff_recog){
     // 計算 一組五線譜 相當於 進度條 幾%
     int div_width = 70 / staff_count;
     int mod_width = 70 % staff_count;
-    
-
-
 
     // 上次的進度先存一份下來
     int old_loading_bar = loading_bar;
@@ -637,21 +636,6 @@ void Game::UI_loading_recognition_one_staff(Recognition_staff_img* staff_recog){
     }
     if(debuging) cout<<"old_loading_bar:" << old_loading_bar << ", loading_bar:" << loading_bar << ", width_frame_acc:" << width_frame_acc << ", div_width:" << div_width << ", mod_width:" << mod_width << endl;
 
-
-
-
-
-    // // 上次的進度先存一份下來
-    // int old_loading_bar = loading_bar;
-    // // 更新進度
-    // loading_bar         = (go_staff + 1) * div_width + loading_bar;
-    // int width_frame_acc = (go_staff + 1) * mod_width;
-    // loading_bar += width_frame_acc / staff_count;      
-    // // if(width_frame_acc / staff_count){
-    // //     loading_bar++;
-    // //     width_frame_acc %= staff_count;
-    // // }
-    // if(debuging) cout<<"old_loading_bar:" << old_loading_bar << ", loading_bar:" << loading_bar << ", width_frame_acc:" << width_frame_acc << ", div_width:" << div_width << ", mod_width:" << mod_width << endl;
 
     // 更新一組五線譜組的進度條
     Show_loading_bar(old_loading_bar, loading_bar);
