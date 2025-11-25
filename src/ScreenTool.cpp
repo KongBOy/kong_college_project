@@ -27,6 +27,23 @@ void FadeInOut(string Title, Mat Now, Mat After, int delay){
     imshow(Title, After);
 }
 
+int Drawing_Random_Circles(Mat& image){
+    // cout << "Drawing_Random_Circles" << endl;
+    int lineType = 8;
+    Point pt1, pt2;
+
+    for( int i = 0; i < 1; i++ ){
+        pt1.x = rand() % image.cols;
+        pt1.y = rand() % image.rows;
+        pt2.x = rand() % image.cols;
+        pt2.y = rand() % image.rows;
+        int radian = 2 + rand() % 3;
+        circle(image, pt2, radian, Scalar(255, 255, 255), -1, 1, 0);
+        circle(image, pt1, radian, Scalar(255, 255, 255), -1, 1, 0);
+    }
+    return 0;
+}
+
 
 // Input圖去白色背景(200以上) 貼進 Output圖
 int DrawTalk2(Mat Input, Mat& Output, int row, int col){

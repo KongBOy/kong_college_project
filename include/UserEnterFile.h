@@ -39,11 +39,16 @@ class Camera_HandShaking_Detect{
         bool now_handmoveup;
         bool pre_handmoveup;
 
-        time_t pre_handmove_up_clock; 
+        time_t pre_handmoveup_clock; 
         time_t now_handmoveup_clock;
 
-        // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
+        // 從 Midi_ShowPlay 傳進來的 Midi播放與手勢偵測thread 共用的資料空間(目前裡面有 速度, 音量, MusicPlayback)
         Midi_shared_datas* midi_shared_datas_ptr;
+        // 偵測 音量/速度 的時候怕太敏感, 設定在某時間內抓一次的clock
+        time_t detect_volume_clock_pre;
+        time_t detect_speed_clock_pre;
+        // 播放手勢偵測的執行緒
+        HANDLE gSThread;
 
     public:
         Camera_HandShaking_Detect(Midi_shared_datas* in_midi_shared_datas_ptr);

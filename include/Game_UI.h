@@ -42,6 +42,7 @@ class Game{
         Point loading_item_position[17]  ;  // 進度條切成17份的位置
         Mat   UI2_5                      ;  // 很抱歉　您提供的樂譜我們無法辨識 請您重新拍攝樂譜
         Mat   UI_drawing;
+        int   width_frame_acc;
         /////////////////////////////////////////////////////////////////
         Mat UI3             ;  // 即將進入指揮囉!(Loading...)
         Mat UI3_enter       ;  // 即將進入指揮囉!(Enter)
@@ -61,19 +62,25 @@ class Game{
         Mat T9;
         Mat T10;
         Mat T11;
+        // 復原 音量/速度 bar 的 原始background 的 copy
+        Mat Speed_Volume_Bar    ;
+        Mat Speed_Volume_Bar_roi;
         // 開始指揮時 顯示 音量 和 速度 的 白色bar
         Mat bar;
+        // 在相應的 音量 和 速度 顯示白色bar 的的地方
+        Mat volume_bar_roi;
+        Mat speed_bar_roi ;
         /////////////////////////////////////////////////////////////////
         Mat UI4_0           ;  // 曲終. 您的指揮真是令我們驚艷！
         Mat UI4_1           ;  // 感謝您參與這趟旅程，期待下一次相遇。
         Mat UI5_0           ;  // 封底 參與人員
         Mat UI5_1           ;  // ******* (沒用到) *******  封底 參與人員 enter
-
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // 指向 頁面辨識結果
         Recognition_page* recog_page_ptr;
         // 指向 辨識結果生成的 midi_notes
         Midi_Generate*    midi_notes_ptr;
-        int width_frame_acc;
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         
     public:
         Game();

@@ -14,39 +14,22 @@
 using namespace std;
 using namespace cv;
 
-extern int speed;
-extern int volume;
-extern bool MusicPlayback;
-extern Mat UI_Output;
-extern int row_index;
-extern Mat row_proc_img[40];
-
-extern int MinValue;
-extern int MaxValue;
-extern int speed_row;
-extern int volume_row;
-
-
-extern double changespeed;
-
-
-
-extern Mat Speed_Volume_Bar;
-extern Mat background      ;
-extern Mat bar             ;
 
 // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
 class Midi_shared_datas{
     private:
-        int speed;
-        int volume;
+        int  speed;
+        int  volume;
+        bool MusicPlayback;
 
     public:
         Midi_shared_datas();
-        void set_speed (int in_speed);
-        void set_volume(int in_volume);
-        int get_speed();
-        int get_volume();
+        void set_speed        (int  in_speed);
+        void set_volume       (int  in_volume);
+        void set_MusicPlayback(bool in_MusicPlayback);
+        int  get_speed        ();
+        int  get_volume       ();
+        bool get_MusicPlayback();
 };
 
 
@@ -95,6 +78,8 @@ class Midi_ShowPlay{
         Midi_shared_datas  midi_shared_datas;
         // 播音樂時 畫彩色簡譜在staff_img上的容器, UI如果需要就從這邊取
         Mat staff_img_draw_note;
+        // 播放聲音的執行緒
+        HANDLE gSThread;
 
     public:
         Midi_ShowPlay(Recognition_page* in_recog_page_ptr, Midi_Generate* in_midi_notes_ptr);
@@ -115,14 +100,4 @@ class Midi_ShowPlay{
         Mat& get_staff_img_draw_note();
 };
 
-
-
-double  Round (double,int);
-
-int GenerateMidiFile(Note_infos* note_infos, Mat staff_img[]);
-
-int MakeSound (float Freq, int Dura = 0, int Vol = 127, int Voice = 0, float Tempo = 1);
-DWORD WINAPI PlaySnd (LPVOID lpParameter);
-void thread_PlaySnd    (Note_infos* note_infos);
-
-int Drawing_Random_Circles( Mat& image);
+double  Round (double n, int d);

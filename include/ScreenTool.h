@@ -7,5 +7,7 @@ using namespace cv;
 
 void FadeInOut(string Title, Mat Inp,Mat Out,int delay);
 
+int Drawing_Random_Circles(Mat& image);
+
 // Input圖去白色背景(200以上) 貼進 Output圖
 int DrawTalk2(Mat Input, Mat& Output, int row, int col);

@@ -213,20 +213,20 @@ int main(){
             NextStep=3;
             break;
 
-        // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
-        case 3:
-            cout<<"Case 3"<<endl;
-            imshow(Title, UI3);
-            GenerateMidiFile(note_infos, staff_img);
-            imshow(Title, UI3_enter);
-            waitKey(0);
-            imshow(Title, UI3_enter_press);
-            waitKey(200);
-            speed = 100;
-            ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music
+        // // NextStep 3: 辨識完成後 開始畫音高 和 建立 MIDI音樂
+        // case 3:
+        //     cout<<"Case 3"<<endl;
+        //     imshow(Title, UI3);
+        //     GenerateMidiFile(note_infos, staff_img);
+        //     imshow(Title, UI3_enter);
+        //     waitKey(0);
+        //     imshow(Title, UI3_enter_press);
+        //     waitKey(200);
+        //     speed = 100;
+        //     ///~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Play Music
 
-            NextStep=0;
-            break;
+        //     NextStep=0;
+        //     break;
 
         // // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
         // case 4:

@@ -30,11 +30,14 @@ Camera_HandShaking_Detect::Camera_HandShaking_Detect(Midi_shared_datas* in_midi_
     now_handmoveup(false),
     pre_handmoveup(false),
 
-    pre_handmove_up_clock(clock()),
-    now_handmoveup_clock (clock()),
-
-    midi_shared_datas_ptr(in_midi_shared_datas_ptr)
-{
+    pre_handmoveup_clock(clock()),
+    now_handmoveup_clock(clock()),
+    // 從 Midi_ShowPlay 傳進來的 Midi播放與手勢偵測thread 共用的資料空間(目前裡面有 速度, 音量, MusicPlayback)
+    midi_shared_datas_ptr(in_midi_shared_datas_ptr),
+    // 偵測 音量/速度 的時候怕太敏感, 設定在某時間內抓一次的clock
+    detect_speed_clock_pre (clock()),
+    detect_volume_clock_pre(clock())
+    {
     // 初始化 self.clock_cost_buffer
     clock_cost_buffer  = new int[clock_cost_buffer_size];
     for(int i = 0; i < clock_cost_buffer_size; i++) clock_cost_buffer[i] = 0;
@@ -79,9 +82,14 @@ void Camera_HandShaking_Detect::Detect_Volumn(){
         float temp_volume = len_ratio;       
         if(temp_volume <   5) temp_volume =   5;  // 最小音量用  5%
         if(temp_volume > 100) temp_volume = 100;  // 如果超過 100% 就clip掉回100%
-        volume = temp_volume / 100 * 127;         // 0 ~ 100 range 縮放成 MIDI音量 0 ~ 127
-        // 手勢偵測 偵測到的速度 設定到 和 Midi播放 共用的資料空間
-        midi_shared_datas_ptr -> set_volume(volume);
+        int volume = temp_volume / 100 * 127;         // 0 ~ 100 range 縮放成 MIDI音量 0 ~ 127
+        // 手勢偵測 偵測到的速度 設定到 與 Midi播放 共用的資料空間, 抓音量太敏感了 可能需要拉到0.4秒左右抓一次
+        time_t detect_volume_clock_now = clock();
+        if( (detect_volume_clock_now - detect_volume_clock_pre) >  0.4 * CLOCKS_PER_SEC ){
+            midi_shared_datas_ptr -> set_volume(volume);
+            detect_volume_clock_pre = detect_volume_clock_now;
+
+        }
     }
     
     // cout << "orbit_len_avg:" << orbit_len_avg << ", len_max:" << len_max << ", temp_volume:" << temp_volume << ", volume:" << volume << endl;
@@ -101,7 +109,7 @@ DWORD WINAPI Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// 如果正在播音樂(MusicPlayback==True) 且 主frame視訊有正常開啟並傳frame進來 就開始記錄軌跡並偵測手勢
     int status = 1;
-    while( MusicPlayback && !self.frame.empty()){
+    while( self.midi_shared_datas_ptr -> get_MusicPlayback() && !self.frame.empty()){
         // self.frame 縮小處理效果差不多 但 會快很多
         resize(self.frame, self.frame_small, Size(int(self.frame.cols / 2), int(self.frame.rows / 2)), 0, 0, INTER_CUBIC);
         // cv::imshow("self.frame_small", self.frame_small);
@@ -165,6 +173,10 @@ DWORD WINAPI Camera_HandShaking_Detect::HandShaking(LPVOID lpParameter){
         if(self.go_orbit < self.orbit_num-1) self.go_orbit++  ;
         else                                 self.go_orbit = 0;
     }
+
+    CloseHandle(self.gSThread);
+    self.gSThread = NULL;
+    status = 0;
     return status;
 }
 
@@ -210,7 +222,7 @@ bool Camera_HandShaking_Detect::Detect_Speed(){
         // 紀錄 上次 到 這次 的 改變方向 且 最後動作是往上的 時間花了多久 存進buffer裡
         now_handmoveup_clock = clock();                                                    // 紀錄此時時間
         clock_cur_posi = clock_cost_buffer_acc % clock_cost_buffer_size;                   // 定位實際buffer可儲存的位置
-        clock_cost_buffer[clock_cur_posi] = now_handmoveup_clock - pre_handmove_up_clock;  // 花的時間存進去
+        clock_cost_buffer[clock_cur_posi] = now_handmoveup_clock - pre_handmoveup_clock;  // 花的時間存進去
         // 顯示一下目前clock_cost_buffer
         for(int i = 0; i < clock_cost_buffer_size; i++ )
             if(i <= clock_cost_buffer_acc) cout << "clock_cost_buffer[" << i << "] " << clock_cost_buffer[i] << endl;
@@ -229,19 +241,22 @@ bool Camera_HandShaking_Detect::Detect_Speed(){
         clock_avg = clock_sum / acc_amount;
 
         // 60秒可以切幾分 clock_avg 就是 60秒可以打幾下, 就是 bpm 囉
+        int speed = midi_shared_datas_ptr -> get_speed();
         int speed_temp = 60000 / (clock_avg + 0.00000001);
         cout << "clock_cost_buffer_acc: " << clock_cost_buffer_acc << ", acc_amount:" << acc_amount << ", clock_avg:" << clock_avg << ", speed_temp:" << speed_temp << endl;
         // 把太極端的速度去除後 才設定成 我們要的速度, 補充一下不要用clip因為速度容易受到雜訊干擾超過300, 超過300就等於300的話 很容易一值被拉到300
         if(20 < speed_temp && speed_temp < 300 ) speed = speed_temp;
         // 加速時常常揮太快超過300 結果發現沒加速 又揮更快, 所以超過300 且 speed 沒超過300 就慢慢 +5
         if(speed_temp > 300 and speed < 300) speed += 5;
-        // 手勢偵測 偵測到的速度 設定到 和 Midi播放 共用的資料空間
+        // 手勢偵測 偵測到的速度 設定到 與 Midi播放 共用的資料空間, 抓速度比較不敏感不用設多長時間設定一次的限制, 不過寫都寫了就留著備用吧
+        time_t detect_speed_clock_now = clock();
         midi_shared_datas_ptr -> set_speed(speed);
+        detect_speed_clock_pre = detect_speed_clock_now;
 
         // 更新 buffer 目前可儲存位置
         clock_cost_buffer_acc += 1;
-        // now_handmove_up_clock用完了 可以更新成 pre_handmove_up_clock 了
-        pre_handmove_up_clock = now_handmoveup_clock;
+        // now_handmove_up_clock用完了 可以更新成 pre_handmoveup_clock 了
+        pre_handmoveup_clock = now_handmoveup_clock;
     }
     
     // now_handmoveup用完了 可以更新成 pre_handmoveup 了

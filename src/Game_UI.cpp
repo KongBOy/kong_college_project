@@ -4,6 +4,8 @@
 #include "ScreenTool.h"
 #include "Generate_Play_Midi.h"
 #include "UserEnterFile.h"
+#include <iostream>
+#include <ctime>
 
 #define LOADING_BAR_SHIFT_X -80
 
@@ -237,7 +239,6 @@ void Game::run(){
             waitKey(0);
             imshow(Title, UI3_enter_press);  // 即將進入指揮囉!(press Enter)
             waitKey(200);
-            speed = 100;
 
             NextStep=4;
             break;
@@ -245,21 +246,31 @@ void Game::run(){
 
         // NextStep 4: 播放MIDI音樂, 顯示畫面指揮畫面, 顯示樂譜音高
         case 4:
+            // 
+            Mat UI_Output = background.clone();
+            int MinValue   = 863;
+            int MaxValue   = 1244;
+            int volume_row = 275;
+            int speed_row  = 390;
+            // 把原始background 的 音量/速度條 複製一份下來, 等等畫完 bar的時候 才可以復原 畫下一次的bar
+            Speed_Volume_Bar      = background(Rect(750, 245, 545, 233)).clone();
+            Speed_Volume_Bar_roi  = UI_Output (Rect(750, 245, 545, 233));
+            // 
+            int talktime = 0;
+            Mat talk;
+            Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
+            Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
+
             cout<<"Case 4"<<endl;
-            UI_Output = background.clone();
-            // Midi播放的物件建立 並 丟thread開始播放
+            // 建立 Midi播放的物件 並 丟thread開始播放(裡面會把 MsicPlayback設true 讓其他thread知道 可以開始運作了)
             Midi_ShowPlay midi_show_play(recog_page_ptr, midi_notes_ptr);
-            MusicPlayback = true;
             midi_show_play.thread_PlaySnd();
 
-
-            // Midi播放 和 手勢偵測共用的資料空間: 速度 和 音量
+            // 取出 midi_show_play 裡面的 Midi播放與手勢偵測thread 共用的資料空間(目前裡面有 速度, 音量, MusicPlayback)
             Midi_shared_datas& midi_shared_datas = midi_show_play.get_Midi_shared_datas();
 
-            // 手勢偵測的物件建立 並 開啟照相機後丟thread開始手勢偵測
+            // 建立 手勢偵測的物件(需丟入 midi_shared_datas共用空間) 並 開啟照相機後丟thread開始手勢偵測(開啟照相機必須在 主thread 裡面做, 在second thread開啟只能抓到黑畫面)
             Camera_HandShaking_Detect hand_shaking_detect( &midi_shared_datas );
-            
-            // 開始視訊
             // 1. 建立 VideoCapture 物件並打開攝影機
             VideoCapture cap(0);
             // 2. 檢查攝影機是否成功開啟
@@ -274,17 +285,25 @@ void Game::run(){
             // 4. HandShaking 丟 thread 開始監聽 frame
             hand_shaking_detect.thread_HandShaking();
 
-            int talktime = 0;
-            Mat talk;
-            Mat talk_roi_ord = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7)).clone();
-            Mat talk_roi     = UI_Output(Rect(700, 130, T1.cols * 0.7, T1.rows * 0.7));
-            while( MusicPlayback){
+            // 如果 MusicPlayback == true, 就持續從 midi播放thread(畫好彩色簡譜的五線譜組) 和 手勢偵測thread(畫好軌跡的手勢偵測圖) 取出 畫好的圖片 並 顯示在 UI上面
+            while( midi_shared_datas.get_MusicPlayback() ){
+                // 畫一些 裝飾用的 白點點
+                if( !(clock() % 10 * CLOCKS_PER_SEC) )
+                    Drawing_Random_Circles(UI_Output);
                 // 主frame 不斷更新 frame, 因為上面有用 set_frame_ptr 設定好共用此 frame 的 ptr, 所以 second frame 只要不斷抓取共用的 frame 的 ptr 就可以收到 最新的影像囉
                 cap.read(frame);
                 if( frame.empty() ){
-                    printf(" --(!) No captured frame -- Break!");
+                    cout << " --(!) No captured frame -- Break!" << endl;
                     break;
                 }
+
+                // 先把 音量/速度bar 的UI 復原
+                Speed_Volume_Bar.copyTo(Speed_Volume_Bar_roi);  
+                // 再根據目前的 音量/速度 在相應的地方貼上 bar小白條
+                volume_bar_roi = UI_Output(Rect( (midi_shared_datas.get_volume()        /         127.) * (MaxValue - MinValue) + MinValue, volume_row, bar.cols, bar.rows) );
+                speed_bar_roi  = UI_Output(Rect( (midi_shared_datas.get_speed ()  - 20.)/ (300. -  20.) * (MaxValue - MinValue) + MinValue, speed_row , bar.cols, bar.rows) );
+                bar.copyTo(volume_bar_roi);
+                bar.copyTo(speed_bar_roi );
 
                 // 把 畫好彩色簡譜的五線譜組 貼上 UI_Output
                 Mat& staff_img_draw_note = midi_show_play.get_staff_img_draw_note();
@@ -299,7 +318,7 @@ void Game::run(){
                     staff_staff_roi.copyTo(ui_staff_roi);
                 }
 
-                // 把 畫好軌跡的手是偵測圖 貼上 UI_Output
+                // 把 畫好軌跡的手勢偵測圖 貼上 UI_Output
                 Mat& frame_small_draw_orbit = hand_shaking_detect.get_frame_small_draw_orbit();
                 Mat frame_small_fit_ui;
                 // 防呆, 一開始thread可能還沒準備好圖片 就抓可能就抓到 empty
@@ -354,35 +373,22 @@ void Game::run(){
                     // cout << "talktime" << talktime << endl;
                     // cout << "clock()" << clock() << endl;
                 }
-                talk_roi_ord.copyTo(talk_roi);     // 先把上次的結果還原回原始UI
+                talk_roi_ord.copyTo(talk_roi);         // 先把上次的結果還原回原始UI
                 DrawTalk2(talk, UI_Output, 130, 700);  // 再貼上新的Talk圖片
                 
-                
+                // 如果有抓到 畫好彩色簡譜的五線譜組 和 畫好軌跡的手勢偵測圖 的話 就顯示UI
                 if(!staff_img_draw_note.empty() && !frame_small_draw_orbit.empty()){
                     imshow(Title, UI_Output);
                     waitKey(1);
                 }
             }
 
-            
-            // NextStep=HandShaking(Title);
-            // switch(NextStep){
-            //     case 1:
-            //         NextStep=0;
-            //         MusicPlayback=false;
-            //         break;
-            //     case 3:
-
-            //         NextStep=0;
-            //         MusicPlayback=false;
-            //         break;
-            // }
-            imshow(Title, UI4_0);
+            imshow(Title, UI4_0);  // 曲終. 您的指揮真是令我們驚艷！
             waitKey(2000);
-            FadeInOut(Title, UI4_0, UI4_1,50);
+            FadeInOut(Title, UI4_0, UI4_1,50);  // 感謝您參與這趟旅程，期待下一次相遇。
             waitKey(2000);
 
-            FadeInOut(Title, UI4_1, UI5_0,50);
+            FadeInOut(Title, UI4_1, UI5_0,50);  // 封底 參與人員
             waitKey(2000);
 
             NextStep=0;
