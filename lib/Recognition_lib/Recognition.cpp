@@ -9,27 +9,9 @@
 
 #include "Recognition.h"
 
-
-
 #include "preprocess_0_watch_hough_line.h"
-
-#include "preprocess_1_warp_straight_rough.h"
-#include "preprocess_2_binary.h"
-#include "preprocess_3_center_roi.h"
-#include "preprocess_3_horizon_map_to_find_line.h"
-#include "preprocess_4_distance_detect.h"
-#include "preprocess_5_find_staff.h"
-#include "preprocess_6_find_head_and_erase_line.h"
-#include "preprocess_7_cut_according_staff.h"
-
-
-
-
 #include "recognition_0_array_tools.h"
 #include "Note_infos.h"
-
-#include "UI_loading.h"
-
 
 #define PREPROCESS_DIR "preprocess_"
 
@@ -328,111 +310,5 @@ int Recognition(Mat ord_img, int& staff_count, Mat staff_img_erase_line[],Mat st
     bool developing_debuging = false;
     Mat src_img = ord_img.clone();
     Mat src_bin = src_img.clone();
-
-    // ************************* pre1 轉正 *************************
-    try{
-        double warp_angle = Find_Angle(src_img, developing_debuging);
-        Wrap_Straight(src_img, warp_angle, developing_debuging);
-    }
-    catch (exception e){
-        imshow(Title, UI2_5);
-        waitKey(2000);
-        return -1;
-    }
-    
-    // ************************* pre2 二值化 *************************
-    try{
-        src_bin = src_img.clone();
-        Binary_by_patch(src_bin, 15, 40, developing_debuging);
-    }
-    catch (exception e){
-        imshow(Title, UI2_5);
-        waitKey(2000);
-        return -2;
-    }
-        
-    
-    
-    // ************************* pre3 取影像正中間cols 後 水平投影 來抓五線譜線 *************************
-    // 水平投影 找山 和 找線
-    vector<Vec2f> lines;
-    Mat src_bin_roi = ~src_bin;
-    try{
-        Center_ROI_by_slider(src_bin_roi, (string)ROI_DIR + "do_roi", developing_debuging);
-        Mat horizontal_img(src_bin_roi.rows ,src_bin_roi.cols, CV_8UC1, Scalar(0));
-        Horizon_map_to_find_line(src_bin_roi, lines, horizontal_img, developing_debuging);
-    }
-    catch (exception e){
-        imshow(Title, UI2_5);
-        waitKey(2000);
-        return -3;
-    }
-    
-    // ************************* pre4 線的 距離階層 找出來 *************************
-    // 把線的 距離階層 找出來, 以目前抓出來的階層有三種：
-    // dist_level[0]= 3    一條粗線裡面可能有 找到多條細線 之間的距離
-    // dist_level[1]= 17   五線譜內五條線大概的距離
-    // dist_level[2]= 241  五線譜之間大概的距離
-    int * dist_level;
-    try{
-        dist_level = Distance_detect(lines, developing_debuging);
-    }
-    catch (exception e){
-        imshow(Title, UI2_5);
-        waitKey(2000);
-        return -4;
-    }
-    
-    // ************************* pre5 利用 dist_level 找出五線譜線 並 組成群組(把 lines 弄成 五條一組, 用5的倍數 來走訪各群, 所以只需return 最終五線譜組數即可) *************************
-    try{
-        staff_count = find_Staff_lines(lines, dist_level[0], dist_level[1], developing_debuging);
-        if(developing_debuging){
-            Watch_Hough_Line(lines, src_bin    , "",(string)"debug_img/" + "pre5_staff_line"    , 1066);
-            Watch_Hough_Line(lines, src_bin_roi, "",(string)"debug_img/" + "pre5_staff_line_roi"      );
-        }
-        // 如果 找到0組 五線譜群, 就 return 失敗
-        if(staff_count == 0){
-            imshow(Title, UI2_5);
-            waitKey(2000);
-            return -5;
-        }
-    }
-    catch (exception e){
-        imshow(Title, UI2_5);
-        waitKey(2000);
-        return -5;
-    }
-    
-    // ************************* pre6 每組五線譜群組 的線找頭 存入 left_point, right_point, 並在 順著線跑到頭的過程中 也生出一張 二值化把五線譜刪除的圖 *************************
-    Mat color_src_img;  // debug用
-    cvtColor(src_img, color_src_img, CV_GRAY2BGR);
-
-    Mat src_bin_erase_line = src_bin.clone();
-    
-    int*** left_point ;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
-    int*** right_point;  // [長度==staff_count, 第幾組五線譜][長度==5, 五線譜的第幾條線][長度==2, 0是x, 1是y]
-    try{
-        Find_Head_and_Erase_Line_Interface(src_bin, lines, staff_count, left_point, right_point, color_src_img, src_bin_erase_line, developing_debuging);
-    }
-    catch (exception e){
-        imshow(Title, UI2_5);
-        waitKey(2000);
-        return -6;
-    }
-    // ************************* 在 UI 上顯示 原始影像 -> 二值化影像 -> 畫出找完左右兩頭連成的線 *************************
-    UI_loading_preprocess(src_img, src_bin, staff_count, left_point, right_point, UI_bass, UI_WINDOW_NAME, developing_debuging);
-
-
-    // ************************* pre7 每組五線譜群組 找到的頭 的四個角 來透射切出每組五線譜  *************************
-    try{
-        Cut_staff(src_bin, src_bin_erase_line, staff_count, left_point, right_point,
-                  staff_img_erase_line, staff_img,
-                  trans_start_point_x, trans_start_point_y, false);
-    }
-    catch (exception e){
-        imshow(Title, UI2_5);
-        waitKey(2000);
-        return -7;
-    }
     return 0;
 }
