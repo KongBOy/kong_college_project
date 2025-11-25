@@ -28,17 +28,6 @@
 #include "recognition_0_array_tools.h"
 #include "Note_infos.h"
 
-#include "recognition_0_all_head.h"
-
-#include "recognition_0_vertical_map_to_speed_up.h"
-#include "recognition_1_find_all_maybe_head.h"
-#include "recognition_2_a_head_charactaristic.h"
-#include "recognition_2_b_head_recheck.h"
-#include "recognition_3_a_find_vertical_bar.h"
-#include "recognition_3_b_find_time_bar.h"
-#include "recognition_3_c_merge_head_and_time.h"
-#include "recognition_4_find_picth.h"
-
 #include "UI_loading.h"
 
 
