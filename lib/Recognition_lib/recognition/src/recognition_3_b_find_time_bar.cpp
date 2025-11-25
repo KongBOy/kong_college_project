@@ -9,7 +9,6 @@
 #include <iostream>
 #include "Recognition.h"
 #include "Bar_tool.h"
-#include "recognition_3_b_find_time_bar.h"
 
 #define DOWNTOTOP 0
 #define TOPTODOWN 1
@@ -193,63 +192,6 @@ void Recognition_staff_img::recognition_3_b_find_time_bar(Mat template_img){
         // 定位完 right框, left框 後就可以把 time_length 找出來囉(bar_dir 為 TOPTODOWN 同理)
         int length_r = find_bars_time(staff_img_erase_line, time_right_l, time_right_r, test_depth, bar_y, bar_len, bar_dir, debug_img, debuging);
         int length_l = find_bars_time(staff_img_erase_line, time_left_l , time_left_r , test_depth, bar_y, bar_len, bar_dir, debug_img, debuging);
-        if(length_l > length_r) bars_time[go_bar] = length_l;
-        else                    bars_time[go_bar] = length_r;
-    }
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-void recognition_3_b_find_time_bar(Mat template_img, 
-                                   int bars_count, short bars[][200], bool bars_dir[200], 
-                                   int bars_time[200],
-                                   Mat reduce_line, 
-                                   bool debuging){
-    Mat debug_img = reduce_line.clone();
-    cvtColor(reduce_line, debug_img, CV_GRAY2BGR);
-
-    // 開始判斷時間長度囉, 定位出 符桿的起始位置(bar順著bar_dir走到尾 然後 往自身偏外幾個pixel後, 框一個小範圍找 符桿)
-    // tr = top_right, tl = top_left, dr = down_right, dl = down_left
-    int  test_width;  // 框一個小範圍的寬度
-    int  test_depth;  // 框一個小範圍的高度
-    int  shift;       // 自身外偏儀幾個pixel
-    int  bar_x;       // bar連接head的x座標, 為了增加可讀性, 先把要用的東西拿出來
-    int  bar_y;       // bar連接head的y座標, 為了增加可讀性, 先把要用的東西拿出來
-    int  bar_len;     // bar的長度         , 為了增加可讀性, 先把要用的東西拿出來
-    bool bar_dir;     // bar的方向         , 為了增加可讀性, 先把要用的東西拿出來
-    for(int go_bar = 0 ; go_bar < bars_count ; go_bar++){
-        // cout << "go_bar = " << go_bar;
-        test_width = 7;                      // 框一個小範圍的寬度
-        shift      = 2;                      // 自身外偏儀幾個pixel
-        test_depth = template_img.rows*2.0;  // 框一個小範圍的高度
-        bar_x      = bars[0][go_bar];        // bar連接head的x座標, 為了增加可讀性, 先把要用的東西拿出來
-        bar_y      = bars[1][go_bar];        // bar連接head的x座標, 為了增加可讀性, 先把要用的東西拿出來
-        bar_len    = bars[2][go_bar];        // bar的長度         , 為了增加可讀性, 先把要用的東西拿出來
-        bar_dir    = bars_dir[go_bar];       // bar的方向         , 為了增加可讀性, 先把要用的東西拿出來
-
-        // 以下都是用 DOWNTOTOP 來舉例
-        // 定位出bar找符桿的 right框, left框 各別的 l, r, 因為 只是定位左右, 跟y座標沒關係 不需要看 bar_dir, 所以 TOPTODOWN 可以直接套用
-        //  ******** 上右 *********
-        int time_right_l = bar_x + shift;              // right框 的 右
-        int time_right_r = time_right_l + test_width;  // right框 的 左
-        //  防呆
-        if(time_right_l < 0 ) time_right_l = 0;
-        if(time_right_r > reduce_line.cols-1) time_right_r = reduce_line.cols -1;
-
-        // ******** 上左 ********
-        int time_left_r = bar_x - shift;             // left框 的 右
-        int time_left_l = time_left_r - test_width;  // left框 的 左
-        //  防呆
-        if(time_left_l < 0 ) time_left_l = 0;
-        if(time_left_r > reduce_line.cols-1) time_left_r = reduce_line.cols -1;
-        // cout << "time_left_l = " << time_left_l << ", time_left_r = " << time_left_r << endl;
-
-
-        // 定位完 right框, left框 後就可以把 time_length 找出來囉(bar_dir 為 TOPTODOWN 同理)
-        int length_r = find_bars_time(reduce_line, time_right_l, time_right_r, test_depth, bar_y, bar_len, bar_dir, debug_img, debuging);
-        int length_l = find_bars_time(reduce_line, time_left_l , time_left_r , test_depth, bar_y, bar_len, bar_dir, debug_img, debuging);
         if(length_l > length_r) bars_time[go_bar] = length_l;
         else                    bars_time[go_bar] = length_r;
     }
